@@ -31,7 +31,7 @@ async def before_request():
     print(request)
 
 
-@app.route('/', subdomain="trovetools")
+@app.route('/', subdomain="troveapi")
 async def index():
     return "Welcome to the Trove API!"
 
@@ -77,4 +77,4 @@ async def not_found(e):
 
 if __name__ == "__main__":
     app.register_blueprint(versions.api_v1)
-    app.run(debug=True, host="0.0.0.0", port=80)
+    app.run(debug=True, host="0.0.0.0", port=os.getenv("SERVER_PORT"))
