@@ -1,0 +1,7 @@
+beanie
+quart
+python-dotenv
+aiohttp
+pydantic
+requests
+Flask-Caching
