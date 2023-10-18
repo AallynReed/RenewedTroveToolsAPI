@@ -31,7 +31,7 @@ async def before_request():
     print(request)
 
 
-@app.route('/', subdomain="troveapi")
+@app.route('/', subdomain="kiwiapi")
 async def index():
     return "Welcome to the Trove API!"
 
