@@ -14,6 +14,7 @@ class ModCache:
     def __init__(self):
         self._data = {}
         self._cached_queries = {}
+        self._processed_hashes = {}
 
     def __str__(self):
         return f"<ModCache mods={len(self)}>"
@@ -58,6 +59,12 @@ class ModCache:
         """Clear the cache."""
         self._data = {}
 
+    def process_hashes(self):
+        for mod in self:
+            for file in mod.files:
+                if file.hash:
+                    self._processed_hashes[file.hash] = mod
+
     def get_sorted_fields(
             self,
             *fields: tuple[str, SortOrder],
@@ -84,3 +91,29 @@ class ModCache:
                 )[offset:][:limit]
             ]
         return self._cached_queries[url_query]
+
+
+    def get_mod_tags(self) -> list[str]:
+        tags = set()
+        for mod in self:
+            if mod.type:
+                tags.add(mod.type)
+        return sorted(list(tags))
+    
+    def get_mod_subtags(self) -> list[str]:
+        tags = set()
+        for mod in self:
+            if mod.sub_type:
+                tags.add(mod.sub_type)
+        return sorted(list(tags))
+    
+    def get_mod_by_hash(self, hash):
+        mod = self._processed_hashes.get(hash)
+        if mod:
+            return mod.dict(by_alias=True)
+        
+    def get_all_hashed_mods(self, hashes):
+        mods = {}
+        for hash in list(set(hashes)):
+            mods[hash] = self.get_mod_by_hash(hash)
+        return mods

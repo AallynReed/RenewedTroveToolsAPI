@@ -15,5 +15,6 @@ async def update_mods_list():
             cache = ModCache()
             for mod in data:
                 cache[mod["id"]] = TrovesaurusMod(**mod)
+            cache.process_hashes()
             current_app.mods_list = cache
 

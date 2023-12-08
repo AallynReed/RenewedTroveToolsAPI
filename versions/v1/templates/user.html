@@ -1,0 +1,75 @@
+<html>
+    <head>
+        <title>Login Successful</title>
+        <style>
+            html, body {
+                color: #bbb;
+                margin: 0;
+                background: #313233;
+            }
+
+            .centered {
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                text-align: center;
+            }
+
+            .embed {
+                border: 1px solid #bbb;
+                padding: 20px;
+                border-radius: 10px;
+                background: #1e1e1e;
+            }
+
+            .side-by-side {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+            
+            .avatar {
+                width: 150px;
+                height: 150px;
+                border-radius: 50%;
+                object-fit: cover;
+                margin-right: 30px;
+            }
+        </style>
+        <script>
+            function visitPage(loc){
+                window.location=loc;
+            }
+            function copyText(text) {
+                navigator.clipboard.writeText 
+                    (
+                        text
+                    ); 
+            }
+        </script>
+    </head>
+    <body>
+        <!-- Centered div with image, username, email and other data -->
+        <div class="centered embed">
+            <div class="side-by-side">
+                <img class="avatar" src="{{ user.avatar_url }}">
+                <div>
+                    <h1>{{ user.username }}</h1>
+                    <p>{{ user.discord_id }}</p>
+                </div>
+            </div>
+            <hr>
+            <div>
+                <h2>Your login token</h2>
+                <!-- Click to copy token -->
+                <div class="side-by-side">
+                    <pre style="margin-right: 20px">{{ user.internal_token }}</pre>
+                    <button onclick="copyText('{{ user.internal_token}}');">Copy</button>
+                </div>
+                
+            </div>
+            <button onclick="visitPage('{{ user.reset_url }}');">Reset token</button>
+        </div>
+    </body>
+</html>

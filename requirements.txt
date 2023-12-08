@@ -2,6 +2,6 @@ beanie
 quart
 python-dotenv
 aiohttp
-pydantic
+pydantic[email]
 requests
-Flask-Caching
+Flask-Discord
