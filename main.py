@@ -10,11 +10,17 @@ import versions.v1.tasks as tasks
 from flask_discord import DiscordOAuth2Session
 
 
-load_dotenv()
-os.environ["OAUTHLIB_INSECURE_TRANSPORT"] = "true"
+config = {
+    "DEBUG": True,
+    "SERVER_NAME": "slynx.xyz"
+}
 
 app = Quart(__name__)
-app.config["SERVER_NAME"] = "kiwiapi.slynx.xyz"
+app.config.from_mapping(config)
+
+
+load_dotenv()
+os.environ["OAUTHLIB_INSECURE_TRANSPORT"] = "true"
 app.config["TEMPLATES_AUTO_RELOAD"] = True
 app.secret_key = os.getenv("TOKEN").encode("utf-8")
 app.config["DISCORD_CLIENT_ID"] = os.getenv("DISCORD_CLIENT_ID")
@@ -32,10 +38,10 @@ async def startup():
 
 @app.before_request
 async def before_request():
-    ...
+    print(request)
 
 
-@app.route('/')
+@app.route('/', subdomain="kiwiapi")
 async def index():
     return "Welcome to the Trove API!<br>Made by <a href=\"https://github.com/Sly0511\">Sly</a>"
 
@@ -81,4 +87,4 @@ async def not_found(e):
 
 if __name__ == "__main__":
     app.register_blueprint(versions.api_v1)
-    app.run(host="0.0.0.0", port=os.getenv("SERVER_PORT"))
+    app.run(debug=True, host="0.0.0.0", port=os.getenv("SERVER_PORT"))

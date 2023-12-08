@@ -3,7 +3,7 @@ from .utils.cache import SortOrder
 from pathlib import Path
 
 mods_path = Path("mods")
-mods_path.mkdir(exist_ok=True)
+mods_path.mkdir(parents=True, exist_ok=True)
 
 mods = Blueprint('mods', __name__, url_prefix='/mods')
 
