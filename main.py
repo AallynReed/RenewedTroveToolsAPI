@@ -6,6 +6,7 @@ import versions
 from beanie import init_beanie
 from versions.v1.models.database.star import StarBuild
 from versions.v1.models.database.user import User
+from versions.v1.models.database.trovesaurus import TrovesaurusEntry
 import versions.v1.tasks as tasks
 from flask_discord import DiscordOAuth2Session
 
@@ -34,7 +35,7 @@ async def startup():
     app.environment_variables = os.environ
     client = AsyncIOMotorClient()
     tasks.update_mods_list.start()
-    await init_beanie(client.trove_api, document_models=[StarBuild, User])
+    await init_beanie(client.trove_api, document_models=[StarBuild, User, TrovesaurusEntry])
 
 @app.before_request
 async def before_request():
@@ -43,7 +44,7 @@ async def before_request():
 
 @app.route('/', subdomain="kiwiapi")
 async def index():
-    return "Welcome to the Trove API!<br>Made by <a href=\"https://github.com/Sly0511\">Sly</a>"
+    return "Welcome to the Trove API!"
 
 
 @app.errorhandler(400)

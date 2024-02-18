@@ -5,3 +5,4 @@ aiohttp
 pydantic[email]
 requests
 Flask-Discord
+binary-reader

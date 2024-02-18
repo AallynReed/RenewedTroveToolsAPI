@@ -7,6 +7,7 @@ from random import choices
 from datetime import datetime
 from typing import Optional
 
+
 def generate_id():
     return ''.join(choices(ascii_letters + digits, k=32))
 
@@ -23,6 +24,10 @@ class User(Document):
     premium_ends: Optional[datetime] = None
     is_premium: bool = False
     is_banned: bool = False
+
+    @property
+    def mod_profiles_limit(self):
+        return 12 if self.is_premium else 3
 
     @property
     def avatar_url(self):

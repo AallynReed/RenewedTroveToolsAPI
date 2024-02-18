@@ -6,6 +6,7 @@ import time
 from random import sample
 from string import ascii_letters, digits
 from typing import Callable, Generic, Literal, TypeVar, Union, overload
+from binary_reader import BinaryReader
 
 
 def random_id(k=8):
@@ -71,3 +72,89 @@ def compute_timedelta(dt: datetime.datetime) -> float:
         dt = dt.astimezone()
     now = datetime.datetime.now(datetime.timezone.utc)
     return max((dt - now).total_seconds(), 0)
+
+def get_key(iterable, obj: dict):
+    for z in iterable:
+        try:
+            for x, y in obj.items():
+                if z[x] == y:
+                    ...
+            return z
+        except KeyError:
+            ...
+    return None
+
+
+def get_attr(iterable, **kwargs):
+    for z in iterable:
+        try:
+            for x, y in kwargs.items():
+                if getattr(z, x) != y:
+                    raise ValueError
+            return z
+        except ValueError:
+            ...
+    return None
+
+
+def chunks(lst, n):
+    result = []
+    for i in range(0, len(lst), n):
+        result.append(lst[i : i + n])
+    return result
+
+
+def ReadLeb128(buffer: BinaryReader, pos):
+    result = 0
+    shift = 0
+    while 1:
+        buffer.seek(pos)
+        b = buffer.read_bytes()
+        for i, byte in enumerate(b):
+            result |= (byte & 0x7F) << shift
+            pos += 1
+            if not (byte & 0x80):
+                result &= (1 << 32) - 1
+                result = int(result)
+                return result
+            shift += 7
+            if shift >= 64:
+                raise Exception("Too many bytes when decoding varint.")
+
+
+def WriteLeb128(value):
+    result = bytearray()
+    while value >= 0x80:
+        result.append((value & 0x7F) | 0x80)
+        value >>= 7
+    result.append(value & 0x7F)
+
+    return bytes(result)
+
+
+def calculate_hash(data):
+    hash_value = 0x811C9DC5
+    prime = 0x1000193
+    length = len(data)
+    length_aligned = length & ~3
+
+    # Process 4-byte chunks
+    for i in range(0, length_aligned, 4):
+        chunk = data[i] | (data[i + 1] << 8) | (data[i + 2] << 16) | (data[i + 3] << 24)
+        hash_value ^= chunk
+        hash_value = (hash_value * prime) & 0xFFFFFFFF
+
+    # Process remaining bytes
+    if length - length_aligned > 0:
+        remainder = length - length_aligned
+        chunk = 0
+        for i in range(remainder):
+            chunk |= data[length_aligned + i] << (i * 8)
+        hash_value ^= chunk
+        hash_value = (hash_value * prime) & 0xFFFFFFFF
+
+    return hash_value
+
+
+def fake_calculate_hash(data):
+    return 0 & 0xFFFFFFFF

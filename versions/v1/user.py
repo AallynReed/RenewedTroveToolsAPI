@@ -3,7 +3,7 @@ from requests_oauthlib import OAuth2Session
 import os
 import traceback
 from .models.database.user import User
-from datetime import datetime
+from datetime import datetime, UTC
 from beanie import PydanticObjectId
 
 user = Blueprint('user', __name__, url_prefix='/user', template_folder="templates")
@@ -76,9 +76,9 @@ async def authorize():
         try:
             db_user = User(
                 discord_id=int(user["id"]),
-                created_at=datetime.utcnow(),
-                updated_at=datetime.utcnow(),
-                last_login=datetime.utcnow(),
+                created_at=datetime.now(UTC),
+                updated_at=datetime.now(UTC),
+                last_login=datetime.now(UTC),
                 username=user["username"],
                 name=user["global_name"],
                 avatar_hash=user["avatar"],
@@ -87,11 +87,11 @@ async def authorize():
         except KeyError:
             return "Failed to login, try again."
     else:
-        db_user.last_login = datetime.utcnow()
+        db_user.last_login = datetime.now(UTC)
         db_user.username = user["username"]
         db_user.name = user["global_name"]
         db_user.avatar_hash = user["avatar"]
-        db_user.updated_at = datetime.utcnow()
+        db_user.updated_at = datetime.now(UTC)
         await db_user.save()
     return redirect(url_for("api_v1.user.get_discord_me") + "?token=" + str(db_user.id))
 
