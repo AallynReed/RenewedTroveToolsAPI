@@ -6,7 +6,7 @@ import versions
 from beanie import init_beanie
 from versions.v1.models.database.star import StarBuild
 from versions.v1.models.database.user import User
-from versions.v1.models.database.trovesaurus import TrovesaurusEntry
+from versions.v1.models.database.mod import ModEntry
 import versions.v1.tasks as tasks
 from flask_discord import DiscordOAuth2Session
 
@@ -35,7 +35,7 @@ async def startup():
     app.environment_variables = os.environ
     client = AsyncIOMotorClient()
     tasks.update_mods_list.start()
-    await init_beanie(client.trove_api, document_models=[StarBuild, User, TrovesaurusEntry])
+    await init_beanie(client.trove_api, document_models=[StarBuild, User, ModEntry])
 
 @app.before_request
 async def before_request():

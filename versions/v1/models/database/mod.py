@@ -16,6 +16,7 @@ from toml import dumps
 
 from ...utils.functions import ReadLeb128, WriteLeb128, calculate_hash, fake_calculate_hash, chunks, get_attr
 from ...utils.trovesaurus import Mod
+from beanie import Document, Indexed
 
 
 class NoFilesError(Exception):
@@ -716,3 +717,9 @@ class TPack:
 
     def remove_property(self, name):
         self.properties.remove(self.get_property(name))
+
+
+class ModEntry(Document):
+    hash: Indexed(str, unique=True)
+    name: str
+    format: str

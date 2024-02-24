@@ -1,5 +1,5 @@
 from .models.database.profile import ModProfile
-from .models.database.trovesaurus import TrovesaurusEntry
+from .models.database.trovesaurus import ModEntry
 from .models.database.mod import TMod, ZMod, TPack
 from quart import Blueprint, url_for, session, request, redirect, jsonify, abort, render_template, send_file
 from datetime import datetime, UTC
@@ -203,39 +203,34 @@ async def set_mod_hashes(profile_id):
     if profile is None:
         return "Not Found", 404
     data = await request.json
-    profile.mod_hashes = data["mod_hashes"]
-    profile.updated_at = datetime.now(UTC)
+    profile.mod_hashes = list(data["mod_hashes"].keys())
+    for mod_hash, mod_data in data["mod_hashes"].items():
+        mod_path = Path(f"mods/{mod_hash}.{mod_data["format"]}")
+        if not mod_path.exists():
+            with open(mod_path, "wb") as f:
+                f.write(b64decode(mod_data["data"]))
     await profile.save()
     return "OK", 200
 
 
 @profile_bp.route('/<profile_id>/download', methods=['GET'])
 async def download_profile(profile_id):
-    # if (user := await authorize(request)) is None:
-    #     return "Unauthorized", 401
-    # profile = await ModProfile.find_one(
-    #     {"profile_id": profile_id, "$or": [{"discord_id": user.discord_id}, {"shared": True}]}
-    # )
-    # if profile is None:
-    #     return "Not Found", 404
-    mod_hashes = [
-        "0a2e198cb575ca0ff6e55bc0cc1b76d6",
-        "0a02d9d30c8a3c17de38dd67f275e361",
-        "0a892990772f2a7994dd4926a121f22c"
-    ]
+    if (user := await authorize(request)) is None:
+        return "Unauthorized", 401
+    profile = await ModProfile.find_one(
+        {"profile_id": profile_id, "$or": [{"discord_id": user.discord_id}, {"shared": True}]}
+    )
+    if profile is None:
+        return "Not Found", 404
     mods = []
-    for hash in mod_hashes:
-        mod_info = await TrovesaurusEntry.find_one({"hash": hash})
-        if mod_info is None:
-            ...  # Get info about mod
-        else:
-            mod_info_data = [f for f in mod_info.mod.files][0]
-        mod_path = Path(f"mods/{hash}.{mod_info_data.format}")
+    for hash in profile.mod_hashes:
+        mod_info = await ModEntry.find_one({"hash": hash})
+        mod_path = Path(f"mods/{hash}.{mod_info.format}")
         if not mod_path.exists():
             return "One of the mods wasn't found, please report this to \"sly.dev.\" on discord", 503
-        if mod_info_data.format == "zip":
+        if mod_info.format == "zip":
             mod = ZMod.read_bytes(mod_path, BytesIO(mod_path.read_bytes()))
-            mod.name = mod_info.mod.name
+            mod.name = mod_info.name
         else:
             mod = TMod.read_bytes(mod_path, mod_path.read_bytes())
         mods.append(mod)
@@ -243,4 +238,4 @@ async def download_profile(profile_id):
     pack.author = "sly.dev."
     pack.files.extend(mods)
     data = pack.compile()
-    return await send_file(BytesIO(data), as_attachment=True, attachment_filename="test.tpack")
+    return await send_file(BytesIO(data), as_attachment=True, attachment_filename=f"{profile_id}.tpack")

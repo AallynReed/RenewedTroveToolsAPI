@@ -2,7 +2,7 @@ from quart import current_app
 from ..utils import tasks
 from aiohttp import ClientSession
 from ..utils.trovesaurus import TrovesaurusMod
-from ..models.database.trovesaurus import TrovesaurusEntry
+from ..models.database.mod import ModEntry
 from ..utils.cache import ModCache
 from pathlib import Path
 
@@ -21,9 +21,9 @@ async def update_mods_list():
                 for file in cache[mod["id"]].files:
                     if not file.hash:
                         continue
-                    ts_entry = await TrovesaurusEntry.find_one({"hash": file.hash})
+                    ts_entry = await ModEntry.find_one({"hash": file.hash})
                     if not ts_entry:
-                        ts_entry = TrovesaurusEntry(hash=file.hash, mod=ts_mod)
+                        ts_entry = ModEntry(hash=file.hash, name=ts_mod.name, format=file.format)
                     await ts_entry.save()
                     path = Path(f"mods/{file.hash}.{file.format}")
                     if not path.exists():
