@@ -1,6 +1,8 @@
-from quart import Blueprint, request, abort, jsonify, current_app
+from quart import Blueprint, request, abort, jsonify, current_app, send_file
+from .models.database.mod import ModEntry, ZMod
 from .utils.cache import SortOrder
 from pathlib import Path
+from io import BytesIO
 
 mods_path = Path("mods")
 mods_path.mkdir(parents=True, exist_ok=True)
@@ -56,3 +58,23 @@ async def get_mods_by_hashes():
 @mods.route('/search', methods=['GET'])
 async def search_mods():
     ...
+
+
+@mods.route('/tmod_converter/<hash>', methods=['GET'])
+async def convert_tmod(hash):
+    return "Not Implemented", 501
+    if not hasattr(current_app, "mods_list"):
+        return abort(503, "Mods list is not populated.")
+    mod_entry = await ModEntry.find_one({"hash": hash})
+    if mod_entry is None:
+        return "Mod not found", 404
+    if mod_entry.format == "tmod":
+        return "Mod is already in tmod format", 400
+    mod_path = mods_path / f"{hash}.{mod_entry.format}"
+    if not mod_path.exists():
+        return "Mod file not found", 404
+    mod = ZMod.read_bytes(mod_path, BytesIO(mod_path.read_bytes()))
+    mod.author = mod_entry.author
+    mod.name = mod_entry.name
+    mod.notes = mod_entry.description
+    return await send_file(BytesIO(mod.tmod_content), attachment_filename=f"{mod_entry.name}.tmod", as_attachment=True)

@@ -1,6 +1,5 @@
 from .models.database.profile import ModProfile
-from .models.database.trovesaurus import ModEntry
-from .models.database.mod import TMod, ZMod, TPack
+from .models.database.mod import TMod, ZMod, TPack, ModEntry
 from quart import Blueprint, url_for, session, request, redirect, jsonify, abort, render_template, send_file
 from datetime import datetime, UTC
 from .utils.authorization import authorize
@@ -17,34 +16,48 @@ profile_bp = Blueprint('profile', __name__, url_prefix='/profile', template_fold
 async def index():
     return "Mod Profile API"
 
+
 @profile_bp.route('/create', methods=['POST'])
 async def create_profile():
     if (user := await authorize(request)) is None:
         return "Unauthorized", 401
-    data = await request.json
+    profiles = await ModProfile.find_many({"discord_id": user.discord_id, "deleted": False}).to_list()
+    if len(profiles) >= user.mod_profiles_limit:
+        return "Profile Limit Exceeded", 400
+    data = dict(await request.json)
     profile = ModProfile(
         name=data["name"],
         description=data["description"],
         image_url=data.get("image_url", None),
-        discord_id=user.discord_id,
-        created_at=datetime.now(UTC),
-        updated_at=datetime.now(UTC)
+        mod_hashes=data.get("mod_hashes", []),
+        discord_id=user.discord_id
     )
     await profile.save()
     return "OK", 200
 
-@profile_bp.route('/<profile_id>', methods=['GET'])
+
+@profile_bp.route('/list_profiles', methods=['GET'])
+async def list_profiles():
+    if (user := await authorize(request)) is None:
+        return "Unauthorized", 401
+    profiles = await ModProfile.find_many({"discord_id": user.discord_id, "deleted": False}).to_list()
+    return jsonify([profile.dict() for profile in profiles])
+
+
+@profile_bp.route('/get/<profile_id>', methods=['GET'])
 async def get_profile(profile_id):
     if (user := await authorize(request)) is None:
         return "Unauthorized", 401
     profile = await ModProfile.find_one(
-        {"profile_id": profile_id, "$or": [{"discord_id": user.discord_id}, {"shared": True}]}
+        {"profile_id": profile_id, "$or": [{"discord_id": user.discord_id}, {"shared": True}]},
+        fetch_links=True
     )
     if profile is None:
         return "Not Found", 404
     return jsonify(profile.dict())
 
-@profile_bp.route('/<profile_id>', methods=['PUT'])
+
+@profile_bp.route('/update/<profile_id>', methods=['PUT'])
 async def update_profile(profile_id):
     if (user := await authorize(request)) is None:
         return "Unauthorized", 401
@@ -57,11 +70,11 @@ async def update_profile(profile_id):
     profile.name = data.get("name", profile.name)
     profile.description = data.get("description", profile.description)
     profile.image_url = data.get("image_url", profile.image_url)
-    profile.updated_at = datetime.now(UTC)
     await profile.save()
     return "OK", 200
 
-@profile_bp.route('/<profile_id>', methods=['DELETE'])
+
+@profile_bp.route('/delete/<profile_id>', methods=['DELETE'])
 async def delete_profile(profile_id):
     if (user := await authorize(request)) is None:
         return "Unauthorized", 401
@@ -71,11 +84,11 @@ async def delete_profile(profile_id):
     if profile is None:
         return "Not Found", 404
     profile.deleted = True
-    profile.updated_at = datetime.now(UTC)
     await profile.save()
     return "OK", 200
 
-@profile_bp.route('/<profile_id>/like', methods=['POST'])
+
+@profile_bp.route('/like/<profile_id>', methods=['POST'])
 async def like_profile(profile_id):
     if (user := await authorize(request)) is None:
         return "Unauthorized", 401
@@ -90,7 +103,8 @@ async def like_profile(profile_id):
     await profile.save()
     return "OK", 200
 
-@profile_bp.route('/<profile_id>/unlike', methods=['POST'])
+
+@profile_bp.route('/unlike/<profile_id>', methods=['POST'])
 async def unlike_profile(profile_id):
     if (user := await authorize(request)) is None:
         return "Unauthorized", 401
@@ -105,7 +119,8 @@ async def unlike_profile(profile_id):
     await profile.save()
     return "OK", 200
 
-@profile_bp.route('/<profile_id>/clone', methods=['POST'])
+
+@profile_bp.route('/clone/<profile_id>', methods=['POST'])
 async def clone_profile(profile_id):
     if (user := await authorize(request)) is None:
         return "Unauthorized", 401
@@ -115,17 +130,23 @@ async def clone_profile(profile_id):
     if profile is None:
         return "Not Found", 404
     if profile.shared is False:
-        return "Not Shared", 400
-    clone = profile.model_copy()
-    clone.discord_id = user.discord_id
-    clone.shared = False
-    clone.likes = []
-    clone.clone_of = profile.profile_id
+        return "Not Shared", 401
+    clone = ModProfile(
+        name=profile.name,
+        description=profile.description,
+        image_url=profile.image_url,
+        mods=profile.mods,
+        discord_id=user.discord_id,
+        shared=False,
+        likes=[],
+        deleted=False,
+        clone_of=profile.profile_id
+    )
     await clone.save()
     return jsonify(clone.dict())
 
 
-@profile_bp.route('/<profile_id>/share', methods=['POST'])
+@profile_bp.route('/share/<profile_id>', methods=['POST'])
 async def share_profile(profile_id):
     if (user := await authorize(request)) is None:
         return "Unauthorized", 401
@@ -135,12 +156,11 @@ async def share_profile(profile_id):
     if profile is None:
         return "Not Found", 404
     profile.shared = True
-    profile.updated_at = datetime.now(UTC)
     await profile.save()
     return "OK", 200
 
 
-@profile_bp.route('/<profile_id>/unshare', methods=['POST'])
+@profile_bp.route('/unshare/<profile_id>', methods=['POST'])
 async def unshare_profile(profile_id):
     if (user := await authorize(request)) is None:
         return "Unauthorized", 401
@@ -150,11 +170,11 @@ async def unshare_profile(profile_id):
     if profile is None:
         return "Not Found", 404
     profile.shared = False
-    profile.updated_at = datetime.now(UTC)
     await profile.save()
     return "OK", 200
 
-@profile_bp.route('/<profile_id>/mod_hashes', methods=['POST'])
+
+@profile_bp.route('/mod_hashes/<profile_id>', methods=['POST'])
 async def add_mod_hashes(profile_id):
     if (user := await authorize(request)) is None:
         return "Unauthorized", 401
@@ -164,56 +184,50 @@ async def add_mod_hashes(profile_id):
     if profile is None:
         return "Not Found", 404
     data = await request.json
-    profile.mod_hashes.extend(list(data["mod_hashes"].keys()))
     for mod_hash, mod_data in data["mod_hashes"].items():
-        mod_path = Path(f"mods/{mod_hash}.{mod_data["format"]}")
-        if not mod_path.exists():
-            with open(mod_path, "wb") as f:
-                f.write(b64decode(mod_data["data"]))
-    profile.updated_at = datetime.now(UTC)
+        mod_entry = await ModEntry.find_one({"hash": mod_hash})
+        if mod_entry is None:
+            mod_entry = ModEntry(
+                hash=mod_hash,
+                name=mod_data["name"],
+                format=mod_data["format"],
+                author=mod_data["author"],
+                description=mod_data["description"],
+                image_url=mod_data.get("image_url", None)
+            )
+            mod_path = Path(f"mods/{mod_hash}.{mod_data["format"]}")
+            if not mod_path.exists():
+                with open(mod_path, "wb") as f:
+                    f.write(b64decode(mod_data["data"]))
+            await mod_entry.save()
+        if mod_entry not in profile.mods:
+            profile.mods.append(mod_entry)
     await profile.save()
     return "OK", 200
 
 
-@profile_bp.route('/<profile_id>/mod_hashes', methods=['DELETE'])
+@profile_bp.route('/mod_hashes/<profile_id>', methods=['DELETE'])
 async def remove_mod_hashes(profile_id):
     if (user := await authorize(request)) is None:
         return "Unauthorized", 401
     profile = await ModProfile.find_one(
-        {"profile_id": profile_id, "discord_id": user.discord_id}
+        {"profile_id": profile_id, "discord_id": user.discord_id},
+        fetch_links=True
     )
     if profile is None:
         return "Not Found", 404
     data = await request.json
     for mod_hash in data["mod_hashes"]:
-        if mod_hash in profile.mod_hashes:
-            profile.mod_hashes.remove(mod_hash)
-    profile.updated_at = datetime.now(UTC)
+        mod_entry = await ModEntry.find_one({"hash": mod_hash})
+        if not mod_entry:
+            continue
+        if mod_entry in profile.mods:
+            profile.mods.remove(mod_entry)
     await profile.save()
     return "OK", 200
 
 
-@profile_bp.route('/<profile_id>/mod_hashes', methods=['PUT'])
-async def set_mod_hashes(profile_id):
-    if (user := await authorize(request)) is None:
-        return "Unauthorized", 401
-    profile = await ModProfile.find_one(
-        {"profile_id": profile_id, "discord_id": user.discord_id}
-    )
-    if profile is None:
-        return "Not Found", 404
-    data = await request.json
-    profile.mod_hashes = list(data["mod_hashes"].keys())
-    for mod_hash, mod_data in data["mod_hashes"].items():
-        mod_path = Path(f"mods/{mod_hash}.{mod_data["format"]}")
-        if not mod_path.exists():
-            with open(mod_path, "wb") as f:
-                f.write(b64decode(mod_data["data"]))
-    await profile.save()
-    return "OK", 200
-
-
-@profile_bp.route('/<profile_id>/download', methods=['GET'])
+@profile_bp.route('/download/<profile_id>', methods=['GET'])
 async def download_profile(profile_id):
     if (user := await authorize(request)) is None:
         return "Unauthorized", 401

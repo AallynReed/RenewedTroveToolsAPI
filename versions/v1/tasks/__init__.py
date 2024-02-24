@@ -23,7 +23,13 @@ async def update_mods_list():
                         continue
                     ts_entry = await ModEntry.find_one({"hash": file.hash})
                     if not ts_entry:
-                        ts_entry = ModEntry(hash=file.hash, name=ts_mod.name, format=file.format)
+                        ts_entry = ModEntry(
+                            hash=file.hash,
+                            name=ts_mod.name,
+                            format=file.format,
+                            description=ts_mod.description,
+                            author=ts_mod.author,
+                        )
                     await ts_entry.save()
                     path = Path(f"mods/{file.hash}.{file.format}")
                     if not path.exists():

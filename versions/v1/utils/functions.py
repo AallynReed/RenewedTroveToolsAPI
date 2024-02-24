@@ -138,13 +138,12 @@ def calculate_hash(data):
     length = len(data)
     length_aligned = length & ~3
 
-    # Process 4-byte chunks
+
     for i in range(0, length_aligned, 4):
         chunk = data[i] | (data[i + 1] << 8) | (data[i + 2] << 16) | (data[i + 3] << 24)
         hash_value ^= chunk
         hash_value = (hash_value * prime) & 0xFFFFFFFF
 
-    # Process remaining bytes
     if length - length_aligned > 0:
         remainder = length - length_aligned
         chunk = 0
@@ -154,6 +153,24 @@ def calculate_hash(data):
         hash_value = (hash_value * prime) & 0xFFFFFFFF
 
     return hash_value
+
+# def calculate_hash(data):
+#     hash_value = 0x811C9DC5
+#     prime = 0x1000193
+#     length = len(data)
+
+#     for i in range(0, length & ~3, 4):
+#         chunk = int.from_bytes(data[i : i + 4], byteorder="little", signed=True)
+#         hash_value ^= chunk
+#         hash_value *= prime
+
+#     remainder = length & 3
+#     if remainder > 0:
+#         part = int.from_bytes(data[-remainder:], byteorder="little", signed=True)
+#         hash_value ^= part
+#         hash_value *= prime
+
+#     return hash_value & 0xFFFFFFFF
 
 
 def fake_calculate_hash(data):

@@ -342,8 +342,6 @@ class TroveMod:
         return data.getvalue()
 
     def compile_tmod(self) -> bytes:
-        if self.tmod_content:
-            return self.tmod_content
         if not self.files:
             raise NoFilesError("No files to compile")
         self.reorder_files()
@@ -666,7 +664,6 @@ class TPack:
             file_stream.write_bytes(mod_data)
         pack.seek(0)
         pack.write_uint64(pack.size())
-        # Compress file stream to Trove Standards
         compressor = zlib.compressobj(level=0, strategy=0, wbits=zlib.MAX_WBITS)
         chunked_file_stream = chunks(file_stream.buffer(), 32768)
         file_stream = BinaryReader(bytearray())
@@ -723,3 +720,5 @@ class ModEntry(Document):
     hash: Indexed(str, unique=True)
     name: str
     format: str
+    author: Optional[str] = None
+    description: Optional[str] = None
