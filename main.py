@@ -6,7 +6,7 @@ import versions
 from beanie import init_beanie
 from versions.v1.models.database.star import StarBuild
 from versions.v1.models.database.user import User
-from versions.v1.models.database.mod import ModEntry
+from versions.v1.models.database.mod import ModEntry, SearchMod
 from versions.v1.models.database.profile import ModProfile
 import versions.v1.tasks as tasks
 from flask_discord import DiscordOAuth2Session
@@ -19,6 +19,7 @@ config = {
 
 app = Quart(__name__)
 app.config.from_mapping(config)
+app.register_blueprint(versions.api_v1)
 
 
 load_dotenv()
@@ -36,11 +37,11 @@ async def startup():
     app.environment_variables = os.environ
     client = AsyncIOMotorClient()
     tasks.update_mods_list.start()
-    await init_beanie(client.trove_api, document_models=[StarBuild, User, ModEntry, ModProfile])
+    await init_beanie(client.trove_api, document_models=[StarBuild, User, ModEntry, ModProfile, SearchMod])
 
-@app.before_request
-async def before_request():
-    print(request)
+# @app.before_request
+# async def before_request():
+#     print(request)
 
 
 @app.route('/', subdomain="kiwiapi")
@@ -54,7 +55,7 @@ async def bad_request(e):
         "status_code": e.code,
         "type": "error",
     }
-    response.update(e.description)
+    response["message"] = e.description
     return jsonify(response), 400
 
 
@@ -64,7 +65,7 @@ async def unauthorized(e):
         "status_code": e.code,
         "type": "error",
     }
-    response.update(e.description)
+    response["message"] = e.description
     return jsonify(response), 401
 
 
@@ -74,7 +75,7 @@ async def forbidden(e):
         "status_code": e.code,
         "type": "error",
     }
-    response.update(e.description)
+    response["message"] = e.description
     return jsonify(response), 403
 
 
@@ -84,9 +85,5 @@ async def not_found(e):
         "status_code": e.code,
         "type": "error",
     }
+    response["message"] = e.description
     return jsonify(response), 404
-
-
-if __name__ == "__main__":
-    app.register_blueprint(versions.api_v1)
-    app.run(debug=True, host="0.0.0.0", port=os.getenv("SERVER_PORT"))

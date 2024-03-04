@@ -5,6 +5,8 @@ import traceback
 from .models.database.user import User
 from datetime import datetime, UTC
 from beanie import PydanticObjectId
+from aiohttp import ClientSession
+from random import randint
 
 user = Blueprint('user', __name__, url_prefix='/user', template_folder="templates")
 
@@ -43,7 +45,7 @@ async def make_session(token=None, state=None, scope=None):
 
 @user.route("/discord/login")
 async def oauth():
-    scope = request.args.get("scope", "identify guilds")
+    scope = request.args.get("scope", "identify")
     usession = await make_session(scope=scope.split(" "))
     authorization_url, state = usession.authorization_url(AUTHORIZATION_BASE_URL)
     session["oauth2_state"] = state
@@ -93,29 +95,29 @@ async def authorize():
         db_user.avatar_hash = user["avatar"]
         db_user.updated_at = datetime.now(UTC)
         await db_user.save()
-    return redirect(url_for("api_v1.user.get_discord_me") + "?token=" + str(db_user.id))
+    return redirect(url_for("api_v1.user.get_discord_me") + "?pass_key=" + str(db_user.id))
 
 @user.route('/discord/reset_token', methods=['GET'])
 async def reset_token():
     params = request.args
     token = params.get("token")
     if token is None:
-        return abort(400, "No token provided.")
+        return abort(400, "No pass key provided.")
     db_user = await User.find_one({"internal_token": token})
     if db_user is None:
         return abort(404, "User not found.")
     else:
         db_user.reset_token()
         await db_user.save()
-    return redirect(url_for("api_v1.user.get_discord_me") + "?token=" + str(db_user.id))
+    return redirect(url_for("api_v1.user.get_discord_me") + "?pass_key=" + str(db_user.id))
 
 
 @user.route('/discord/me/', methods=['GET'])
 async def get_discord_me():
     params = request.args
-    token = params.get("token")
+    token = params.get("pass_key")
     if token is None:
-        return abort(400, "No token provided.")
+        return abort(400, "No pass key provided.")
     user = await User.find_one(User.id == PydanticObjectId(token))
     if not user:
         return abort(404, "User not found.")
@@ -125,12 +127,36 @@ async def get_discord_me():
 @user.route('/discord/get', methods=['GET'])
 async def get_user():
     params = request.args
-    user_token = params.get("token")
+    user_token = params.get("pass_key")
     if user_token is None:
-        return abort(400, "No token provided.")
+        return abort(400, "No pass key provided.")
     user = await User.find_one(User.internal_token == user_token)
     if not user:
-        return abort(404, "User not found.")
+        async with ClientSession() as session:
+            async with session.get(
+                f"https://trovesaurus.com/client/useridfromkey.php?key={user_token}",
+                allow_redirects=True
+            ) as response:
+                if response.status != 200:
+                    return abort(404, "User not found.")
+                data = await response.json()
+                user = await User.find_one(User.discord_id == int(data["user_id"]))
+                if user:
+                    user.internal_token = user_token
+                    await user.save()
+                else:
+                    user = User(
+                        internal_token=user_token,
+                        discord_id=int(data["user_id"]),
+                        created_at=datetime.now(UTC),
+                        updated_at=datetime.now(UTC),
+                        last_login=datetime.now(UTC),
+                        username=data["username"],
+                        name=data["username"],
+                        avatar_hash=data["custom_profile_image"] or data["icon"] or None,
+                    )
+                    await user.save()     
+        user = await User.find_one(User.internal_token == user_token)
     data = user.dict()
     data["avatar_url"] = user.avatar_url
     return jsonify(data)

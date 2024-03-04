@@ -4,6 +4,7 @@ from .mods import mods
 from .star_chart import star
 from .profiles import profile_bp
 from .user import user
+from .image import image
 
 api_v1 = Blueprint('api_v1', __name__, url_prefix='/v1', subdomain="kiwiapi")
 # Register Endpoints
@@ -11,3 +12,4 @@ api_v1.register_blueprint(user)
 api_v1.register_blueprint(star)
 api_v1.register_blueprint(mods)
 api_v1.register_blueprint(profile_bp)
+api_v1.register_blueprint(image)

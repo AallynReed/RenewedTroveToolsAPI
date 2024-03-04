@@ -4,8 +4,8 @@ from .trovesaurus import TrovesaurusMod
 
 
 class SortOrder(Enum):
-    ASCENDING = "asc"
-    DESCENDING = "desc"
+    asc = 1
+    desc = -1
 
 
 class ModCache:
@@ -78,7 +78,7 @@ class ModCache:
         if url_query not in self._cached_queries:
             print("Not cached")
             self._cached_queries[url_query] = [
-                mod.dict(by_alias=True)
+                mod.model_dump(by_alias=True)
                 for mod in sorted(
                     self,
                     key=lambda m: tuple(

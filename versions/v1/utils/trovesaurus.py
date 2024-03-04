@@ -4,8 +4,9 @@ import re
 from datetime import datetime
 from enum import Enum
 from re import compile
-from typing import Union
+from typing import Union, Optional
 from aiohttp import ClientSession
+from beanie import Document, Indexed
 
 
 class TrovesaurusModFile(BaseModel):
@@ -16,6 +17,13 @@ class TrovesaurusModFile(BaseModel):
     changes: str
     format: str
     hash: str = Field(default="")
+
+
+class ModAuthor(BaseModel):
+    ID: Optional[int]
+    Username: Optional[str]
+    Avatar: str
+    Role: str
 
 
 class TrovesaurusMod(BaseModel):
@@ -29,10 +37,9 @@ class TrovesaurusMod(BaseModel):
     replacements: str = Field(alias="replaces")
     downloads: int = Field(alias="totaldownloads")
     image_url: str = Field(alias="image")
-    user_id: int = Field(alias="userid")
     notes: str
-    author: str
-    likes: int = Field(alias="votes")
+    authors: list[ModAuthor]
+    likes: int
     image_full_url: str = Field(alias="image_full")
     files: list[TrovesaurusModFile] = Field(alias="downloads")
 
@@ -44,13 +51,15 @@ class TrovesaurusMod(BaseModel):
         return v
 
 
-paragraph = compile(r"<p>(.*?)<\/p>")
-strong = compile(r"<strong>(.*?)<\/strong>")
-img = compile(r"<img.*?>")
-anchor = compile(r"<a.*?>(.*?)<\/a>")
-ul = compile(r"<ul>(.*?)<\/ul>", re.MULTILINE | re.DOTALL)
-li = compile(r"<li>(.*?)</li>")
-br = compile(r"<br.*?>")
+class SearchCache(Document):
+    id: Indexed(int)
+    name: Indexed(str)
+    type: Indexed(str)
+    sub_type: Indexed(str)
+    views: int
+    downloads: int
+    likes: int
+    authors: list[ModAuthor]
 
 
 class ModFileType(Enum):
@@ -67,7 +76,6 @@ class ModFile(BaseModel):
     changes: str
     created_at: Union[int, datetime] = Field(alias="date")
     downloads: int
-    size: int = Field(alias="fileid")
     hash: str = Field(default="")
 
     @validator("created_at")
@@ -83,27 +91,6 @@ class ModFile(BaseModel):
         if not value.strip():
             return f"File: [{str(values['file_id'])}]"
         return value
-
-    @property
-    def clean_changes(self):
-        desc = paragraph.sub(r"\1", self.changes)
-        desc = strong.sub(r"\1", desc)
-        desc = img.sub(r"", desc)
-        desc = anchor.sub(r"\1", desc)
-        desc = ul.sub(r"", desc)
-        desc = br.sub(r"", desc)
-        desc = li.sub("\t\u2022 \\1", desc)
-        return (
-            desc.replace("&nbsp;", "").replace("&gt;", ">").replace("&lt;", "<").strip()
-            or None
-        )
-
-    async def download(self):
-        async with ClientSession() as session:
-            async with session.get(
-                f"https://trovesaurus.com/client/downloadfile.php?fileid={self.file_id}"
-            ) as response:
-                return await response.read()
 
 
 class Mod(BaseModel):

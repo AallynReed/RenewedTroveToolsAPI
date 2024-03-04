@@ -61,7 +61,7 @@
             </div>
             <hr>
             <div>
-                <h2>Your login token</h2>
+                <h2>Your login pass key</h2>
                 <!-- Click to copy token -->
                 <div class="side-by-side">
                     <pre style="margin-right: 20px">{{ user.internal_token }}</pre>
@@ -69,7 +69,7 @@
                 </div>
                 
             </div>
-            <button onclick="visitPage('{{ user.reset_url }}');">Reset token</button>
+            <button onclick="visitPage('{{ user.reset_url }}');">Reset pass key</button>
         </div>
     </body>
 </html>

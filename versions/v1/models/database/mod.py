@@ -15,7 +15,7 @@ from pydantic import BaseModel
 from toml import dumps
 
 from ...utils.functions import ReadLeb128, WriteLeb128, calculate_hash, fake_calculate_hash, chunks, get_attr
-from ...utils.trovesaurus import Mod
+from ...utils.trovesaurus import Mod, ModAuthor
 from beanie import Document, Indexed
 
 
@@ -720,5 +720,15 @@ class ModEntry(Document):
     hash: Indexed(str, unique=True)
     name: str
     format: str
-    author: Optional[str] = None
+    authors: list[ModAuthor]
     description: Optional[str] = None
+
+class SearchMod(Document):
+    id: Indexed(int)
+    name: Indexed(str)
+    type: Indexed(str)
+    sub_type: Indexed(str)
+    views: int
+    downloads: int
+    likes: int
+    authors: list[str]

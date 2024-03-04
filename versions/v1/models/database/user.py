@@ -18,9 +18,9 @@ class User(Document):
     created_at: datetime
     updated_at: datetime
     last_login: datetime
-    username: str = None
-    name: str = None
-    avatar_hash: str = None
+    username: Optional[str] = None
+    name: Optional[str] = None
+    avatar_hash: Optional[str] = None
     premium_ends: Optional[datetime] = None
     is_premium: bool = False
     is_banned: bool = False
@@ -33,6 +33,11 @@ class User(Document):
     def avatar_url(self):
         if self.has_avatar is False:
             return self.default_avatar
+        if self.discord_id < 10000000:
+            if self.avatar_hash.startswith("//"):
+                return f"https:{self.avatar_hash}"
+            else:
+                return f"https://trovesaurus.com/data/catalog/{self.avatar_hash}.png"
         if self.avatar_hash.startswith("a_"):
             return f"https://cdn.discordapp.com/avatars/{self.discord_id}/{self.avatar_hash}.gif"
         return f"https://cdn.discordapp.com/avatars/{self.discord_id}/{self.avatar_hash}.png"
