@@ -7,3 +7,4 @@ requests
 Flask-Discord
 binary-reader
 pillow
+matplotlib

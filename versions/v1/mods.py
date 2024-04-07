@@ -5,6 +5,8 @@ from pathlib import Path
 from io import BytesIO
 import base64
 import traceback
+import urllib.parse
+import re
 
 mods_path = Path("mods")
 mods_path.mkdir(parents=True, exist_ok=True)
@@ -63,6 +65,12 @@ async def get_mods_by_hashes():
         return abort(503, "Mods list is not populated.")
     params = request.args
     hashes = params.get("hashes", "").split("#")
+    hashes = [h for h in hashes if h]
+    if not hashes:
+        data = await request.json
+        if data is None:
+            return "No hashes provided", 400
+        hashes = data.get("hashes")
     return jsonify(current_app.mods_list.get_all_hashed_mods(hashes))
 
 @mods.route('/search', methods=['GET'])
@@ -78,7 +86,7 @@ async def search_mods():
     sub_type = params.get("sub_type", None)
     limit = int(params.get("limit", 999999))
     offset = int(params.get("offset", 0))
-    sort_by = params.get("sort_by", "downloads:desc,likes:desc,views:desc,name:asc")
+    sort_by = params.get("sort_by", "downloads:desc,likes:desc,name:asc,last_update:desc")
     processed_sort_by = [
         (field, SortOrder[order].value)
         for field, order in (field.split(":") for field in sort_by.split(","))
@@ -112,6 +120,8 @@ async def search_mods():
         }
     try:
         final_query = SearchMod.find(query_dump).sort(processed_sort_by)
+        if query is not None and re.match(r"^\d*$", query):
+            final_query = SearchMod.find({"_id": int(query)})
         mods = await final_query.skip(offset).limit(limit).to_list()
         mods_count = await final_query.count()
     except:

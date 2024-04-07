@@ -732,3 +732,4 @@ class SearchMod(Document):
     downloads: int
     likes: int
     authors: list[str]
+    last_update: int

@@ -8,6 +8,8 @@ from versions.v1.models.database.star import StarBuild
 from versions.v1.models.database.user import User
 from versions.v1.models.database.mod import ModEntry, SearchMod
 from versions.v1.models.database.profile import ModProfile
+from versions.v1.models.database.gem import GemBuild
+from versions.v1.models.database.api import API
 import versions.v1.tasks as tasks
 from flask_discord import DiscordOAuth2Session
 
@@ -37,7 +39,9 @@ async def startup():
     app.environment_variables = os.environ
     client = AsyncIOMotorClient()
     tasks.update_mods_list.start()
-    await init_beanie(client.trove_api, document_models=[StarBuild, User, ModEntry, ModProfile, SearchMod])
+    tasks.update_change_log.start()
+    tasks.twitch_streams_fetch.start()
+    await init_beanie(client.trove_api, document_models=[API, StarBuild, GemBuild, User, ModEntry, ModProfile, SearchMod])
 
 # @app.before_request
 # async def before_request():

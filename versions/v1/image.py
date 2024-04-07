@@ -30,6 +30,11 @@ async def resize_image():
         size = ImageSize[params.get("size", "MEDIUM")]
     except ValueError:
         return abort(400, "Invalid size\nValid sizes: MINI, TINY, SMALL, MEDIUM, LARGE, HUGE, MAX")
+    url = url.replace("//imgur.", "//i.imgur.")
+    if "imgur" in url and not any(
+        url.endswith(ext) for ext in [".png", ".jpg", ".jpeg", ".gif", ".webp"]
+    ):
+        url += ".png"
     hash_string = url + size.name
     hash = md5(hash_string.encode()).hexdigest()
     cached_image = images_cache / (hash + ".png")
