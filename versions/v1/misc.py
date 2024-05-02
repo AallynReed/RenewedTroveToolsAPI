@@ -4,6 +4,10 @@ from os import getenv
 import matplotlib.pyplot as plt
 from io import BytesIO
 import humanize
+from .utils.discord import send_embed
+import os
+from datetime import datetime, UTC
+import pycountry
 
 misc = Blueprint('misc', __name__, url_prefix='/misc')
 
@@ -126,3 +130,35 @@ async def opn_chart():
     plt.savefig(data, format="png", bbox_inches='tight', dpi=300)
     data.seek(0)
     return await send_file(data, mimetype="image/png")
+
+
+@misc.route('/handshake')
+async def handshake():
+    headers = request.headers
+    data = await request.json
+    os_data = data.get("os", {})
+    os_name = os_data.get("name", "Unknown")
+    os_version = os_data.get("version", "")
+    os_version = f"[{os_version}]" if os_version else ""
+    os_release = os_data.get("release", "")
+    country = headers.get("Cf-Ipcountry", None)
+    if country:
+        country = pycountry.countries.get(alpha_2=country)
+        country = country.name
+    else:
+        country = "Unknown"
+    await send_embed(
+        os.getenv("APP_WEBHOOK"),
+        {
+            "title": "APP Launched",
+            "description": "App has been launched",
+            "color": 0x0000bb,
+            "fields": [
+                {"name": "App Version", "value": data.get("version"), "inline": True},
+                {"name": "App Debug Mode", "value": str(data.get("dev")), "inline": True},
+                {"name": "Geolocation", "value": country},
+                {"name": "Operating System", "value": f"{os_name} {os_release} {os_version}"}
+            ]
+        }
+    )
+    return "OK", 200

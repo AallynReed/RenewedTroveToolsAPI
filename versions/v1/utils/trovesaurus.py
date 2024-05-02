@@ -22,8 +22,8 @@ class TrovesaurusModFile(BaseModel):
 class ModAuthor(BaseModel):
     ID: Optional[int]
     Username: Optional[str]
-    Avatar: str
-    Role: str
+    Avatar: Optional[str]
+    Role: Optional[str]
 
 
 class TrovesaurusMod(BaseModel):

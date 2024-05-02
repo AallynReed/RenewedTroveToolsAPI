@@ -16,7 +16,8 @@ from flask_discord import DiscordOAuth2Session
 
 config = {
     "DEBUG": True,
-    "SERVER_NAME": "slynx.xyz"
+    "SERVER_NAME": "slynx.xyz",
+    "MAX_CONTENT_LENGTH": 300 * 1024 * 1024,
 }
 
 app = Quart(__name__)

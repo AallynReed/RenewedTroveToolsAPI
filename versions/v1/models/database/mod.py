@@ -718,6 +718,7 @@ class TPack:
 
 class ModEntry(Document):
     hash: Indexed(str, unique=True)
+    mod_id: Optional[int] = None
     name: str
     format: str
     authors: list[ModAuthor]

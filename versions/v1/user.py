@@ -7,6 +7,7 @@ from datetime import datetime, UTC
 from beanie import PydanticObjectId
 from aiohttp import ClientSession
 from random import randint
+from .utils.discord import send_embed
 
 user = Blueprint('user', __name__, url_prefix='/user', template_folder="templates")
 
@@ -86,6 +87,14 @@ async def authorize():
                 avatar_hash=user["avatar"],
             )
             await db_user.save()
+            await send_embed(
+                os.getenv("USER_WEBHOOK"),
+                {
+                    "title": "User Registered",
+                    "description": f"<:discord:1232031240329232444> User **{user.username}** has registered.",
+                    "color": 0x00ff00
+                }
+            )   
         except KeyError:
             return "Failed to login, try again."
     else:
@@ -155,8 +164,30 @@ async def get_user():
                         name=data["username"],
                         avatar_hash=data["custom_profile_image"] or data["icon"] or None,
                     )
-                    await user.save()     
+                    await user.save()
+                    await send_embed(
+                        os.getenv("USER_WEBHOOK"),
+                        {
+                            "title": "User Registered",
+                            "description": f"<:trovesaurus:1232031134142042112> User **{user.username}** has registered.",
+                            "color": 0x00ff00
+                        }
+                    )   
         user = await User.find_one(User.internal_token == user_token)
+    user.last_login = datetime.now(UTC)
+    await user.save()
     data = user.dict()
     data["avatar_url"] = user.avatar_url
+    if user.discord_id < 100_000_000:
+        icon = "<:trovesaurus:1232031134142042112>"
+    else:
+        icon = "<:discord:1232031240329232444>"
+    await send_embed(
+        os.getenv("USER_WEBHOOK"),
+        {
+            "title": "User Logged in",
+            "description": f"{icon} [{user.discord_id}] **{user.username}** has logged in.",
+            "color": 0x0000ff
+        }
+    )
     return jsonify(data)

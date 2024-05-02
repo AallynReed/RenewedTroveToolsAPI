@@ -194,5 +194,5 @@ async def get_preview_image(hash):
         return await send_file(BytesIO(), attachment_filename=f"{mod_entry.hash}.png", as_attachment=True)
     except Exception as e:
         print(e)
-    return await send_file("assets/construction.png", attachment_filename="construction.png", as_attachment=True)
+    return await send_file("assets/no_preview.png", attachment_filename="no_preview.png", as_attachment=True)
     

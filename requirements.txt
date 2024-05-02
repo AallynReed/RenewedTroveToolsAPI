@@ -8,3 +8,4 @@ Flask-Discord
 binary-reader
 pillow
 matplotlib
+pycountry

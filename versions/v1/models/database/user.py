@@ -24,6 +24,7 @@ class User(Document):
     premium_ends: Optional[datetime] = None
     is_premium: bool = False
     is_banned: bool = False
+    is_admin: bool = False
 
     @property
     def mod_profiles_limit(self):
