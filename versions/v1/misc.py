@@ -162,3 +162,76 @@ async def handshake():
         }
     )
     return "OK", 200
+
+@misc.route('latest_version')
+async def latest_version():
+    if not hasattr(current_app, "app_versions"):
+        return abort(503, "Latest version is not available.")
+    try:
+        version = current_app.app_versions[0]
+    except IndexError:
+        return abort(500)
+    return jsonify({"version": version.get("tag_name")})
+
+
+@misc.route('/latest_release')
+async def latest_release():
+    if not hasattr(current_app, "app_versions"):
+        return abort(503, "Latest release is not available.")
+    try:
+        version = current_app.app_versions[0]
+    except IndexError:
+        return abort(500)
+    return jsonify(version)
+
+@misc.route('/latest_release/download')
+async def latest_release_download():
+    if not hasattr(current_app, "app_versions"):
+        return abort(503, "Latest release is not available.")
+    try:
+        version = current_app.app_versions[0]
+    except IndexError:
+        return abort(500)
+    for asset in version.get("assets"):
+        if "debug" not in asset.get("name"):
+            return {"download": asset.get("browser_download_url")}
+    return abort(404, "No download link found.")
+
+@misc.route('latest_release/download/redirect')
+async def latest_release_download_redirect():
+    if not hasattr(current_app, "app_versions"):
+        return abort(503, "Latest release is not available.")
+    try:
+        version = current_app.app_versions[0]
+    except IndexError:
+        return abort(500)
+    for asset in version.get("assets"):
+        if "debug" not in asset.get("name"):
+            return Response(status=301, headers={"Location": asset.get("browser_download_url")})
+    return abort(404, "No download link found.")
+
+@misc.route('/latest_release/debug')
+async def latest_release_debug():
+    if not hasattr(current_app, "app_versions"):
+        return abort(503, "Latest release is not available.")
+    try:
+        version = current_app.app_versions[0]
+    except IndexError:
+        return abort(500)
+    for asset in version.get("assets"):
+        if "debug" in asset.get("name"):
+            return {"download": asset.get("browser_download_url")}
+    return abort(404, "No download link found.")
+
+@misc.route('latest_release/debug/redirect')
+async def latest_release_debug_redirect():
+    if not hasattr(current_app, "app_versions"):
+        return abort(503, "Latest release is not available.")
+    try:
+        version = current_app.app_versions[0]
+    except IndexError:
+        return abort(500)
+    for asset in version.get("assets"):
+        if "debug" in asset.get("name"):
+            return Response(status=301, headers={"Location": asset.get("browser_download_url")})
+    return abort(404, "No download link found.")

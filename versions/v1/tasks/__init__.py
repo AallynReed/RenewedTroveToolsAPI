@@ -134,6 +134,21 @@ async def before_update_change_log():
     print("Change log update task starting.")
 
 @tasks.loop(minutes=5)
+async def get_versions():
+    async with ClientSession() as session:
+        async with session.get(
+            "https://api.github.com/repos/Sly0511/RenewedTroveTools/releases"
+        ) as response:
+            try:
+                current_app.app_versions = await response.json()
+            except:
+                current_app.app_versions = []
+
+@get_versions.before_loop
+async def before_get_versions():
+    print("Versions fetch task starting.")
+
+@tasks.loop(minutes=5)
 async def twitch_streams_fetch():
     async with ClientSession() as session:
         async with session.get(

@@ -41,6 +41,7 @@ async def startup():
     client = AsyncIOMotorClient()
     tasks.update_mods_list.start()
     tasks.update_change_log.start()
+    tasks.get_versions.start()
     tasks.twitch_streams_fetch.start()
     await init_beanie(client.trove_api, document_models=[API, StarBuild, GemBuild, User, ModEntry, ModProfile, SearchMod])
 
