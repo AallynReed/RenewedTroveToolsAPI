@@ -4,8 +4,17 @@ import asyncio
 import datetime
 import inspect
 from collections.abc import Sequence
-from typing import (Any, Callable, Coroutine, Generic, List, Optional, Type,
-                    TypeVar, Union)
+from typing import (
+    Any,
+    Callable,
+    Coroutine,
+    Generic,
+    List,
+    Optional,
+    Type,
+    TypeVar,
+    Union,
+)
 
 from ..utils import functions as utils
 

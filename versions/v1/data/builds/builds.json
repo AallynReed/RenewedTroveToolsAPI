@@ -1092,7 +1092,7 @@
             ],
             "subclass": [
                 "Lunar Lancer",
-                "CB"
+                "Candy Barbarian"
             ],
             "flask": [
                 "Conjurer's Crucible Vial"
@@ -1367,7 +1367,7 @@
                 "Maximum Health",
                 "Light",
                 "Movement Speed",
-                "Maximum Health%",
+                "Maximum Health %",
                 "Attack Speed"
             ],
             "weapon": [
@@ -1381,7 +1381,7 @@
                 "Maximum Health",
                 "Light",
                 "Movement Speed",
-                "Maximum Health%",
+                "Maximum Health %",
                 "Attack Speed"
             ],
             "ring": [

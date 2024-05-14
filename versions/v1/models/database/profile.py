@@ -13,7 +13,7 @@ from typing import Optional, Annotated
 
 
 def generate_id():
-    return ''.join(choices(ascii_letters + digits, k=12))
+    return "".join(choices(ascii_letters + digits, k=12))
 
 
 class ModProfile(Document):
@@ -37,15 +37,15 @@ class ModProfile(Document):
     @property
     def likes_count(self):
         return len(self.likes)
-    
+
     @property
     def created_at(self):
         return datetime.fromtimestamp(self.created, UTC)
-    
+
     @property
     def updated_at(self):
         return datetime.fromtimestamp(self.updated, UTC)
-    
+
     @before_event([Insert])
     def set_created(self):
         self.created = int(datetime.now(UTC).timestamp())

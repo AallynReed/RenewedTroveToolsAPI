@@ -11,13 +11,15 @@ import re
 mods_path = Path("mods")
 mods_path.mkdir(parents=True, exist_ok=True)
 
-mods = Blueprint('mods', __name__, url_prefix='/mods')
+mods = Blueprint("mods", __name__, url_prefix="/mods")
 
-@mods.route('/')
+
+@mods.route("/")
 async def index():
     return "Mods API"
 
-@mods.route('/list', methods=['GET'])
+
+@mods.route("/list", methods=["GET"])
 async def get_mods():
     if not hasattr(current_app, "mods_list"):
         return abort(503, "Mods list is not populated.")
@@ -31,35 +33,40 @@ async def get_mods():
         fields.append((key, SortOrder(value)))
     limit = int(params.get("limit", 0)) or None
     offset = int(params.get("offset", 0)) or None
-    return jsonify(current_app.mods_list.get_sorted_fields(*fields, limit=limit, offset=offset))
+    return jsonify(
+        current_app.mods_list.get_sorted_fields(*fields, limit=limit, offset=offset)
+    )
 
 
-@mods.route('/count', methods=['GET'])
+@mods.route("/count", methods=["GET"])
 async def get_mods_count():
     if not hasattr(current_app, "mods_list"):
         return abort(503, "Mods list is not populated.")
     return jsonify({"count": len(current_app.mods_list)})
 
 
-@mods.route('/tags', methods=['GET'])
+@mods.route("/tags", methods=["GET"])
 async def get_tags():
     if not hasattr(current_app, "mods_list"):
         return abort(503, "Mods list is not populated.")
     return jsonify(current_app.mods_list.get_mod_tags())
 
-@mods.route('/subtags', methods=['GET'])
+
+@mods.route("/subtags", methods=["GET"])
 async def get_subtags():
     if not hasattr(current_app, "mods_list"):
         return abort(503, "Mods list is not populated.")
     return jsonify(current_app.mods_list.get_mod_subtags())
 
-@mods.route('/hash/<mod_hash>', methods=['GET'])
+
+@mods.route("/hash/<mod_hash>", methods=["GET"])
 async def get_mod_by_hash(mod_hash):
     if not hasattr(current_app, "mods_list"):
         return abort(503, "Mods list is not populated.")
     return jsonify(current_app.mods_list.get_mod_by_hash(mod_hash))
 
-@mods.route('/hashes', methods=['GET'])
+
+@mods.route("/hashes", methods=["GET"])
 async def get_mods_by_hashes():
     if not hasattr(current_app, "mods_list"):
         return abort(503, "Mods list is not populated.")
@@ -73,7 +80,8 @@ async def get_mods_by_hashes():
         hashes = data.get("hashes")
     return jsonify(current_app.mods_list.get_all_hashed_mods(hashes))
 
-@mods.route('/search', methods=['GET'])
+
+@mods.route("/search", methods=["GET"])
 async def search_mods():
     if not hasattr(current_app, "mods_list"):
         return abort(503, "Mods list is not populated.")
@@ -86,7 +94,9 @@ async def search_mods():
     sub_type = params.get("sub_type", None)
     limit = int(params.get("limit", 999999))
     offset = int(params.get("offset", 0))
-    sort_by = params.get("sort_by", "downloads:desc,likes:desc,name:asc,last_update:desc")
+    sort_by = params.get(
+        "sort_by", "downloads:desc,likes:desc,name:asc,last_update:desc"
+    )
     processed_sort_by = [
         (field, SortOrder[order].value)
         for field, order in (field.split(":") for field in sort_by.split(","))
@@ -104,18 +114,12 @@ async def search_mods():
                                 {"authors": {"$in": [query]}},
                             ]
                         }
-                    ] if query is not None else []
+                    ]
+                    if query is not None
+                    else []
                 ),
-                *(
-                    [
-                        {"type": type}
-                    ] if type is not None else []
-                ),
-                *(
-                    [
-                        {"sub_type": sub_type}
-                    ] if sub_type is not None else []
-                )
+                *([{"type": type}] if type is not None else []),
+                *([{"sub_type": sub_type}] if sub_type is not None else []),
             ]
         }
     try:
@@ -138,14 +142,16 @@ async def search_mods():
     response.headers["count"] = mods_count
     return response
 
-@mods.route('/types', methods=['GET'])
+
+@mods.route("/types", methods=["GET"])
 async def get_mod_types():
     if not hasattr(current_app, "mods_list"):
         return abort(503, "Mods list is not populated.")
     result = await SearchMod.distinct("type")
     return jsonify([t for t in result if t])
 
-@mods.route('/sub_types/<type>', methods=['GET'])
+
+@mods.route("/sub_types/<type>", methods=["GET"])
 async def get_mod_sub_types(type):
     if not hasattr(current_app, "mods_list"):
         return abort(503, "Mods list is not populated.")
@@ -154,7 +160,8 @@ async def get_mod_sub_types(type):
         return jsonify([st for st in result if st])
     return jsonify({})
 
-@mods.route('/tmod_converter/<hash>', methods=['GET'])
+
+@mods.route("/tmod_converter/<hash>", methods=["GET"])
 async def convert_tmod(hash):
     return "Not Implemented", 501
     if not hasattr(current_app, "mods_list"):
@@ -171,15 +178,22 @@ async def convert_tmod(hash):
     mod.author = mod_entry.author
     mod.name = mod_entry.name
     mod.notes = mod_entry.description
-    return await send_file(BytesIO(mod.tmod_content), attachment_filename=f"{mod_entry.name}.tmod", as_attachment=True)
+    return await send_file(
+        BytesIO(mod.tmod_content),
+        attachment_filename=f"{mod_entry.name}.tmod",
+        as_attachment=True,
+    )
 
-@mods.route('preview_image/<hash>', methods=['GET'])
+
+@mods.route("preview_image/<hash>", methods=["GET"])
 async def get_preview_image(hash):
     if not hasattr(current_app, "mods_list"):
         return abort(503, "Mods list is not populated.")
     cached_image_path = mods_path / f"cached_images/{hash}.png"
     if cached_image_path.exists():
-        return await send_file(cached_image_path, attachment_filename=f"{hash}.png", as_attachment=True)
+        return await send_file(
+            cached_image_path, attachment_filename=f"{hash}.png", as_attachment=True
+        )
     mod_entry = await ModEntry.find_one({"hash": hash})
     if mod_entry is None:
         return "Mod not found", 404
@@ -191,8 +205,13 @@ async def get_preview_image(hash):
         image_data = base64.b64decode(mod.image)
         image_path = mods_path / f"cached_images/{hash}.png"
         image_path.write_bytes(image_data)
-        return await send_file(BytesIO(), attachment_filename=f"{mod_entry.hash}.png", as_attachment=True)
+        return await send_file(
+            BytesIO(), attachment_filename=f"{mod_entry.hash}.png", as_attachment=True
+        )
     except Exception as e:
         print(e)
-    return await send_file("assets/no_preview.png", attachment_filename="no_preview.png", as_attachment=True)
-    
+    return await send_file(
+        "assets/no_preview.png",
+        attachment_filename="no_preview.png",
+        as_attachment=True,
+    )

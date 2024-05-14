@@ -9,7 +9,7 @@ from .image import image
 from .stats import stats
 from .misc import misc
 
-api_v1 = Blueprint('api_v1', __name__, url_prefix='/v1', subdomain="kiwiapi")
+api_v1 = Blueprint("api_v1", __name__, url_prefix="/v1", subdomain="kiwiapi")
 # Register Endpoints
 api_v1.register_blueprint(user)
 api_v1.register_blueprint(star)

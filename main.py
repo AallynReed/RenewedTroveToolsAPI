@@ -12,6 +12,7 @@ from versions.v1.models.database.gem import GemBuild
 from versions.v1.models.database.api import API
 import versions.v1.tasks as tasks
 from flask_discord import DiscordOAuth2Session
+from versions.v1.utils.logger import Logger
 
 
 config = {
@@ -35,22 +36,40 @@ app.config["DISCORD_REDIRECT_URI"] = os.getenv("DISCORD_REDIRECT_URI")
 app.config["DISCORD_BOT_TOKEN"] = os.getenv("DISCORD_BOT_TOKEN")
 
 
+def setup_loggers():
+    Logger("Mod List")
+
+
 @app.before_serving
 async def startup():
+    setup_loggers()
     app.environment_variables = os.environ
     client = AsyncIOMotorClient()
+    app.database_client = client
+    await init_beanie(
+        client.trove_api,
+        document_models=[
+            API,
+            StarBuild,
+            GemBuild,
+            User,
+            ModEntry,
+            ModProfile,
+            SearchMod,
+        ],
+    )
     tasks.update_mods_list.start()
     tasks.update_change_log.start()
     tasks.get_versions.start()
     tasks.twitch_streams_fetch.start()
-    await init_beanie(client.trove_api, document_models=[API, StarBuild, GemBuild, User, ModEntry, ModProfile, SearchMod])
+
 
 # @app.before_request
 # async def before_request():
-#     print(request)
+#     print((request.headers)["Cf-Connecting-IP"])
 
 
-@app.route('/', subdomain="kiwiapi")
+@app.route("/", subdomain="kiwiapi")
 async def index():
     return "Welcome to the Trove API!"
 

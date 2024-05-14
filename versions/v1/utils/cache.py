@@ -66,10 +66,7 @@ class ModCache:
                     self._processed_hashes[file.hash] = mod
 
     def get_sorted_fields(
-            self,
-            *fields: tuple[str, SortOrder],
-            limit: int = None,
-            offset: int = None
+        self, *fields: tuple[str, SortOrder], limit: int = None, offset: int = None
     ) -> list[dict]:
         url_query = ""
         url_query += "#".join(f"{field[0]}${field[1].value}" for field in fields)
@@ -86,12 +83,12 @@ class ModCache:
                             getattr(m, field[0])
                             if field[1] == SortOrder.ASCENDING
                             else -getattr(m, field[0])
-                        ) for field in fields
-                    )
+                        )
+                        for field in fields
+                    ),
                 )[offset:][:limit]
             ]
         return self._cached_queries[url_query]
-
 
     def get_mod_tags(self) -> list[str]:
         tags = set()
@@ -99,19 +96,19 @@ class ModCache:
             if mod.type:
                 tags.add(mod.type)
         return sorted(list(tags))
-    
+
     def get_mod_subtags(self) -> list[str]:
         tags = set()
         for mod in self:
             if mod.sub_type:
                 tags.add(mod.sub_type)
         return sorted(list(tags))
-    
+
     def get_mod_by_hash(self, hash):
         mod = self._processed_hashes.get(hash)
         if mod:
             return mod.dict(by_alias=True)
-        
+
     def get_all_hashed_mods(self, hashes):
         mods = {}
         for hash in list(set(hashes)):

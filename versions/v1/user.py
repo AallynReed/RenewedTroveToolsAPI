@@ -1,4 +1,13 @@
-from quart import Blueprint, url_for, session, request, redirect, jsonify, abort, render_template
+from quart import (
+    Blueprint,
+    url_for,
+    session,
+    request,
+    redirect,
+    jsonify,
+    abort,
+    render_template,
+)
 from requests_oauthlib import OAuth2Session
 import os
 import traceback
@@ -9,20 +18,22 @@ from aiohttp import ClientSession
 from random import randint
 from .utils.discord import send_embed
 
-user = Blueprint('user', __name__, url_prefix='/user', template_folder="templates")
+user = Blueprint("user", __name__, url_prefix="/user", template_folder="templates")
 
 API_BASE_URL = "https://discord.com/api"
 TOKEN_URL = API_BASE_URL + "/oauth2/token"
 AUTHORIZATION_BASE_URL = API_BASE_URL + "/oauth2/authorize"
 
 
-@user.route('/')
+@user.route("/")
 async def index():
     return "User API"
 
-@user.route('/discord', methods=['GET'])
+
+@user.route("/discord", methods=["GET"])
 async def get_discord_user():
     return "Discord User API"
+
 
 async def token_updater(token):
     session["oauth2_token"] = token
@@ -54,7 +65,7 @@ async def oauth():
     return redirect(authorization_url)
 
 
-@user.route('/discord/login/callback', methods=['GET'])
+@user.route("/discord/login/callback", methods=["GET"])
 async def authorize():
     if (await request.values).get("error"):
         return request.values["error"]
@@ -63,7 +74,7 @@ async def authorize():
         token = usession.fetch_token(
             TOKEN_URL,
             client_secret=os.getenv("DISCORD_CLIENT_SECRET"),
-            authorization_response=request.url
+            authorization_response=request.url,
         )
 
         session["oauth2_token"] = token
@@ -92,9 +103,9 @@ async def authorize():
                 {
                     "title": "User Registered",
                     "description": f"<:discord:1232031240329232444> User **{user.username}** has registered.",
-                    "color": 0x00ff00
-                }
-            )   
+                    "color": 0x00FF00,
+                },
+            )
         except KeyError:
             return "Failed to login, try again."
     else:
@@ -104,9 +115,12 @@ async def authorize():
         db_user.avatar_hash = user["avatar"]
         db_user.updated_at = datetime.now(UTC)
         await db_user.save()
-    return redirect(url_for("api_v1.user.get_discord_me") + "?pass_key=" + str(db_user.id))
+    return redirect(
+        url_for("api_v1.user.get_discord_me") + "?pass_key=" + str(db_user.id)
+    )
 
-@user.route('/discord/reset_token', methods=['GET'])
+
+@user.route("/discord/reset_token", methods=["GET"])
 async def reset_token():
     params = request.args
     token = params.get("token")
@@ -118,10 +132,12 @@ async def reset_token():
     else:
         db_user.reset_token()
         await db_user.save()
-    return redirect(url_for("api_v1.user.get_discord_me") + "?pass_key=" + str(db_user.id))
+    return redirect(
+        url_for("api_v1.user.get_discord_me") + "?pass_key=" + str(db_user.id)
+    )
 
 
-@user.route('/discord/me/', methods=['GET'])
+@user.route("/discord/me/", methods=["GET"])
 async def get_discord_me():
     params = request.args
     token = params.get("pass_key")
@@ -133,7 +149,7 @@ async def get_discord_me():
     return await render_template("user.html", user=user)
 
 
-@user.route('/discord/get', methods=['GET'])
+@user.route("/discord/get", methods=["GET"])
 async def get_user():
     params = request.args
     user_token = params.get("pass_key")
@@ -144,7 +160,7 @@ async def get_user():
         async with ClientSession() as session:
             async with session.get(
                 f"https://trovesaurus.com/client/useridfromkey.php?key={user_token}",
-                allow_redirects=True
+                allow_redirects=True,
             ) as response:
                 if response.status != 200:
                     return abort(404, "User not found.")
@@ -162,7 +178,9 @@ async def get_user():
                         last_login=datetime.now(UTC),
                         username=data["username"],
                         name=data["username"],
-                        avatar_hash=data["custom_profile_image"] or data["icon"] or None,
+                        avatar_hash=data["custom_profile_image"]
+                        or data["icon"]
+                        or None,
                     )
                     await user.save()
                     await send_embed(
@@ -170,9 +188,9 @@ async def get_user():
                         {
                             "title": "User Registered",
                             "description": f"<:trovesaurus:1232031134142042112> User **{user.username}** has registered.",
-                            "color": 0x00ff00
-                        }
-                    )   
+                            "color": 0x00FF00,
+                        },
+                    )
         user = await User.find_one(User.internal_token == user_token)
     user.last_login = datetime.now(UTC)
     await user.save()
@@ -187,7 +205,7 @@ async def get_user():
         {
             "title": "User Logged in",
             "description": f"{icon} [{user.discord_id}] **{user.username}** has logged in.",
-            "color": 0x0000ff
-        }
+            "color": 0x0000FF,
+        },
     )
     return jsonify(data)

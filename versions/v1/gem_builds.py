@@ -3,21 +3,23 @@ from .models.database.gem import GemBuild, BuildConfig
 from pydantic import ValidationError
 
 
-gem = Blueprint('gem', __name__, url_prefix='/gem_builds')
+gem = Blueprint("gem", __name__, url_prefix="/gem_builds")
 
 
-@gem.route('/')
+@gem.route("/")
 async def index():
     return "Gem Builds API"
 
-@gem.route('/build/<build>', methods=['GET'])
+
+@gem.route("/build/<build>", methods=["GET"])
 async def get_build_by_id(build):
     build = await GemBuild.find_one({"build": build})
     if not build:
         return abort(404, "Build not found.")
     return jsonify(build.model_dump_json())
 
-@gem.route('/build_config', methods=['GET'])
+
+@gem.route("/build_config", methods=["GET"])
 async def get_build_by_config():
     headers = request.headers
     config = json.loads(headers.get("config"))

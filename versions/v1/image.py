@@ -9,7 +9,8 @@ from hashlib import md5
 images_cache = Path("image_cache")
 images_cache.mkdir(parents=True, exist_ok=True)
 
-image = Blueprint('image', __name__, url_prefix='/image')
+image = Blueprint("image", __name__, url_prefix="/image")
+
 
 class ImageSize(Enum):
     MINI = 24
@@ -20,7 +21,8 @@ class ImageSize(Enum):
     HUGE = 512
     MAX = 1024
 
-@image.route('/resize', methods=['GET'])
+
+@image.route("/resize", methods=["GET"])
 async def resize_image():
     params = request.args
     url = params.get("url")
@@ -29,7 +31,10 @@ async def resize_image():
     try:
         size = ImageSize[params.get("size", "MEDIUM")]
     except ValueError:
-        return abort(400, "Invalid size\nValid sizes: MINI, TINY, SMALL, MEDIUM, LARGE, HUGE, MAX")
+        return abort(
+            400,
+            "Invalid size\nValid sizes: MINI, TINY, SMALL, MEDIUM, LARGE, HUGE, MAX",
+        )
     url = url.replace("//imgur.", "//i.imgur.")
     if "imgur" in url and not any(
         url.endswith(ext) for ext in [".png", ".jpg", ".jpeg", ".gif", ".webp"]

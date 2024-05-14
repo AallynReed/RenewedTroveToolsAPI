@@ -8,9 +8,11 @@ class MasteryServer(BaseModel):
     pts: int = 0
     updated: datetime = 0
 
+
 class Mastery(BaseModel):
     normal: MasteryServer
     geode: MasteryServer
+
 
 class API(Document):
     id: str = Indexed(str, unique=True)

@@ -14,7 +14,14 @@ from binary_reader import BinaryReader
 from pydantic import BaseModel
 from toml import dumps
 
-from ...utils.functions import ReadLeb128, WriteLeb128, calculate_hash, fake_calculate_hash, chunks, get_attr
+from ...utils.functions import (
+    ReadLeb128,
+    WriteLeb128,
+    calculate_hash,
+    fake_calculate_hash,
+    chunks,
+    get_attr,
+)
 from ...utils.trovesaurus import Mod, ModAuthor
 from beanie import Document, Indexed
 
@@ -723,6 +730,7 @@ class ModEntry(Document):
     format: str
     authors: list[ModAuthor]
     description: Optional[str] = None
+
 
 class SearchMod(Document):
     id: Indexed(int)

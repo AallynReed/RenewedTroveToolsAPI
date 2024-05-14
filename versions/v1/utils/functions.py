@@ -37,7 +37,7 @@ class ExponentialBackoff(Generic[T]):
         self._base: int = base
         self._exp: int = 0
         self._max: int = 10
-        self._reset_time: int = base * 2**11
+        self._reset_time: int = base * 2 ** 11
         self._last_invocation: float = time.monotonic()
         rand = random.Random()
         rand.seed()
@@ -64,7 +64,7 @@ class ExponentialBackoff(Generic[T]):
         if interval > self._reset_time:
             self._exp = 0
         self._exp = min(self._exp + 1, self._max)
-        return self._randfunc(0, self._base * 2**self._exp)
+        return self._randfunc(0, self._base * 2 ** self._exp)
 
 
 def compute_timedelta(dt: datetime.datetime) -> float:
@@ -72,6 +72,7 @@ def compute_timedelta(dt: datetime.datetime) -> float:
         dt = dt.astimezone()
     now = datetime.datetime.now(datetime.timezone.utc)
     return max((dt - now).total_seconds(), 0)
+
 
 def get_key(iterable, obj: dict):
     for z in iterable:
@@ -138,7 +139,6 @@ def calculate_hash(data):
     length = len(data)
     length_aligned = length & ~3
 
-
     for i in range(0, length_aligned, 4):
         chunk = data[i] | (data[i + 1] << 8) | (data[i + 2] << 16) | (data[i + 3] << 24)
         hash_value ^= chunk
@@ -153,6 +153,7 @@ def calculate_hash(data):
         hash_value = (hash_value * prime) & 0xFFFFFFFF
 
     return hash_value
+
 
 # def calculate_hash(data):
 #     hash_value = 0x811C9DC5

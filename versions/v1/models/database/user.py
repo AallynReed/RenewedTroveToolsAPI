@@ -9,7 +9,7 @@ from typing import Optional
 
 
 def generate_id():
-    return ''.join(choices(ascii_letters + digits, k=32))
+    return "".join(choices(ascii_letters + digits, k=32))
 
 
 class User(Document):
@@ -42,20 +42,20 @@ class User(Document):
         if self.avatar_hash.startswith("a_"):
             return f"https://cdn.discordapp.com/avatars/{self.discord_id}/{self.avatar_hash}.gif"
         return f"https://cdn.discordapp.com/avatars/{self.discord_id}/{self.avatar_hash}.png"
-    
+
     @property
     def has_avatar(self):
         return self.avatar_hash is not None
-    
+
     @property
     def default_avatar(self):
         index = str((self.discord_id >> 22) % 6)
         return f"https://cdn.discordapp.com/embed/avatars/{index}.png"
-    
+
     @property
     def reset_url(self):
         return f"https://kiwiapi.slynx.xyz/v1/user/discord/reset_token?token={self.internal_token}"
-    
+
     def reset_token(self):
         self.internal_token = generate_id()
         return self.internal_token
