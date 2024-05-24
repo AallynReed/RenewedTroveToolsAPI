@@ -1,415 +1,408 @@
-Renewed Trove Tools»»Renewed Trove Tools
-American English»»Englisch
-Portuguese»»Portugiesisch
-German»»Deutsch
-French»»Französisch
-Russian»»Russisch
-Get Windows Application»»Windows Anwendung herunterladen
-A newer version is available»»Eine neuere Version ist verfügbar
-Change Log»»Änderungshinweise
-Send feedback»»Sende feedback
-Change theme»»Farbschema anpassen
-Donate»»Spenden
-Login»»Anmelden
-Logout»»Abmelden
-Report a bug»»Melde einen Fehler
-Switch to debug version»»Wechseln zur Debug Version
-Switch to release version»»Wechseln zur Normalen Version
-About»»Über
-Others»»Andere
-Version {}»»Version {}
-Close»»Schließen
-Update available»»Update verfügbar
-A new update is available, do you want to download it?»»Ein neues Update ist verfügbar, möchtest du es herunterladen?
-The application will download update and close itself to install it.»»Die Anwendung wird das Update herunterladen und sich schließen, um das Update zu installieren.
-After the installation is complete, the application will be automatically restarted.»»Sobald die Installation abgeschlossen ist, wird die Anwendung automatisch neu gestartet.
-Keeping the app up to date is important to ensure that you have the latest features and bug fixes.»»Die Anwendung aktualisiert zu halten ist wichtig, um die neusten Funktionen und Fehlerbehebungen zu erhalten.
-Later»»Später
-Update»»Aktualisieren
-A new update is available, click on the download icon to update.»»Ein neues Update ist verfügbar, klicke auf das download Symbol um das Update zu starten.
-Feedback»»Feedback
-Send»»Senden
-Feedback sent»»Feedback gesendet
-Downloading update, please wait...»»Das Update wird heruntergeladen, bitte warten...
-Mastery Points»»Beherrschungspunkte
-Mastery Levels»»Beherrschungsrang
-Mastery Buffs»»Beherrschungs Buffs
-Geode Mastery Buffs»»Geode Beherrschungs Buffs
-Mastery»»Beherrschung
-Please provide a valid number»»Bitte gebe eine gültige Zahl ein
-Gem Set Calculator»»Juwelen Set Rechner
-Star Chart»»Sternenkarte
-Gem Simulator»»Juwelen Simulator
-Fire»»Feuer
-Water»»Wasser
-Air»»Luft
-Cosmic»»Kosmisch
-Empowered»»Machtvoll
-Lesser»»Kleiner
-Arcane»»Arcane
-Fierce»»Wilder
-Radiant»»Strahlend
-Stellar»»Stellar
-Crystal»»Kristall
-Fire Primordial»»Feuer Urdrache
-Water Primordial»»Wasser Urdrache
-Air Primordial»»Luft Urdrache
-Cosmic Primordial»»Kosmischer Urdrache
-Explosive Epilogue»»Explosiver Epilog
-Volatile Velocity»»Volatile Velozität
-Cubic Curtain»»Kubischer schild
-Mired Mojo»»Stasishagel
-Pyrodisc»»Pyroscheibe
-Stunburst»»Stasissalve
-Spirit Surge»»Spirit Surge
-Stinging Curse»»Geisterwelle
-Berserker Battler»»Kampfberserker
-Flower Power»»Flower-Power
-Empyrean Barrier»»Lichthimmelbarriere
-Vampirian Vanquisher»»Vampirischer Bezwinger
-Builder's Rough Focus»»Grober Fokus des Baumeisters
-Builder's Precise Focus»»Akkurater Fokus des Baumeisters
-Builder's Superior Focus»»Präzisionsfokus des Baumeisters
-Chaos Contained Spark»»Kontrollierter Chaosfunke
-Chaos Contained Flare»»Kontrollierte Chaosfackel
-Flux»»Flux
-Bound Brilliance»»Brillianzbündler
-Heart of Darkness»»Fesselnde Finsternis
-Fire Gem Dust»»Feuerjuwelenstaub
-Water Gem Dust»»Wasserjuwelenstaub
-Air Gem Dust»»Luftjuwelenstaub
-Cosmic Gem Dust»»Kosmischer Juwelenstaub
-Diamond Dragonite»»Diamantdrachit
-Titan Soul»»Titanenseele
-Level»»Rang
-Lvl»»Lvl
-Ability»»Fähigkeit
-Gem Ability»»Juwelenfähigkeit
-Stats»»Attribute
-Stat»»Attribut
-Value»»Wert
-Augmentation Cost»»Verbesserungskosten
 % Augmentation»»% Verbesserung
-Change Ability»»Fähigkeit ändern
-Change Restricition»»Beschränkung anpassen
-Change Stat»»Attribut ändern
-Improve Stat»»Attribut verbessern
-Reroll Stat»»Attribut neu generieren
-Move Boost»»Perle verschieben
-Arcane Fire Gem»»Arkaner Feuerjuwel
-Arcane Water Gem»»Arkaner Wasserjuwel
-Arcane Air Gem»»Arkaner Luftjuwel
-Arcane Cosmic Gem»»Arkaner kosmischer Juwel
-Fierce Fire Gem»»Wilder Feuerjuwel
-Fierce Water Gem»»Wilder Wasserjuwel
-Fierce Air Gem»»Wilder Luftjuwel
-Fierce Cosmic Gem»»Wilder kosmischer Juwel
-Lesser Fire Gem»»Kleiner Feuerjuwel
-Lesser Water Gem»»Kleiner Wasserjuwel
-Lesser Air Gem»»Kleiner Luftjuwel
-Lesser Cosmic Gem»»Kleiner kosmischer Juwel
-Empowered Fire Gem»»Mächtiger Feuerjuwel
-Empowered Water Gem»»Mächtiger Wasserjuwel
-Empowered Air Gem»»Mächtiger Luftjuwel
-Empowered Cosmic Gem»»Mächtiger kosmischer Juwel
-All gems have had their level maxed out.»»Die Stufe aller Juwelen wurde auf das maximum erhöht.
-All gems have had their level set to 5.»»Die Stufe aller Juwelen wurde auf 5 gesetzt.
-All gems have had their level set to 10.»»Die Stufe aller Juwelen wurde auf 10 gesetzt.
-All gems have had their level set to 15.»»Die Stufe aller Juwelen wurde auf 15 gesetzt.
-All gems have had their level set to 1.»»Die Stufe aller Juwelen wurde auf 1 gesetzt.
-All gems have fully augmented.»»Alle Juwelen wurden vollständig verbessert.
-All gems have been de-augmented.»»Die Verbesserungen wurden von allen Juwelen vollständig entfernt.
-All gems have been zero-ed in augmentation (This is irreversible, reroll gems to get new ones).»»Die Verbesserungen aller Juwelen wurde auf Null gesetzt (Dies ist nicht reversibel, ändere neue Juwelen um neue Verbesserungen zu erhalten).
-All gems have had their Physical damage stat changed to Magic Damage»»Der physische Schaden aller Juwelen wurde in magischen Schaden geändert.
-All gems have had their Magic damage stat changed to Physical Damage»»Der magische Schaden aller Juwelen wurde in physische Schaden geändert.
-All gems have had their stats tuned for damage.»»Die Attribute aller Juwelen wurden für Schaden optimiert.
-All gems have had their stats tuned for health.»»Die Attribute aller Juwelen wurden für Leben optimiert.
-Gem level changed to {level}»»Juwelenlevel geändert zu {level}
-Updated Stats»»Attribute aktualisiert
-Updated Stat's Augmentation»»Verbesserungsstand des Attributes aktualisiert
-Updated Ability»»Fähigkeit aktualisiert
-Max mastery is 1000»»Der maximale Beherrschungsrang ist 1000
-Health Bonus»»Lebensbonus
-Damage Bonus»»Schadensbonus
-Power Rank»»Machtrang
-Magic Find»»Magiegespür
-Light»»Licht
-Physical Damage»»Physischer Schaden
-Magic Damage»»Magischer Schaden
-Critical Damage»»Kritischer Schaden
-Critical Hit»»Kritische Trefferchance
-Maximum Health»»Max. Gesundheit
-Maximum Health %»»Max. Gesundheit %
-Low Cost»»Niedrige Kosten
-Medium Cost»»Mittlere Kosten
-High Cost»»Hohe Kosten
-Gem Tier»»Juwelenstufe
-Gem Levels»»Juwelenlevel
-Augmentation»»Verbesserung
-Stats»»Attribute
-Home»»Hauptmenü
-Twitch Streams»»Twitch Streams
-Weekly Bonuses»»Wöchentliche Boni
-Daily Bonuses»»Tägliche Boni
-Events»»Ereignisse
-No events are currently going on.»»Momentan sind keine Ereignisse verfügbar.
-Dragon Merchants»»Drachenhändler
-Max Mastery»»Maximaler Beherrschungsrang
-Live Trove Mastery»»Live Trove Beherrschungsrang
-Live Geode Mastery»»Live Geode Beherrschungsrang
-PTS Trove Mastery»»PTS Trove Beherrschungsrang
-PTS Geode Mastery»»PTS Geode Beherrschungsrang
-Monday»»Montag
-Tuesday»»Dienstag
-Wednesday»»Mittwoch
-Thursday»»Donnerstag
-Friday»»Freitag
-Saturday»»Samstag
-Sunday»»Sonntag
-Delve Day»»Grottentag
-Gathering Day»»Sammeltag
-Gem Day»»Juwelentag
-Adventure Day»»Abenteuertag
-Dragon Day»»Drachentag
-XP Day»»EP-Tag
-Loot Day»»Beutetag
-Double Star Bar»»Doppelte Sternenleiste
-Bonus XP»»Bonus EP
-Second Stat Reroll»»Änderung des zweiten Ausrüstungsattributes
-Fast Invasions»»Schnelle Invasionen
-Leaving in {}»»Verlässt in {}
-Arriving in {}»»Erscheint in {}
-Luxion»»Luxion
-Corruxion»»Corruxion
-Fluxion»»Fluxion
-Selling»»Verkauft
-Voting»»Abstimmung
-File Extractor»»Dateiextraktor
-Modder Tools»»Modder Tools
-Mods Manager»»Mods Verwalten
-Gear Builds»»Ausrüstungsbuilds
-Gem Builds»»Juwelenbuilds
-Normal»»Normal
-Patron»»Stammspieler
-My Mods»»Meine Mods
-Mod Profiles»»Mod Profile
-Not working yet»»Funktioniert noch nicht
-Filter Mods»»Mods Filtern
-Enabled»»Aktiviert
-Disabled»»Deaktiviert
-Local»»Lokal
-Settings»»Einstellungen
-Show Previews»»Vorschau anzeigen
-Show mod image previews»»Zeige das Vorschaubild der Mods
-Auto Fix Mod Names»»Mod-Namen automatisch korrigieren
-Automatically fix mod names on directory reading»»Mod-Namen automatisch beim lesen des Ordners korrigieren
-Auto Generate and Fix CFG files for UI mods»»Generiere und Repariere automatisch Konfigurationsdateien für UI mods
-My Mods tiles toggle mods»»Klicken auf Mod schaltflächen zum ein/aus schalten
-Custom Directories»»Benutzerdefinierte Pfade
-Add Custom directory»»Benutzerdefinierte Pfad hinzufügen
-No custom directories»»Keine benutzerdefinierte Pfade
-MD/CD/MD/CD»»MD/CD/MD/CD
-PD/CD/PD/CD»»PD/CD/PD/CD
-MD/CD/LT/MD/CD/LT»»MD/CD/LT/MD/CD/LT
-PD/CD/LT/PD/CD/LT»»PD/CD/LT/PD/CD/LT
-Build»»Build
-Light»»Licht
-Base Damage»»Basisschaden
-Bonus Damage»»Bonusschaden
-Damage»»Schaden
-Deviation»»Abweichung
-Critical»»Kritisch
-Coefficient»»Koeffizient
-Deviation»»Abweichung
-Actions»»Aktionen
-Build format»»Build format
-MD/Light»»MD/Light
-PD/Light»»PD/Light
-MD+PD/Light»»MD+PD/Light
-MS/MD/Light»»MS/MD/Light
-MS/PD/Light»»MS/PD/Light
-MS/MD+PD/Light»»MS/MD+PD/Light
-WIP»»WIP
-Class»»Klasse
-Subclass»»Subklasse
-Build Type»»Build Typ
-Food»»Nahrung
-Abilities»»Fähigkeiten
-Ally»»Gefährte
-Star Chart Build ID»»Sternenkarten Build ID
-Face Damage»»Maskenschaden
-Subclass active»»Subklasse aktiv
-Enlightened»»Erleuchtet
-First»»Erste
-Previous»»Zurück
-Next»»Vor
-Last»»Letzte
-Copied build GB-{} to clipboard»»build GB-{} in die Zwischenablage kopiert
-Insert Gem Build ID»»Juwelen-Build ID eingeben
-Copy Gem Build»»Juwelen-Build kopieren
-Gear Critical Damage»»Ausrüstung kritischer Schaden
-Copied to clipboard»»In die Zwischenablage kopiert
-Best»»Bester
-Ability Build Changed»»Fähigkeiten Build geändert
-Bard»»Barde
-Boomeranger»»Bumeranger
-Candy Barbarian»»Blutzuckerbarbar
-Chloromancer»»Chloromant
-Dino Tamer»»Dinobändiger
-Dracolyte»»Drakolyth
-Fae Trickster»»Feengaukler
-Gunslinger»»Revolverheld
-Ice Sage»»Eisweiser
-Knight»»Ritter
-Lunar Lancer»»Mondulan
-Neon Ninja»»Neonninja
-Pirate Captain»»Piratenkapitän
-Revenant»»Wiedergänger
-Shadow Hunter»»Schattenjäger
-Solarion»»Solarion
-Tomb Raiser»»Gruftwandler
-Vanguardian»»Gralshüter
-Freerange Electrolytic Crystals»»Elektrolytische Freilauf-Kristalle
-Premium Fish Soup»»Erstklassige Fischsuppe
-Premium Fish Fillet»»Erstklassiges Fischfilet
-Premium Fish Kabobs»»Erstklassiges Fischkebab
-Jump»»Sprünge
-Movement Speed»»Lauftempo
-Class Bonus»»Klassenbonus
-Blue»»Blau
-Red»»Rot
-Pink»»Pink
-Purple»»Lila
-Indigo»»Indigo
-Cyan»»Cyan
-Teal»»Aquamarin
-Green»»Grün
-Lime»»Hellgrün
-Yellow»»Gelb
-Amber»»Bernsteingelb
-Orange»»Orange
-Brown»»Braun
-Loading...»»Lade...
-Trove Time»»Trove Zeit
-Loading...»»Lade...
-from now»»ab jetzt
-Buffs»»Buffs
-Bonus Star Bar»»Bonus Sternenleiste
-Edit Mastery»»Beherrschungsrang bearbeiten
-Server»»Server
-Type»»Typ
-Points»»Punkte
-Save»»Speichern
-Cancel»»Abbrechen
-Max»»Max
-Min»»Min
-Level Down»»Level runter
-Level Up»»Level hoch
-Level 15»»Level 15
-Double Cubits and Flux from Star Bar completion!»»Doppelte Credits und Cubits beim abschließen der Sternenleiste!
+% Augmentation Progress»»% Verbesserungsfortschritt
++100 Magic Find»»+100 Magiegespür
 +100% Base Experience!»»+100% Basis EP!
-Chaos Forge can reroll the second stat on equipment!»»Die Chaosschmiede kann das zweite Attribut auf Ausrüstung ändern!
-Increased rate of Shadow Invasions!»»Schatteninvasionen finden häufiger statt!
-Double Crystal Drops»»2x Kristalle
-Double Shadow Shard Drops»»2x Schattenscherben
-Double Inert Geode Drops»»2x Inaktive Geoden
-Triple Crystal Drops»»3x Kristalle
-Triple Shadow Shard Drops»»3x Schattenscherben
-Triple Inert Geode Drops»»x Inaktive Geoden
-Double Radiant Shard Drops»»2x Strahlende Scherben
-20% Bonus Harvest Chance»»20%ige Chance auf Bonusernte
-50% Bonus Ore Chance»»50%ige Chance auf Bonuserz
-20% Bonus Fish Chance»»20%ige Chance auf Bonus-Fische
-Triple Radiant Shard Drops»»3x Strahlende Scherben
-40% Bonus Harvest Chance»»40%ige Chance auf Bonusernte
++400 Magic Find»»+400 Magiegespür
 100% Bonus Ore Chance»»100%ige Chance auf Bonuserz
-40% Bonus Fish Chance»»40%ige Chance auf Bonus-Fische
-Gem Upgrade Dust Cost Reduced By 10%»»Um 10% reduzierte Juwelenstaubkosten
+100% More Adventure Experience»»100% mehr Abenteuer-EP
+100% More Arena Win Experience»»100% mehr EP für Arenasiege
+100% More Club Experience»»100% mehr Klub-EP
+20% Bonus Fish Chance»»20%ige Chance auf Bonus-Fische
+20% Bonus Harvest Chance»»20%ige Chance auf Bonusernte
 25% Bonus Gem Box Drop Chance»»25%ige Chance auf Bonusjuwelenkisten
-Dungeons Can Drop Up To 3 Lustrous Gem Boxes»»In Dungeons können bis zu 3 "Glitzernde Juwelenkisten" droppen
-Gem Upgrade Dust Cost Reduced By 20%»»Um 20% reduzierte Juwelenstaubkosten
-50% Bonus Gem Box Drop Chance»»50%ige Chance auf Bonusjuwelenkisten
-Dungeons Can Drop Up To 6 Lustrous Gem Boxes»»In Dungeons können bis zu 6 "Glitzernde Juwelenkisten" droppen
-Earn 50% More Adventurine»»Verdiene 50% mehr Abenteuros
-Double Chance to Find Adventure Boxes»»2x Chance auf Abenteuerkisten
-Double Chance To Find Talismans»»2x Chance auf Talismane
-Earn 100% More Adventurine»»Verdiene 100% mehr Abenteuros
-Triple Chance to Find Adventure Boxes»»3x Chance auf Abenteuerkisten
-Triple Chance To Find Talismans»»3x Chance auf Talismane
+2x Chance Of Finding Dragon Fragments»»2x Chance auf Drachenfragmente
 2x Dragon Coins from Challenges»»2x Drachenmünzen von Herausforderungen
 2x Lesser Dragon Caches from Challenges»»2x "Gemeine Drachenschatzkisten" aus Herausforderungen
-2x Chance Of Finding Dragon Fragments»»2x Chance auf Drachenfragmente
+3x Chance Of Finding Dragon Fragments»»3x Chance auf Drachenfragmente
 3x Dragon Coins from Challenges»»3x Drachenmünzen von Herausforderungen
 3x Lesser Dragon Caches from Challenges»»3x "Gemeine Drachenschatzkisten" aus Herausforderungen
-3x Chance Of Finding Dragon Fragments»»3x Chance auf Drachenfragmente
+40% Bonus Fish Chance»»40%ige Chance auf Bonus-Fische
+40% Bonus Harvest Chance»»40%ige Chance auf Bonusernte
+50% Bonus Gem Box Drop Chance»»50%ige Chance auf Bonusjuwelenkisten
+50% Bonus Ore Chance»»50%ige Chance auf Bonuserz
 50% More Adventure Experience»»50% mehr Abenteuer-EP
-50% More Club Experience»»50% mehr Klub-EP
 50% More Arena Win Experience»»50% mehr EP für Arenasiege
-100% More Adventure Experience»»100% mehr Abenteuer-EP
-100% More Club Experience»»100% mehr Klub-EP
-100% More Arena Win Experience»»100% mehr EP für Arenasiege
-+100 Magic Find»»+100 Magiegespür
-Double Chance To Find Flux Artifacts»»2x Chance auf Fluxartefakte
-Increased Chaos Chest Drop Chance»»Erhöhte Chaostruhen-Dropchance
-+400 Magic Find»»+400 Magiegespür
-Triple Chance To Find Flux Artifacts»»3x Chance auf Fluxartefakte
-Increased Chaos Chest Drop Chance»»Erhöhte Chaostruhen-Dropchance
-Star Chart Build ID | "none" to remove»»Sternenkarten-Build ID | "none" zum entfernen
-Mastery Levels»»Beherrschungsrang
-Dragons»»Drachen
-Dragon Badges»»Drachenabzeichen
-Weapon»»Waffe
-Ring»»Ring
-Borrowed Luck»»Geborgtes Glück
-Elixir»»Elixir
+50% More Club Experience»»50% mehr Klub-EP
+A new update is available, click on the download icon to update.»»Ein neues Update ist verfügbar, klicke auf das download Symbol um das Update zu starten.
+A new update is available, do you want to download it?»»Ein neues Update ist verfügbar, möchtest du es herunterladen?
+A newer version is available»»Eine neuere Version ist verfügbar
+Abilities»»Fähigkeiten
+Ability»»Fähigkeit
+Ability Build Changed»»Fähigkeiten Build geändert
+About»»Über
+Actions»»Aktionen
+Add Custom directory»»Benutzerdefinierte Pfad hinzufügen
+Adventure Day»»Abenteuertag
+After the installation is complete, the application will be automatically restarted.»»Sobald die Installation abgeschlossen ist, wird die Anwendung automatisch neu gestartet.
+Air»»Luft
+Air Gem Dust»»Luftjuwelenstaub
+Air Primordial»»Luft Urdrache
+All gems have been de-augmented.»»Die Verbesserungen wurden von allen Juwelen vollständig entfernt.
+All gems have been zero-ed in augmentation (This is irreversible, reroll gems to get new ones).»»Die Verbesserungen aller Juwelen wurde auf Null gesetzt (Dies ist nicht reversibel, ändere neue Juwelen um neue Verbesserungen zu erhalten).
+All gems have fully augmented.»»Alle Juwelen wurden vollständig verbessert.
+All gems have had their Magic damage stat changed to Physical Damage»»Der magische Schaden aller Juwelen wurde in physische Schaden geändert.
+All gems have had their Physical damage stat changed to Magic Damage»»Der physische Schaden aller Juwelen wurde in magischen Schaden geändert.
+All gems have had their level maxed out.»»Die Stufe aller Juwelen wurde auf das maximum erhöht.
+All gems have had their level set to 1.»»Die Stufe aller Juwelen wurde auf 1 gesetzt.
+All gems have had their level set to 10.»»Die Stufe aller Juwelen wurde auf 10 gesetzt.
+All gems have had their level set to 15.»»Die Stufe aller Juwelen wurde auf 15 gesetzt.
+All gems have had their level set to 5.»»Die Stufe aller Juwelen wurde auf 5 gesetzt.
+All gems have had their stats tuned for damage.»»Die Attribute aller Juwelen wurden für Schaden optimiert.
+All gems have had their stats tuned for health.»»Die Attribute aller Juwelen wurden für Leben optimiert.
+Ally»»Gefährte
+Amber»»Bernsteingelb
+American English»»Englisch
+Arcane»»Arcane
+Arcane Air Gem»»Arkaner Luftjuwel
+Arcane Cosmic Gem»»Arkaner kosmischer Juwel
+Arcane Fire Gem»»Arkaner Feuerjuwel
+Arcane Water Gem»»Arkaner Wasserjuwel
+Arriving in {}»»Erscheint in {}
+Attack Speed»»Angriffstempo
+Augmentation»»Verbesserung
+Augmentation Cost»»Verbesserungskosten
+Augmentation Costs»»Verbesserungskosten
+Auto Fix Mod Names»»Mod-Namen automatisch korrigieren
+Auto Generate and Fix CFG files for UI mods»»Generiere und Repariere automatisch Konfigurationsdateien für UI mods
+Automatically fix mod names on directory reading»»Mod-Namen automatisch beim lesen des Ordners korrigieren
+Bard»»Barde
+Base Damage»»Basisschaden
+Beamer»»Beamer
+Berserk Battler (Cosmic)»»Kampfberserker (Kosmisch)
+Berserker Battler»»Kampfberserker
+Best»»Bester
+Blue»»Blau
+Bonus Damage»»Bonusschaden
 Bonus MF (No deaths)»»Bonus Magiegespür (keine Tode)
-Sunday Loot Day»»Sonntagsbonus
-Store Boost»»Markt Boost
+Bonus Star Bar»»Bonus Sternenleiste
+Bonus XP»»Bonus EP
+Boomeranger»»Bumeranger
+Borrowed Luck»»Geborgtes Glück
+Bound Brilliance»»Brillianzbündler
+Bountiful»»Bountiful
+Brown»»Braun
+Buffs»»Buffs
+Build»»Build
+Build Type»»Build Typ
+Build format»»Build format
+Builder's Precise Focus»»Akkurater Fokus des Baumeisters
+Builder's Rough Focus»»Grober Fokus des Baumeisters
+Builder's Superior Focus»»Präzisionsfokus des Baumeisters
+Cancel»»Abbrechen
+Candy Barbarian»»Blutzuckerbarbar
+Change Ability»»Fähigkeit ändern
+Change Log»»Änderungshinweise
+Change Restricition»»Beschränkung anpassen
+Change Restriction»»Beschränkung anpassen
+Change Stat»»Attribut ändern
+Change language»»Sprache ändern
+Change theme»»Farbschema anpassen
+Chaos Contained Flare»»Kontrollierte Chaosfackel
+Chaos Contained Spark»»Kontrollierter Chaosfunke
+Chaos Forge can reroll the second stat on equipment!»»Die Chaosschmiede kann das zweite Attribut auf Ausrüstung ändern!
+Chloromancer»»Chloromant
+Chronomantic»»Chronomantic
+Class»»Klasse
+Class Bonus»»Klassenbonus
+Class Gem»»Klassenjuwel
+Close»»Schließen
 Clover»»Glücksklee
 Club Fixture»»Klubkomplexe
-Rating»»Bewertung
-Face»»Maske
-Hat»»Hut
-Preference»»Einstellung
-Attack Speed»»Angriffstempo
-Orchian»»Orchian
-Flask»»Flakon
-Cubic Curtain/Explosive Epilogue»»Kubischer Schild/Explosiver Epilog
-Vampirian Vanquisher (Cosmic)»»Vampirischer Bezwinger (Kosmisch)
-Berserk Battler (Cosmic)»»Kampfberserker (Kosmisch)
-Farm»»Farmen
-Emblem»»Emblem
-Gems»»Juwelen
-Class Gem»»Klassenjuwel
-Evil Eye»»Evil Eye
-Death-Defying Vial»»Death-Defying Vial
-Starry Skyfire»»Starry Skyfire
-Trailblazing»»Trailblazing
+Coefficient»»Koeffizient
 Conjurer's Crucible Vial»»Feuerphiole des Zauberkünstlers 
-Martial»»Martial
-Chronomantic»»Chronomantic
-Jingles»»Jingles
-Scorpius»»Scorpius
-Unyielding»»Unyielding
-Bountiful»»Bountiful
+Copied build GB-{} to clipboard»»build GB-{} in die Zwischenablage kopiert
+Copied to clipboard»»In die Zwischenablage kopiert
+Copy Gem Build»»Juwelen-Build kopieren
+Corruxion»»Corruxion
+Cosmic»»Kosmisch
+Cosmic Gem Dust»»Kosmischer Juwelenstaub
+Cosmic Primordial»»Kosmischer Urdrache
+Critical»»Kritisch
+Critical Damage»»Kritischer Schaden
+Critical Hit»»Kritische Trefferchance
+Crystal»»Kristall
+Cubic Curtain»»Kubischer schild
+Cubic Curtain/Explosive Epilogue»»Kubischer Schild/Explosiver Epilog
 Cubic Curtain/Mired Mojo»»Cubic Curtain/Mired Mojo
-Empyrean Barrier (Cosmic)»»Empyrean Barrier (Cosmic)
-Lil' Whiptop»»Lil' Whiptop
+Custom Directories»»Benutzerdefinierte Pfade
+Cyan»»Cyan
+Daily Bonuses»»Tägliche Boni
+Damage»»Schaden
+Damage Bonus»»Schadensbonus
+Death-Defying Vial»»Death-Defying Vial
+Delve Day»»Grottentag
+Deviation»»Abweichung
+Diamond Dragonite»»Diamantdrachit
+Dino Tamer»»Dinobändiger
+Disabled»»Deaktiviert
+Donate»»Spenden
+Double Chance To Find Flux Artifacts»»2x Chance auf Fluxartefakte
+Double Chance To Find Talismans»»2x Chance auf Talismane
+Double Chance to Find Adventure Boxes»»2x Chance auf Abenteuerkisten
+Double Crystal Drops»»2x Kristalle
+Double Cubits and Flux from Star Bar completion!»»Doppelte Credits und Cubits beim abschließen der Sternenleiste!
+Double Inert Geode Drops»»2x Inaktive Geoden
+Double Radiant Shard Drops»»2x Strahlende Scherben
+Double Shadow Shard Drops»»2x Schattenscherben
+Double Star Bar»»Doppelte Sternenleiste
+Downloading update, please wait...»»Das Update wird heruntergeladen, bitte warten...
+Dracolyte»»Drakolyth
+Dragon Badges»»Drachenabzeichen
+Dragon Day»»Drachentag
+Dragon Merchants»»Drachenhändler
+Dragons»»Drachen
+Dungeons Can Drop Up To 3 Lustrous Gem Boxes»»In Dungeons können bis zu 3 "Glitzernde Juwelenkisten" droppen
+Dungeons Can Drop Up To 6 Lustrous Gem Boxes»»In Dungeons können bis zu 6 "Glitzernde Juwelenkisten" droppen
+Earn 100% More Adventurine»»Verdiene 100% mehr Abenteuros
+Earn 50% More Adventurine»»Verdiene 50% mehr Abenteuros
+Edit Mastery»»Beherrschungsrang bearbeiten
+Elixir»»Elixir
 Elysian Bandolier»»Elysian Bandolier
-Beamer»»Beamer
+Emblem»»Emblem
+Empowered»»Machtvoll
+Empowered Air Gem»»Mächtiger Luftjuwel
+Empowered Cosmic Gem»»Mächtiger kosmischer Juwel
+Empowered Fire Gem»»Mächtiger Feuerjuwel
+Empowered Water Gem»»Mächtiger Wasserjuwel
+Empyrean Barrier»»Lichthimmelbarriere
+Empyrean Barrier (Cosmic)»»Empyrean Barrier (Cosmic)
+Enabled»»Aktiviert
 Energy Regeneration»»Energy Regeneration
-Zealous»»Zealous
-Augmentation Costs»»Verbesserungskosten
-Change Restriction»»Beschränkung anpassen
-% Augmentation Progress»»% Verbesserungsfortschritt
-Zero»»Null
-Magic»»Magisch
-Physical»»Physisch
+Enlightened»»Erleuchtet
+Events»»Ereignisse
+Evil Eye»»Evil Eye
+Explosive Epilogue»»Explosiver Epilog
+Face»»Maske
+Face Damage»»Maskenschaden
+Fae Trickster»»Feengaukler
+Farm»»Farmen
+Fast Invasions»»Schnelle Invasionen
+Feedback»»Feedback
+Feedback sent»»Feedback gesendet
+Fierce»»Wilder
+Fierce Air Gem»»Wilder Luftjuwel
+Fierce Cosmic Gem»»Wilder kosmischer Juwel
+Fierce Fire Gem»»Wilder Feuerjuwel
+Fierce Water Gem»»Wilder Wasserjuwel
+File Extractor»»Dateiextraktor
+Filter Mods»»Mods Filtern
+Fire»»Feuer
+Fire Gem Dust»»Feuerjuwelenstaub
+Fire Primordial»»Feuer Urdrache
+First»»Erste
+Flask»»Flakon
+Flower Power»»Flower-Power
+Flux»»Flux
+Fluxion»»Fluxion
+Food»»Nahrung
+Freerange Electrolytic Crystals»»Elektrolytische Freilauf-Kristalle
+French»»Französisch
+Friday»»Freitag
+Gathering Day»»Sammeltag
+Gear Builds»»Ausrüstungsbuilds
+Gear Critical Damage»»Ausrüstung kritischer Schaden
+Gem Ability»»Juwelenfähigkeit
+Gem Builds»»Juwelenbuilds
+Gem Day»»Juwelentag
+Gem Levels»»Juwelenlevel
+Gem Set Calculator»»Juwelen Set Rechner
+Gem Simulator»»Juwelen Simulator
+Gem Tier»»Juwelenstufe
+Gem Upgrade Dust Cost Reduced By 10%»»Um 10% reduzierte Juwelenstaubkosten
+Gem Upgrade Dust Cost Reduced By 20%»»Um 20% reduzierte Juwelenstaubkosten
+Gem level changed to {level}»»Juwelenlevel geändert zu {level}
+Gems»»Juwelen
+Geode Mastery Buffs»»Geode Beherrschungs Buffs
+German»»Deutsch
+Get Windows Application»»Windows Anwendung herunterladen
+Green»»Grün
+Gunslinger»»Revolverheld
+Hat»»Hut
 Health»»Leben
-
-Change language»»Sprache ändern
-This application was developed by Sly. Interface design improved by Cr0nicl3 D3str0y3r.»»Diese Anwendung wurde von Sly entwickelt. De Benutzeroberfläche wurde von Cr0nicl3 D3str0y3r verbessert.
+Health Bonus»»Lebensbonus
+Heart of Darkness»»Fesselnde Finsternis
+High Cost»»Hohe Kosten
+Home»»Hauptmenü
 I am coding this as an hobby with the goal of achieving greater front-end building skills, at the same time I also improve code making and organization skills.»»Ich erstelle diese Anwendung mit dem Ziel, meine Frontend-Baufähigkeiten zu verbessern sowie meine Programmier und Organisationsfähigkeiten.
-I have the goal to not only build something that is usable but mostly updatable with little effort or code knowledge this however may be a challenge if newer updates come with changes on behavior of previous content.»»Ich verfolge nicht nur das Ziel, eine Anwendung zu Programmieren, sondern diese auch Updatebar zu erhalten mit wenig Aufwand/Programmierwissen. Dies könnte sich schwierig gestalten, sollten Funktionsweisen im Spiel geändert werden.
 I don't promise to keep this up to date forever, but as long as I am around I should be able to.»»Ich verspreche zwar nicht die Anwendung für immer zu updaten, aber solange ich da bin sollte es möglich sein.
+I have the goal to not only build something that is usable but mostly updatable with little effort or code knowledge this however may be a challenge if newer updates come with changes on behavior of previous content.»»Ich verfolge nicht nur das Ziel, eine Anwendung zu Programmieren, sondern diese auch Updatebar zu erhalten mit wenig Aufwand/Programmierwissen. Dies könnte sich schwierig gestalten, sollten Funktionsweisen im Spiel geändert werden.
+Ice Sage»»Eisweiser
+Improve Stat»»Attribut verbessern
+Increased Chaos Chest Drop Chance»»Erhöhte Chaostruhen-Dropchance
+Increased rate of Shadow Invasions!»»Schatteninvasionen finden häufiger statt!
+Indigo»»Indigo
+Insert Gem Build ID»»Juwelen-Build ID eingeben
+Jingles»»Jingles
+Jump»»Sprünge
+Keeping the app up to date is important to ensure that you have the latest features and bug fixes.»»Die Anwendung aktualisiert zu halten ist wichtig, um die neusten Funktionen und Fehlerbehebungen zu erhalten.
+Knight»»Ritter
+Last»»Letzte
+Later»»Später
+Leaving in {}»»Verlässt in {}
+Lesser»»Kleiner
+Lesser Air Gem»»Kleiner Luftjuwel
+Lesser Cosmic Gem»»Kleiner kosmischer Juwel
+Lesser Fire Gem»»Kleiner Feuerjuwel
+Lesser Water Gem»»Kleiner Wasserjuwel
+Level»»Rang
+Level 15»»Level 15
+Level Down»»Level runter
+Level Up»»Level hoch
+Light»»Licht
+Lil' Whiptop»»Lil' Whiptop
+Lime»»Hellgrün
+Live Geode Mastery»»Live Geode Beherrschungsrang
+Live Trove Mastery»»Live Trove Beherrschungsrang
+Loading...»»Lade...
+Local»»Lokal
+Login»»Anmelden
+Logout»»Abmelden
+Loot Day»»Beutetag
+Low Cost»»Niedrige Kosten
+Lunar Lancer»»Mondulan
+Luxion»»Luxion
+Lvl»»Lvl
+MD+PD/Light»»MD+PD/Light
+MD/CD/LT/MD/CD/LT»»MD/CD/LT MD/CD/LT
+MD/CD/MD/CD»»MD/CD MD/CD
+MD/Light»»MD/Light
+MS/MD+PD/Light»»MS/MD+PD/Light
+MS/MD/Light»»MS/MD/Light
+MS/PD/Light»»MS/PD/Light
+Magic»»Magisch
+Magic Damage»»Magischer Schaden
+Magic Find»»Magiegespür
+Martial»»Martial
+Mastery»»Beherrschung
+Mastery Buffs»»Beherrschungs Buffs
+Mastery Levels»»Beherrschungsrang
+Mastery Points»»Beherrschungspunkte
+Max»»Max
+Max Mastery»»Maximaler Beherrschungsrang
+Max mastery is 1000»»Der maximale Beherrschungsrang ist 1000
+Maximum Health»»Max. Gesundheit
+Maximum Health %»»Max. Gesundheit %
+Medium Cost»»Mittlere Kosten
+Min»»Min
+Mired Mojo»»Stasishagel
+Mod Profiles»»Mod Profile
+Modder Tools»»Modder Tools
+Mods Manager»»Mods Verwalten
+Monday»»Montag
+Move Boost»»Perle verschieben
+Movement Speed»»Lauftempo
+My Mods»»Meine Mods
+My Mods tiles toggle mods»»Klicken auf Mod schaltflächen zum ein/aus schalten
+Neon Ninja»»Neonninja
+Next»»Vor
+No custom directories»»Keine benutzerdefinierte Pfade
+No events are currently going on.»»Momentan sind keine Ereignisse verfügbar.
+Normal»»Normal
+Not working yet»»Funktioniert noch nicht
+Orange»»Orange
+Orchian»»Orchian
+Others»»Andere
+PD/CD/LT/PD/CD/LT»»PD/CD/LT PD/CD/LT
+PD/CD/PD/CD»»PD/CD PD/CD
+PD/Light»»PD/Light
+PTS Geode Mastery»»PTS Geode Beherrschungsrang
+PTS Trove Mastery»»PTS Trove Beherrschungsrang
+Patron»»Stammspieler
+Physical»»Physisch
+Physical Damage»»Physischer Schaden
+Pink»»Pink
+Pirate Captain»»Piratenkapitän
+Please provide a valid number»»Bitte gebe eine gültige Zahl ein
+Points»»Punkte
+Portuguese»»Portugiesisch
+Power Rank»»Machtrang
+Preference»»Einstellung
+Premium Fish Fillet»»Erstklassiges Fischfilet
+Premium Fish Kabobs»»Erstklassiges Fischkebab
+Premium Fish Soup»»Erstklassige Fischsuppe
+Previous»»Zurück
+Purple»»Lila
+Pyrodisc»»Pyroscheibe
+Radiant»»Strahlend
+Rating»»Bewertung
+Red»»Rot
+Renewed Trove Tools»»Renewed Trove Tools
+Report a bug»»Melde einen Fehler
+Reroll Stat»»Attribut neu generieren
+Revenant»»Wiedergänger
+Ring»»Ring
+Russian»»Russisch
+Saturday»»Samstag
+Save»»Speichern
+Scorpius»»Scorpius
+Second Stat Reroll»»Änderung des zweiten Ausrüstungsattributes
+Selling»»Verkauft
+Send»»Senden
+Send feedback»»Sende feedback
+Server»»Server
+Settings»»Einstellungen
+Shadow Hunter»»Schattenjäger
+Show Previews»»Vorschau anzeigen
+Show mod image previews»»Zeige das Vorschaubild der Mods
+Solarion»»Solarion
+Spirit Surge»»Spirit Surge
+Star Chart»»Sternenkarte
+Star Chart Build ID»»Sternenkarten Build ID
+Star Chart Build ID | "none" to remove»»Sternenkarten-Build ID | "none" zum entfernen
+Starry Skyfire»»Starry Skyfire
+Stat»»Attribut
+Stats»»Attribute
+Stellar»»Stellar
+Stinging Curse»»Geisterwelle
+Store Boost»»Markt Boost
+Stunburst»»Stasissalve
+Subclass»»Subklasse
+Subclass active»»Subklasse aktiv
+Sunday»»Sonntag
+Sunday Loot Day»»Sonntagsbonus
+Switch to debug version»»Wechseln zur Debug Version
+Switch to release version»»Wechseln zur Normalen Version
+Teal»»Aquamarin
 Thanks for using my application. <3»»Danke für das verwenden meiner Anwendung. <3
+The application will download update and close itself to install it.»»Die Anwendung wird das Update herunterladen und sich schließen, um das Update zu installieren.
+This application was developed by Sly. Interface design improved by Cr0nicl3 D3str0y3r.»»Diese Anwendung wurde von Sly entwickelt. De Benutzeroberfläche wurde von Cr0nicl3 D3str0y3r verbessert.
+Thursday»»Donnerstag
+Titan Soul»»Titanenseele
+Tomb Raiser»»Gruftwandler
+Trailblazing»»Trailblazing
+Triple Chance To Find Flux Artifacts»»3x Chance auf Fluxartefakte
+Triple Chance To Find Talismans»»3x Chance auf Talismane
+Triple Chance to Find Adventure Boxes»»3x Chance auf Abenteuerkisten
+Triple Crystal Drops»»3x Kristalle
+Triple Inert Geode Drops»»x Inaktive Geoden
+Triple Radiant Shard Drops»»3x Strahlende Scherben
+Triple Shadow Shard Drops»»3x Schattenscherben
+Trove Time»»Trove Zeit
+Tuesday»»Dienstag
+Twitch Streams»»Twitch Streams
+Type»»Typ
+Unyielding»»Unyielding
+Update»»Aktualisieren
+Update available»»Update verfügbar
+Updated Ability»»Fähigkeit aktualisiert
+Updated Stat's Augmentation»»Verbesserungsstand des Attributes aktualisiert
+Updated Stats»»Attribute aktualisiert
+Value»»Wert
+Vampirian Vanquisher»»Vampirischer Bezwinger
+Vampirian Vanquisher (Cosmic)»»Vampirischer Bezwinger (Kosmisch)
+Vanguardian»»Gralshüter
+Version {}»»Version {}
+Volatile Velocity»»Volatile Velozität
+Voting»»Abstimmung
+WIP»»WIP
+Water»»Wasser
+Water Gem Dust»»Wasserjuwelenstaub
+Water Primordial»»Wasser Urdrache
+Weapon»»Waffe
+Wednesday»»Mittwoch
+Weekly Bonuses»»Wöchentliche Boni
+XP Day»»EP-Tag
+Yellow»»Gelb
+Zealous»»Zealous
+Zero»»Null
+from now»»ab jetzt

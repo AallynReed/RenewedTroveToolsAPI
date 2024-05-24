@@ -13,6 +13,7 @@ from base64 import b64encode
 
 misc = Blueprint("misc", __name__, url_prefix="/misc")
 locales_folder = Path("versions/v1/locales")
+assets_folder = Path("versions/v1/assets")
 
 
 def format_number(number):
@@ -152,6 +153,8 @@ async def opn_chart():
 
 @misc.route("/handshake")
 async def handshake():
+    if not hasattr(current_app, "app_versions"):
+        return abort(503, "Latest release is not available.")
     headers = request.headers
     data = await request.json
     os_data = data.get("os", {})
@@ -165,12 +168,21 @@ async def handshake():
         country = country.name
     else:
         country = "Unknown"
+    update_version = None
+    for version in current_app.app_versions:
+        if update_version is not None:
+            break
+        for asset in version.get("assets"):
+            asset_name = asset.get("name")
+            if "debug" not in asset_name and asset_name.endswith(".msi"):
+                update_version = version.get("tag_name")
+                break
     await send_embed(
         os.getenv("APP_WEBHOOK"),
         {
             "title": "APP Launched",
             "description": "App has been launched",
-            "color": 0x0000BB,
+            "color": 0x0000BB if data.get("version") == update_version else 0xBB0000,
             "fields": [
                 {"name": "App Version", "value": data.get("version"), "inline": True},
                 {
@@ -196,7 +208,7 @@ async def latest_version():
     for version in current_app.app_versions:
         for asset in version.get("assets"):
             asset_name = asset.get("name")
-            if "debug" not in asset_name and asset.endswith(".msi"):
+            if "debug" not in asset_name and asset_name.endswith(".msi"):
                 return jsonify({"version": version.get("tag_name")})
     return abort(404)
 
@@ -229,15 +241,13 @@ async def latest_release_download():
 async def latest_release_download_redirect():
     if not hasattr(current_app, "app_versions"):
         return abort(503, "Latest release is not available.")
-    try:
-        version = current_app.app_versions[0]
-    except IndexError:
-        return abort(500)
-    for asset in version.get("assets"):
-        if "debug" not in asset.get("name"):
-            return Response(
-                status=302, headers={"Location": asset.get("browser_download_url")}
-            )
+    for version in current_app.app_versions:
+        for asset in version.get("assets"):
+            asset_name = asset.get("name")
+            if "debug" not in asset_name and asset_name.endswith(".msi"):
+                return Response(
+                    status=302, headers={"Location": asset.get("browser_download_url")}
+                )
     return abort(404, "No download link found.")
 
 
@@ -256,26 +266,24 @@ async def latest_release_debug():
 @misc.route("latest_release/debug/redirect")
 async def latest_release_debug_redirect():
     if not hasattr(current_app, "app_versions"):
-        return abort(503, "Latest release is not available.")
-    try:
-        version = current_app.app_versions[0]
-    except IndexError:
-        return abort(500)
-    for asset in version.get("assets"):
-        if "debug" in asset.get("name"):
-            return Response(
-                status=302, headers={"Location": asset.get("browser_download_url")}
-            )
+        return abort(503, "Latest release is not available.") 
+    for version in current_app.app_versions:
+        for asset in version.get("assets"):
+            asset_name = asset.get("name")
+            if "debug" in asset_name and asset_name.endswith(".msi"):
+                return Response(
+                    status=302, headers={"Location": asset.get("browser_download_url")}
+                )
     return abort(404, "No download link found.")
 
 
-@misc.route("sage_dump")
-async def sage_dump():
-    return jsonify(
-        await current_app.database_client["trove"]["tags"]
-        .find({})
-        .to_list(length=99999)
-    )
+# @misc.route("sage_dump")
+# async def sage_dump():
+#     return jsonify(
+#         await current_app.database_client["trove"]["tags"]
+#         .find({})
+#         .to_list(length=99999)
+#     )
 
 
 @misc.route("/locales", methods=["GET"])
@@ -283,6 +291,28 @@ async def get_locales():
     files = {}
     for x in locales_folder.rglob("*.loc"):
         if x.is_file():
+            fix_file = []
+            with open(x) as f:
+                data = f.read()
+                for l in data.splitlines():
+                    if not l:
+                        continue
+                    split = l.split("»»", 1)
+                    if len(split) != 2:
+                        continue
+                    k, v = split
+                    if k and v:
+                        fix_file.append((k, v))
+            fix_file = "\n".join([f"{k}»»{v}" for k, v in sorted(list(set(fix_file)), key=lambda x: x[0])])
+            x.write_text(fix_file)
             file_name = str(x.relative_to(locales_folder).as_posix())
             files[file_name] = b64encode(x.read_bytes()).decode("utf-8")
     return jsonify(files)
+
+
+@misc.route("/assets/<path:subpath>", methods=["GET"])
+async def get_assets(subpath):
+    file = assets_folder.joinpath(subpath)
+    if not file.exists():
+        return abort(404)
+    return await send_file(file, mimetype="image/png")
