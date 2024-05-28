@@ -102,7 +102,7 @@ async def authorize():
                 os.getenv("USER_WEBHOOK"),
                 {
                     "title": "User Registered",
-                    "description": f"<:discord:1232031240329232444> User **{user.username}** has registered.",
+                    "description": f"<:discord:1232031240329232444> User **{db_user.username}** has registered.",
                     "color": 0x00FF00,
                 },
             )
