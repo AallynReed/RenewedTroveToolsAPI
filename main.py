@@ -1,5 +1,5 @@
 from dotenv import load_dotenv
-from quart import Quart, request, jsonify
+from quart import Quart, request, abort, make_response, redirect
 import os
 from motor.motor_asyncio import AsyncIOMotorClient
 import versions
@@ -13,7 +13,13 @@ from versions.v1.models.database.api import API
 import versions.v1.tasks as tasks
 from flask_discord import DiscordOAuth2Session
 from versions.v1.utils.logger import Logger
-
+from pathlib import Path
+from datetime import datetime
+from copy import deepcopy
+from aiohttp import ClientSession
+from utils import render_json, render
+from quart_cors import cors
+import re
 
 config = {
     "DEBUG": True,
@@ -21,7 +27,10 @@ config = {
     "MAX_CONTENT_LENGTH": 300 * 1024 * 1024,
 }
 
-app = Quart(__name__)
+app = Quart(__name__, template_folder="website", static_folder="website")
+app = cors(app, allow_origin=re.compile(r"https:\/\/(.*\.)?slynx\.xyz"))
+app.config['CORS_ORIGINS'] = ['https://slynx.xyz', 'https://trove.slynx.xyz', 'https://kiwiapi.slynx.xyz']
+app.config['CORS_HEADERS'] = ['Content-Type']
 app.config.from_mapping(config)
 app.register_blueprint(versions.api_v1)
 
@@ -63,10 +72,102 @@ async def startup():
     tasks.get_versions.start()
     tasks.twitch_streams_fetch.start()
 
-
 # @app.before_request
 # async def before_request():
 #     print((request.headers)["Cf-Connecting-IP"])
+
+@app.route("/css/<path:path>")
+@app.route("/css/<path:path>", subdomain="trove")
+async def send_css(path):
+    return await app.send_static_file(f"css/{path}")
+
+@app.route("/js/<path:path>")
+@app.route("/js/<path:path>", subdomain="trove")
+async def send_js(path):
+    return await app.send_static_file(f"js/{path}")
+
+@app.route("/assets/<path:path>")
+@app.route("/assets/<path:path>", subdomain="trove")
+async def send_assets(path):
+    return await app.send_static_file(f"assets/{path}")
+
+@app.route("/")
+@app.route("/", subdomain="trove")
+async def home():
+    features = [
+        {"name": "Timers", "description": "Check daily, weekly, luxion, corruxion and other timers with ease at a glance.", "app": False, "icon": "timer"},
+        {"name": "Live Stats", "description": "Be sure that in-game stats will be updated as soon as possible.", "app": False, "icon": "query_stats"},
+        {"name": "Events", "description": "Be up to date with the new events on Trove and Trovesaurus.", "app": False, "icon": "event"},
+        {"name": "Twitch Tracker", "description": "Find new Trove streamers to watch and engage with.", "app": False, "icon": "tv"},
+        {"name": "Mod Profiles (Soon)", "description": "Profile presets for mods.", "app": True, "icon": "timer"},
+        {"name": "Mod Manager", "description": "Manage your mods with ease and update them at will.", "app": True, "icon": "extension"},
+        {"name": "Modder Tools", "description": "Create your own mods and compile them with ease.", "app": True, "icon": "construction"},
+        {"name": "Mod Projects", "description": "Keep your projects clean and organized with mod projects.", "app": True, "icon": "account_tree"},
+        {"name": "Game Files Extractor", "description": "Extract game files efficiently and quickly compared to the game client.", "app": True, "icon": "unarchive"},
+        {"name": "Star Chart", "description": "Test your star chart builds quickly and easily before spending resources.", "app": False, "icon": "stars"},
+        {"name": "Gem Builds", "description": "Max out your class with customizable gem builds with a powerful calculator.", "app": False, "icon": "timer"},
+        {"name": "Gear Builds", "description": "Make sure to optimize your class's equipments to your playstyle.", "app": False, "icon": "shield"},
+        {"name": "Gem Simulator", "description": "Learn how gems work and test them with this 1:1 gem simulator.", "app": False, "icon": "science"},
+        {"name": "Gem Set Calculator", "description": "Check the maxed ouot stats of your gems before even getting them.", "app": False, "icon": "diamond"},
+        {"name": "Mastery", "description": "See what stats await you at each mastery level.", "app": False, "icon": "menu_book"},
+        {"name": "Magic Find", "description": "Calculate your magic find with this calculator.", "app": False, "icon": "menu_book"}
+    ]
+    features = [features[i:i + 4] for i in range(0, len(features), 4)]
+    previews = [
+        "assets/previews/" + path.name
+        for path in Path("website/assets/previews").rglob("*") if path.is_file()
+    ]
+    previews.sort()
+    previews = list(enumerate(previews))
+    return await render("index.html", features=features, previews=previews)
+
+@app.route("/privacy")
+@app.route("/privacy", subdomain="trove")
+async def privacy():
+    return await render("privacy.html")
+
+@app.route("/terms")
+@app.route("/terms", subdomain="trove")
+async def terms():
+    return await render("terms.html")
+
+@app.route("/donate")
+@app.route("/donate", subdomain="trove")
+async def donate():
+    return await render("donate.html")
+
+@app.route("/change_log")
+@app.route("/change_log", subdomain="trove")
+async def change_log():
+    if not hasattr(app, "github_change_log"):
+        return abort(503, "Change log is not available.")
+    change_log = deepcopy(app.github_change_log)
+    change_log = [
+        {"version": version, "change": change}
+        for version, change in sorted(change_log.items(), key=lambda x: ".".join([f"{int(i):02d}" for i in x[0].split(".")]), reverse=True)
+    ]
+    for change in change_log:
+        date = datetime.fromisoformat(change["change"]["time"])
+        change["change"]["time"] = date.strftime("%d %B %Y")
+        for c in change["change"]["commits"]:
+            d = datetime.fromisoformat(c["date"])
+            c["date"] = d.strftime("%d %B %Y")
+    return await render("change_log.html", change_log=change_log)
+
+@app.route("/documentation")
+@app.route("/documentation", subdomain="trove")
+async def documentation():
+    return await render("documentation.html")
+
+
+@app.route("/.well-known/discord")
+async def slynx_discord_link():
+    return "dh=9195508d1685bf0923bd91c249bd71d1e49e36f9"
+
+
+@app.route("/.well-known/discord", subdomain="kiwiapi")
+async def kiwi_discord_link():
+    return "dh=d91a52123e2ab752b119de1d878ea834ea80dc05"
 
 
 @app.route("/", subdomain="kiwiapi")
@@ -81,7 +182,7 @@ async def bad_request(e):
         "type": "error",
     }
     response["message"] = e.description
-    return jsonify(response), 400
+    return render_json(response), 400
 
 
 @app.errorhandler(401)
@@ -91,7 +192,7 @@ async def unauthorized(e):
         "type": "error",
     }
     response["message"] = e.description
-    return jsonify(response), 401
+    return render_json(response), 401
 
 
 @app.errorhandler(403)
@@ -101,7 +202,7 @@ async def forbidden(e):
         "type": "error",
     }
     response["message"] = e.description
-    return jsonify(response), 403
+    return render_json(response), 403
 
 
 @app.errorhandler(404)
@@ -111,4 +212,4 @@ async def not_found(e):
         "type": "error",
     }
     response["message"] = e.description
-    return jsonify(response), 404
+    return render_json(response), 404

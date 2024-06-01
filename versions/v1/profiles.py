@@ -7,7 +7,6 @@ from quart import (
     session,
     request,
     redirect,
-    jsonify,
     abort,
     render_template,
     send_file,
@@ -20,6 +19,7 @@ from pathlib import Path
 from base64 import b64decode
 from io import BytesIO
 from copy import deepcopy
+from utils import render_json
 
 
 mods_path = Path("mods")
@@ -50,7 +50,7 @@ async def cloud_mods():
             if entry.hash == hash:
                 results[hash] = entry.dict()
                 break
-    return jsonify(results)
+    return render_json(results)
 
 
 @profile_bp.route("/upload_cloud_mods", methods=["POST"])
@@ -121,7 +121,7 @@ async def list_profiles():
         profile["clones"] = await ModProfile.find(
             {"clone_of": profile["profile_id"]}
         ).count()
-    return jsonify(result)
+    return render_json(result)
 
 
 @profile_bp.route("/get/<profile_id>", methods=["GET"])
@@ -137,7 +137,7 @@ async def get_profile(profile_id):
     )
     if profile is None:
         return "Not Found", 404
-    return jsonify(profile.dict())
+    return render_json(profile.dict())
 
 
 @profile_bp.route("/update/<profile_id>", methods=["PUT"])
@@ -245,7 +245,7 @@ async def clone_profile(profile_id):
         clone_of=profile.profile_id,
     )
     await clone.save()
-    return jsonify(clone.dict())
+    return render_json(clone.dict())
 
 
 @profile_bp.route("/share/<profile_id>", methods=["POST"])

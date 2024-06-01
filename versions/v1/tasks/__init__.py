@@ -115,7 +115,7 @@ async def before_update_mods_list():
 @tasks.loop(minutes=10)
 async def update_change_log():
     versions = []
-    version_count = 5
+    version_count = 10
     async with ClientSession() as session:
         async with session.get(
             "https://api.github.com/repos/Sly0511/RenewedTroveTools/releases",

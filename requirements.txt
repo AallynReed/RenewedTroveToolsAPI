@@ -1,5 +1,6 @@
 beanie
 quart
+quart-cors
 python-dotenv
 aiohttp
 pydantic[email]

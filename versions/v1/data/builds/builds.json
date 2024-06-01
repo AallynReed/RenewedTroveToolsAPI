@@ -2,7 +2,7 @@
     "Gunslinger": {
         "light": {
             "enabled": true,
-            "tier": 2,
+            "tier": 3,
             "hat": [
                 "Maximum Health",
                 "Light",
@@ -126,7 +126,7 @@
     "Ice Sage": {
         "light": {
             "enabled": true,
-            "tier": 2,
+            "tier": 3,
             "hat": [
                 "Maximum Health",
                 "Light",
@@ -374,7 +374,7 @@
     "Chloromancer": {
         "light": {
             "enabled": true,
-            "tier": 1,
+            "tier": 2,
             "hat": [
                 "Maximum Health",
                 "Light",
@@ -498,7 +498,7 @@
     "Fae Trickster": {
         "light": {
             "enabled": true,
-            "tier": 3,
+            "tier": 4,
             "hat": [
                 "Maximum Health",
                 "Light",
@@ -746,7 +746,7 @@
     "Dracolyte": {
         "light": {
             "enabled": true,
-            "tier": 2,
+            "tier": 3,
             "hat": [
                 "Maximum Health",
                 "Light",
@@ -870,7 +870,7 @@
     "Tomb Raiser": {
         "light": {
             "enabled": true,
-            "tier": 2,
+            "tier": 3,
             "hat": [
                 "Maximum Health",
                 "Light",
@@ -994,7 +994,7 @@
     "Bard": {
         "light": {
             "enabled": true,
-            "tier": 2,
+            "tier": 3,
             "hat": [
                 "Maximum Health",
                 "Light",
@@ -1119,7 +1119,7 @@
     "Revenant": {
         "light": {
             "enabled": true,
-            "tier": 2,
+            "tier": 3,
             "hat": [
                 "Maximum Health",
                 "Light",
@@ -1243,7 +1243,7 @@
     "Candy Barbarian": {
         "light": {
             "enabled": true,
-            "tier": 5,
+            "tier": 4,
             "hat": [
                 "Maximum Health",
                 "Light",
@@ -1795,7 +1795,7 @@
     "Knight": {
         "light": {
             "enabled": true,
-            "tier": 3,
+            "tier": 4,
             "hat": [
                 "Maximum Health",
                 "Light",
@@ -2043,7 +2043,7 @@
     "Lunar Lancer": {
         "light": {
             "enabled": true,
-            "tier": 2,
+            "tier": 3,
             "hat": [
                 "Maximum Health",
                 "Light",

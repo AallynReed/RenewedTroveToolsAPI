@@ -17,3 +17,4 @@ class Mastery(BaseModel):
 class API(Document):
     id: str = Indexed(str, unique=True)
     mastery: Mastery
+    downloads: int = 0

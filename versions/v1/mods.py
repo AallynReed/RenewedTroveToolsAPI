@@ -1,4 +1,4 @@
-from quart import Blueprint, request, abort, jsonify, current_app, send_file, Response
+from quart import Blueprint, request, abort, current_app, send_file, Response
 from .models.database.mod import ModEntry, ZMod, TMod, SearchMod
 from .utils.cache import SortOrder
 from pathlib import Path
@@ -7,6 +7,7 @@ import base64
 import traceback
 import urllib.parse
 import re
+from utils import render_json
 
 mods_path = Path("mods")
 mods_path.mkdir(parents=True, exist_ok=True)
@@ -33,7 +34,7 @@ async def get_mods():
         fields.append((key, SortOrder(value)))
     limit = int(params.get("limit", 0)) or None
     offset = int(params.get("offset", 0)) or None
-    return jsonify(
+    return render_json(
         current_app.mods_list.get_sorted_fields(*fields, limit=limit, offset=offset)
     )
 
@@ -42,28 +43,28 @@ async def get_mods():
 async def get_mods_count():
     if not hasattr(current_app, "mods_list"):
         return abort(503, "Mods list is not populated.")
-    return jsonify({"count": len(current_app.mods_list)})
+    return render_json({"count": len(current_app.mods_list)})
 
 
 @mods.route("/tags", methods=["GET"])
 async def get_tags():
     if not hasattr(current_app, "mods_list"):
         return abort(503, "Mods list is not populated.")
-    return jsonify(current_app.mods_list.get_mod_tags())
+    return render_json(current_app.mods_list.get_mod_tags())
 
 
 @mods.route("/subtags", methods=["GET"])
 async def get_subtags():
     if not hasattr(current_app, "mods_list"):
         return abort(503, "Mods list is not populated.")
-    return jsonify(current_app.mods_list.get_mod_subtags())
+    return render_json(current_app.mods_list.get_mod_subtags())
 
 
 @mods.route("/hash/<mod_hash>", methods=["GET"])
 async def get_mod_by_hash(mod_hash):
     if not hasattr(current_app, "mods_list"):
         return abort(503, "Mods list is not populated.")
-    return jsonify(current_app.mods_list.get_mod_by_hash(mod_hash))
+    return render_json(current_app.mods_list.get_mod_by_hash(mod_hash))
 
 
 @mods.route("/hashes", methods=["GET"])
@@ -78,7 +79,7 @@ async def get_mods_by_hashes():
         if data is None:
             return "No hashes provided", 400
         hashes = data.get("hashes")
-    return jsonify(current_app.mods_list.get_all_hashed_mods(hashes))
+    return render_json(current_app.mods_list.get_all_hashed_mods(hashes))
 
 
 @mods.route("/search", methods=["GET"])
@@ -138,7 +139,7 @@ async def search_mods():
             await mod.delete()
             continue
         found.append(found_mod.model_dump(by_alias=True))
-    response = jsonify(found)
+    response = render_json(found)
     response.headers["count"] = mods_count
     return response
 
@@ -148,7 +149,7 @@ async def get_mod_types():
     if not hasattr(current_app, "mods_list"):
         return abort(503, "Mods list is not populated.")
     result = await SearchMod.distinct("type")
-    return jsonify([t for t in result if t])
+    return render_json([t for t in result if t])
 
 
 @mods.route("/sub_types/<type>", methods=["GET"])
@@ -157,8 +158,8 @@ async def get_mod_sub_types(type):
         return abort(503, "Mods list is not populated.")
     if type in ["Costumes"]:
         result = await SearchMod.distinct("sub_type")
-        return jsonify([st for st in result if st])
-    return jsonify({})
+        return render_json([st for st in result if st])
+    return render_json({})
 
 
 @mods.route("/tmod_converter/<hash>", methods=["GET"])

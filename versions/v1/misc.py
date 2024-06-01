@@ -1,4 +1,4 @@
-from quart import Blueprint, request, abort, jsonify, current_app, Response, send_file
+from quart import Blueprint, request, abort, current_app, Response, send_file, redirect
 from aiohttp import ClientSession
 from os import getenv
 import matplotlib.pyplot as plt
@@ -10,6 +10,8 @@ from datetime import datetime, UTC
 import pycountry
 from pathlib import Path
 from base64 import b64encode
+from utils import render_json
+from versions.v1.models.database.api import API
 
 misc = Blueprint("misc", __name__, url_prefix="/misc")
 locales_folder = Path("versions/v1/locales")
@@ -34,6 +36,25 @@ def format_number(number):
     else:
         return str(number)
 
+@misc.route("/support")
+async def support():
+    return redirect("https://discord.gg/WTq6YxYzut")
+
+@misc.route("/github")
+async def github():
+    return redirect("https://github.com/Sly0511/RenewedTroveTools")
+
+@misc.route("/paypal")
+async def paypal():
+    return redirect("https://www.paypal.com/paypalme/waterin")
+
+@misc.route("kofi")
+async def kofi():
+    return redirect("https://ko-fi.com/slydev")
+
+@misc.route("bmc")
+async def bmc():
+    return redirect("https://www.buymeacoffee.com/sly1301")
 
 @misc.route("/feedback", methods=["POST"])
 async def feedback():
@@ -55,14 +76,14 @@ async def feedback():
 async def change_log():
     if not hasattr(current_app, "github_change_log"):
         return abort(503, "Change log is not available.")
-    return jsonify(current_app.github_change_log)
+    return render_json(current_app.github_change_log)
 
 
 @misc.route("/twitch_streams")
 async def streams():
     if not hasattr(current_app, "twitch_streams"):
         return abort(503, "Twitch streams are not available.")
-    return jsonify(current_app.twitch_streams)
+    return render_json(current_app.twitch_streams)
 
 
 @misc.route("/opn_chart")
@@ -209,7 +230,7 @@ async def latest_version():
         for asset in version.get("assets"):
             asset_name = asset.get("name")
             if "debug" not in asset_name and asset_name.endswith(".msi"):
-                return jsonify({"version": version.get("tag_name")})
+                return render_json({"version": version.get("tag_name")})
     return abort(404)
 
 
@@ -221,7 +242,7 @@ async def latest_release():
         for asset in version.get("assets"):
             asset_name = asset.get("name")
             if "debug" not in asset_name and asset_name.endswith(".msi"):
-                return jsonify(version)
+                return render_json(version)
     return abort(404)
 
 
@@ -241,15 +262,39 @@ async def latest_release_download():
 async def latest_release_download_redirect():
     if not hasattr(current_app, "app_versions"):
         return abort(503, "Latest release is not available.")
+    headers = request.headers
+    country = headers.get("Cf-Ipcountry", None)
+    if country:
+        country = pycountry.countries.get(alpha_2=country)
+        country = country.name
+    else:
+        country = "Unknown"
     for version in current_app.app_versions:
         for asset in version.get("assets"):
             asset_name = asset.get("name")
             if "debug" not in asset_name and asset_name.endswith(".msi"):
+                api = await API.find_one({"_id": "api"})
+                api.downloads += 1
+                await api.save()
+                await send_embed(
+                    os.getenv("APP_WEBHOOK"),
+                    {
+                        "title": "APP Downloaded",
+                        "color": 0x00BB00,
+                        "fields": [
+                            {"name": "Geolocation", "value": country},
+                        ],
+                    },
+                )
                 return Response(
                     status=302, headers={"Location": asset.get("browser_download_url")}
                 )
     return abort(404, "No download link found.")
 
+@misc.route("/downloads_count")
+async def downloads_count():
+    api = await API.find_one({"_id": "api"})
+    return render_json({"downloads": api.downloads})
 
 @misc.route("/latest_release/debug")
 async def latest_release_debug():
@@ -279,7 +324,7 @@ async def latest_release_debug_redirect():
 
 # @misc.route("sage_dump")
 # async def sage_dump():
-#     return jsonify(
+#     return render_json(
 #         await current_app.database_client["trove"]["tags"]
 #         .find({})
 #         .to_list(length=99999)
@@ -307,7 +352,7 @@ async def get_locales():
             x.write_text(fix_file)
             file_name = str(x.relative_to(locales_folder).as_posix())
             files[file_name] = b64encode(x.read_bytes()).decode("utf-8")
-    return jsonify(files)
+    return render_json(files)
 
 
 @misc.route("/assets/<path:subpath>", methods=["GET"])

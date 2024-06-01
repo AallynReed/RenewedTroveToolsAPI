@@ -1,10 +1,11 @@
-from quart import Blueprint, request, abort, jsonify, current_app, send_file, Response
+from quart import Blueprint, request, abort, current_app, send_file, Response
 from PIL import Image
 from enum import Enum
 from aiohttp import ClientSession
 from io import BytesIO
 from pathlib import Path
 from hashlib import md5
+from utils import render_json
 
 images_cache = Path("image_cache")
 images_cache.mkdir(parents=True, exist_ok=True)
