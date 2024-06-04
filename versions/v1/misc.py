@@ -42,7 +42,7 @@ async def support():
 
 @misc.route("/github")
 async def github():
-    return redirect("https://github.com/Sly0511/RenewedTroveTools")
+    return redirect("https://github.com/AallynDev/RenewedTroveTools")
 
 @misc.route("/paypal")
 async def paypal():
@@ -50,11 +50,11 @@ async def paypal():
 
 @misc.route("kofi")
 async def kofi():
-    return redirect("https://ko-fi.com/slydev")
+    return redirect("https://ko-fi.com/aallyn")
 
 @misc.route("bmc")
 async def bmc():
-    return redirect("https://www.buymeacoffee.com/sly1301")
+    return redirect("https://www.buymeacoffee.com/aallyn")
 
 @misc.route("/feedback", methods=["POST"])
 async def feedback():
@@ -191,13 +191,13 @@ async def handshake():
         country = "Unknown"
     update_version = None
     for version in current_app.app_versions:
-        if update_version is not None:
-            break
         for asset in version.get("assets"):
             asset_name = asset.get("name")
             if "debug" not in asset_name and asset_name.endswith(".msi"):
                 update_version = version.get("tag_name")
                 break
+        if update_version is not None:
+            break
     await send_embed(
         os.getenv("APP_WEBHOOK"),
         {

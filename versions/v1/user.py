@@ -169,6 +169,13 @@ async def get_user():
                 user = await User.find_one(User.discord_id == int(data["user_id"]))
                 if user:
                     user.internal_token = user_token
+                    user.name = data["username"]
+                    user.username = data["username"]
+                    avatar_hash = (
+                        data["custom_profile_image"]
+                        or data["icon"]
+                        or None
+                    )
                     await user.save()
                 else:
                     user = User(
@@ -199,6 +206,23 @@ async def get_user():
     data["avatar_url"] = user.avatar_url
     if user.discord_id < 100_000_000:
         icon = "<:trovesaurus:1232031134142042112>"
+        async with ClientSession() as session:
+            async with session.get(
+                f"https://trovesaurus.com/client/useridfromkey.php?key={user_token}",
+                allow_redirects=True,
+            ) as response:
+                if response.status != 200:
+                    return abort(404, "User not found.")
+                tdata = await response.json()
+                user.internal_token = user_token
+                user.name = tdata["username"]
+                user.username = tdata["username"]
+                avatar_hash = (
+                    tdata["custom_profile_image"]
+                    or tdata["icon"]
+                    or None
+                )
+                await user.save()
     else:
         icon = "<:discord:1232031240329232444>"
     await send_embed(

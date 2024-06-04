@@ -26,7 +26,7 @@ function getLatestVersionData(theUrl) {
 }
 
 function getLatestVersion() {
-    return getLatestVersionData("https://kiwiapi.slynx.xyz/v1/misc/latest_release").then(
+    return getLatestVersionData("https://kiwiapi.aallyn.xyz/v1/misc/latest_release").then(
         data => {
             return data;
         }
@@ -34,7 +34,7 @@ function getLatestVersion() {
 }
 
 function getDownloadCount() {
-    return getLatestVersionData("https://kiwiapi.slynx.xyz/v1/misc/downloads_count").then(
+    return getLatestVersionData("https://kiwiapi.aallyn.xyz/v1/misc/downloads_count").then(
         data => {
             return data;
         }
@@ -42,7 +42,7 @@ function getDownloadCount() {
 }
 
 function getLatestDownloadRelease() {
-    return getLatestVersionData("https://kiwiapi.slynx.xyz/v1/misc/latest_release/download").then(
+    return getLatestVersionData("https://kiwiapi.aallyn.xyz/v1/misc/latest_release/download").then(
         data => {
             return data;
         }
@@ -55,8 +55,11 @@ function getLatestDownloadRelease() {
 function setVersionHtml() {
     var version_tags = document.querySelectorAll("span.set-version");
     getLatestVersion().then(version => {
-        for (index = 0; index < version_tags.length; index++) {  
-            version_tags[index].innerHTML = version_tags[index].innerHTML + " " + `<a href="${version.html_url}" target="_blank">${version.tag_name}</a>`; 
+        for (index = 0; index < version_tags.length; index++) {
+            const dateObject = new Date(version.created_at);
+            const options = { day: '2-digit', month: 'long', year: 'numeric' };
+            const formattedDate = dateObject.toLocaleDateString('en-GB', options);
+            version_tags[index].innerHTML = version_tags[index].innerHTML + " " + `<a href="${version.html_url}" target="_blank">${version.tag_name}</a><code style="font-size: 14px"> (${formattedDate})</code>`; 
         }
     });
 }

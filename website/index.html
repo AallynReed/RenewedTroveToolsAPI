@@ -1,49 +1,19 @@
 <!DOCTYPE html>
 <html lang="en">
     <head>
-        <meta charset="utf-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
-        <meta name="description" content="A modern Flutter-based, python application with many tools to make a Trovian's life easier" />
-        <meta name="author" content="Aallyn" />
         <title>Renewed Trove Tools</title>
         <meta property="og:title" content="Renewed Trove Tools">
-        <meta property="og:site_name" content="Renewed Trove Tools">
-        <meta property="og:url" content="https://trove.slynx.xyz">
-        <meta property="og:description" content="A modern Flutter-based, python application with many tools to make a Trovian's life easier">
-        <meta property="og:type" content=website>
-        <meta property="og:image" content="">
-        <link rel="icon" type="image/x-icon" href="https://kiwiapi.slynx.xyz/v1/misc/assets/favicon.ico" />
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-        <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@100;200;300;400;500;600;700;800;900&amp;display=swap" rel="stylesheet" />
-        <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css" rel="stylesheet" />
-        <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-        <link href="css/styles.css" rel="stylesheet" />
-        <link href="assets/fonts/tisa.css" rel="stylesheet">
+        {% include 'head.html' %}
     </head>
     <body class="d-flex flex-column h-100">
         <main class="flex-shrink-0">
-            <nav class="navbar navbar-expand-lg navbar-light bg-dark py-3">
-                <div class="container px-5">
-                    <p style="margin:0"><span class="fw-bolder text-primary"><a class="navbar-brand" style="margin-right:5px" href="/">Renewed Trove Tools</a><a class="navbar-brand fw-lighter" style="font-size: 11px;" href="https://discordapp.com/users/1155548668108218438">by Aallyn</a></span></span></p>
-                    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
-                    <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                        <ul class="navbar-nav ms-auto mb-2 mb-lg-0 small fw-bolder">
-                            <li class="nav-item"><a class="nav-link text-primary" href="/">Home</a></li>
-                            <li class="nav-item"><a class="nav-link text-primary" href="https://kiwiapi.slynx.xyz/v1/misc/github" target="_blank">Github</a></li>
-                            <li class="nav-item"><a class="nav-link text-primary" href="change_log">Change Log</a></li>
-                            <li class="nav-item"><a class="nav-link text-primary" href="donate">Donate</a></li>
-                            <li class="nav-item"><a class="nav-link text-primary" href="https://kiwiapi.slynx.xyz/v1/misc/support" target="_blank">Support</a></li>
-                        </ul>
-                    </div>
-                </div>
-            </nav>
+            {% include 'header.html' %}
             <header class="py-3">
                 <div class="container px-5 pb-5">
                     <div class="row gx-5 align-items-center">
                         <div class="col-xxl-3">
                             <div class="d-flex justify-content-center mt-5 mt-xxl-0">
-                                <img class="profile-img" src="https://kiwiapi.slynx.xyz/v1/misc/assets/favicon.png" alt="..." />
+                                <img class="profile-img" src="https://kiwiapi.aallyn.xyz/v1/misc/assets/favicon.png" alt="..." />
                                 <div class="dots-3">
                                 </div>
                             </div>
@@ -55,9 +25,9 @@
                                 <h3 class="fw-bolder"><span class="text-gradient d-inline set-version">Version</span></h3>
                                 <p class="downloads-count text-primary">Downloads: </p>
                                 <div class="d-grid gap-3 d-sm-flex justify-content-sm-center justify-content-xxl-start mb-3">
-                                    <a class="btn btn-outline-primary btn-lg px-5 py-3 fs-6 fw-bolder set-download-release" href="https://kiwiapi.slynx.xyz/v1/misc/latest_release/download/redirect">Windows Installer (x64)</a>
-                                    <a class="btn btn-outline-success btn-lg px-5 py-3 fs-6 fw-bolder" href="https://trovetools.slynx.xyz/" target="_blank">Web version</a>
-                                    <a class="btn btn-outline-danger btn-lg px-5 py-3 fs-6 fw-bolder" href="https://kiwiapi.slynx.xyz/v1/misc/github" target="_blank">Source code</a>
+                                    <a class="btn btn-outline-primary btn-lg px-5 py-3 fs-6 fw-bolder set-download-release" href="https://kiwiapi.aallyn.xyz/v1/misc/latest_release/download/redirect">Windows Installer (x64)</a>
+                                    <a class="btn btn-outline-success btn-lg px-5 py-3 fs-6 fw-bolder" href="https://trovetools.aallyn.xyz/" target="_blank">Web version (Limited)</a>
+                                    <a class="btn btn-outline-danger btn-lg px-5 py-3 fs-6 fw-bolder" href="https://kiwiapi.aallyn.xyz/v1/misc/github" target="_blank">Source code</a>
                                 </div>
                             </div>
                         </div>
@@ -120,43 +90,8 @@
                       <span class="carousel-control-next-icon" aria-hidden="true"></span>
                       <span class="visually-hidden">Next</span>
                     </button>
-                  </div>
-            <section class="bg-dark">
-                <div class="container px-5">
-                    <div class="row gx-3 justify-content-center">
-                        <div class="col-xxl-8">
-                            <div class="text-center my-3">
-                                <p class="lead mb-3 text-muted">Renewed Trove Tools aims to make the experience with trove modding better and modern, as well as provide tools that ease calculations and other mechanics of the game.</p>
-                                <p class="text-muted">Thank you for using my application.</p>
-                                <div class="d-flex justify-content-center fs-2 gap-4">
-                                    <a class="text-gradient" href="https://kiwiapi.slynx.xyz/v1/misc/support" target="_blank"><i class="bi bi-discord"></i></a>
-                                    <a class="text-gradient" href="https://kiwiapi.slynx.xyz/v1/misc/paypal" target="_blank"><i class="bi bi-paypal"></i></a>
-                                    <a class="text-gradient" href="https://kiwiapi.slynx.xyz/v1/misc/github" target="_blank"><i class="bi bi-github"></i></a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
                 </div>
-            </section>
         </main>
-        <!-- Footer-->
-        <footer class="bg-dark py-5 mt-auto">
-            <div class="container px-5">
-                <div class="row align-items-center justify-content-between flex-column flex-sm-row">
-                    <div class="col-auto text-muted"><div class="small m-0">Copyright &copy; Aallyn 2023-Present</div></div>
-                    <div class="col-auto">
-                        <a class="small" href="privacy">Privacy</a>
-                        <span class="mx-1">&middot;</span>
-                        <a class="small" href="terms">Terms</a>
-                        <span class="mx-1">&middot;</span>
-                        <a class="small" href="donate">Donate</a>
-                        <span class="mx-1">&middot;</span>
-                        <a class="small" href="https://kiwiapi.slynx.xyz/v1/misc/support" target="_blank">Support</a>
-                    </div>
-                </div>
-            </div>
-        </footer>
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
-        <script src="js/scripts.js"></script>
+        {% include 'footer.html' %}
     </body>
 </html>

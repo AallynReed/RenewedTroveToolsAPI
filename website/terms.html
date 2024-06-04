@@ -1,44 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
     <head>
-        <meta charset="utf-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
-        <meta name="description" content="A modern Flutter-based, python application with many tools to make a Trovian's life easier" />
-        <meta name="author" content="Aallyn" />
         <title>Terms of Service</title>
         <meta property="og:title" content="Terms of Service">
-        <meta property="og:site_name" content="Renewed Trove Tools">
-        <meta property="og:url" content=https://trove.slynx.xyz>
-        <meta property="og:description" content="A modern Flutter-based, python application with many tools to make a Trovian's life easier">
-        <meta property="og:type" content=website>
-        <meta property="og:image" content="">
-        <link rel="icon" type="image/x-icon" href="https://kiwiapi.slynx.xyz/v1/misc/assets/favicon.ico" />
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-        <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@100;200;300;400;500;600;700;800;900&amp;display=swap" rel="stylesheet" />
-        <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css" rel="stylesheet" />
-        <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-        <link href="css/styles.css" rel="stylesheet" />
-        <link href="assets/fonts/tisa.css" rel="stylesheet">
+        {% include 'head.html' %}
     </head>
     <body class="d-flex flex-column h-100">
-        <main class="flex-shrink-0">
-            <nav class="navbar navbar-expand-lg navbar-light bg-dark py-3">
-                <div class="container px-5">
-                    <p style="margin:0"><span class="fw-bolder text-primary"><a class="navbar-brand" style="margin-right:5px" href="/">Renewed Trove Tools</a><a class="navbar-brand fw-lighter" style="font-size: 11px;" href="https://discordapp.com/users/1155548668108218438">by Aallyn</a></span></span></p>
-                    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
-                    <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                        <ul class="navbar-nav ms-auto mb-2 mb-lg-0 small fw-bolder">
-                            <li class="nav-item"><a class="nav-link text-primary" href="/">Home</a></li>
-                            <li class="nav-item"><a class="nav-link text-primary" href="https://kiwiapi.slynx.xyz/v1/misc/github" target="_blank">Github</a></li>
-                            <li class="nav-item"><a class="nav-link text-primary" href="change_log">Change Log</a></li>
-                            <li class="nav-item"><a class="nav-link text-primary" href="donate">Donate</a></li>
-                            <li class="nav-item"><a class="nav-link text-primary" href="https://kiwiapi.slynx.xyz/v1/misc/support" target="_blank">Support</a></li>
-                        </ul>
-                    </div>
-                </div>
-            </nav>
-        </main>
+        {% include 'header.html' %}
         <header>
             <div class="container px-5 pb-5 mt-xxl-5">
                 <div class="row gx-5 align-items-center">
@@ -127,30 +95,12 @@
                         </p>
                         <div class="mt-xxl-5">
                             <h5 class="text-gradient">Contact Us</h5>
-                            <p class="text-primary">If you have any questions or concerns about these Terms of Service, please contact us on our <i class="bi bi-discord"></i> <a class="link-success" href="https://kiwiapi.slynx.xyz/v1/misc/support" target="_blank">Discord Support Server</a>.</p>
+                            <p class="text-primary">If you have any questions or concerns about these Terms of Service, please contact us on our <i class="bi bi-discord"></i> <a class="link-success" href="https://kiwiapi.aallyn.xyz/v1/misc/support" target="_blank">Discord Support Server</a>.</p>
                         </div>    
                     </div>
                 </div>
             </div>
         </header>
-        <!-- Footer-->
-        <footer class="bg-dark py-5 mt-auto">
-            <div class="container px-5">
-                <div class="row align-items-center justify-content-between flex-column flex-sm-row">
-                    <div class="col-auto text-muted"><div class="small m-0">Copyright &copy; Aallyn 2023-Present</div></div>
-                    <div class="col-auto">
-                        <a class="small" href="privacy">Privacy</a>
-                        <span class="mx-1">&middot;</span>
-                        <a class="small" href="terms">Terms</a>
-                        <span class="mx-1">&middot;</span>
-                        <a class="small" href="donate">Donate</a>
-                        <span class="mx-1">&middot;</span>
-                        <a class="small" href="https://kiwiapi.slynx.xyz/v1/misc/support" target="_blank">Support</a>
-                    </div>
-                </div>
-            </div>
-        </footer>
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
-        <script src="js/scripts.js"></script>
+        {% include 'footer.html' %}
     </body>
 </html>

@@ -118,7 +118,7 @@ async def update_change_log():
     version_count = 10
     async with ClientSession() as session:
         async with session.get(
-            "https://api.github.com/repos/Sly0511/RenewedTroveTools/releases",
+            "https://api.github.com/repos/AallynDev/RenewedTroveTools/releases",
             headers={
                 "Authorization": "Bearer {}".format(os.getenv("GITHUB_TOKEN")),
             },
@@ -133,7 +133,7 @@ async def update_change_log():
             (
                 version,
                 published_at,
-                f"https://api.github.com/repos/Sly0511/RenewedTroveTools/compare/{versions[next][0]}...{version}",
+                f"https://api.github.com/repos/AallynDev/RenewedTroveTools/compare/{versions[next][0]}...{version}",
             )
         )
     async with ClientSession() as session:
@@ -171,12 +171,12 @@ async def before_update_change_log():
 async def get_versions():
     async with ClientSession() as session:
         async with session.get(
-            "https://api.github.com/repos/Sly0511/RenewedTroveTools/releases"
+            "https://api.github.com/repos/AallynDev/RenewedTroveTools/releases"
         ) as response:
             try:
                 current_app.app_versions = await response.json()
-            except:
-                current_app.app_versions = []
+            except Exception as e:
+                ...
 
 
 @get_versions.before_loop

@@ -366,7 +366,7 @@ async def download_profile(profile_id):
         mod_path = Path(f"mods/{hash}.{mod_info.format}")
         if not mod_path.exists():
             return (
-                'One of the mods wasn\'t found, please report this to "sly.dev." on discord',
+                'One of the mods wasn\'t found, please report this to "aallyn" on discord',
                 503,
             )
         if mod_info.format == "zip":
@@ -376,7 +376,7 @@ async def download_profile(profile_id):
             mod = TMod.read_bytes(mod_path, mod_path.read_bytes())
         mods.append(mod)
     pack = TPack()
-    pack.author = "sly.dev."
+    pack.author = "aallyn"
     pack.files.extend(mods)
     data = pack.compile()
     return await send_file(

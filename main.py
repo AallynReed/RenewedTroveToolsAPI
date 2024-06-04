@@ -23,15 +23,13 @@ import re
 
 config = {
     "DEBUG": True,
-    "SERVER_NAME": "slynx.xyz",
+    "SERVER_NAME": "aallyn.xyz",
     "MAX_CONTENT_LENGTH": 300 * 1024 * 1024,
 }
 
 app = Quart(__name__, template_folder="website", static_folder="website")
-app = cors(app, allow_origin=re.compile(r"https:\/\/(.*\.)?slynx\.xyz"))
-app.config['CORS_ORIGINS'] = ['https://slynx.xyz', 'https://trove.slynx.xyz', 'https://kiwiapi.slynx.xyz']
-app.config['CORS_HEADERS'] = ['Content-Type']
 app.config.from_mapping(config)
+app = cors(app, allow_origin=re.compile(r"https:\/\/(.*\.)?aallyn\.xyz"))
 app.register_blueprint(versions.api_v1)
 
 
@@ -152,6 +150,8 @@ async def change_log():
         for c in change["change"]["commits"]:
             d = datetime.fromisoformat(c["date"])
             c["date"] = d.strftime("%d %B %Y")
+            c["id"] = c["url"].split("/")[-1][:7]
+        change["change"]["commits"].reverse()
     return await render("change_log.html", change_log=change_log)
 
 @app.route("/documentation")
@@ -161,13 +161,13 @@ async def documentation():
 
 
 @app.route("/.well-known/discord")
-async def slynx_discord_link():
-    return "dh=9195508d1685bf0923bd91c249bd71d1e49e36f9"
+async def aallyn_discord_link():
+    return "dh=d9f4e6ed8eb40bacb2cb35f3444e9aca4a6bac05"
 
 
 @app.route("/.well-known/discord", subdomain="kiwiapi")
 async def kiwi_discord_link():
-    return "dh=d91a52123e2ab752b119de1d878ea834ea80dc05"
+    return "dh=c712e1d862b981c8af888cde0f547a7799d6ae82"
 
 
 @app.route("/", subdomain="kiwiapi")
