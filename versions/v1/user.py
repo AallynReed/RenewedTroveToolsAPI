@@ -171,11 +171,7 @@ async def get_user():
                     user.internal_token = user_token
                     user.name = data["username"]
                     user.username = data["username"]
-                    avatar_hash = (
-                        data["custom_profile_image"]
-                        or data["icon"]
-                        or None
-                    )
+                    avatar_hash = data["custom_profile_image"] or data["icon"] or None
                     await user.save()
                 else:
                     user = User(
@@ -217,11 +213,7 @@ async def get_user():
                 user.internal_token = user_token
                 user.name = tdata["username"]
                 user.username = tdata["username"]
-                avatar_hash = (
-                    tdata["custom_profile_image"]
-                    or tdata["icon"]
-                    or None
-                )
+                avatar_hash = tdata["custom_profile_image"] or tdata["icon"] or None
                 await user.save()
     else:
         icon = "<:discord:1232031240329232444>"

@@ -1,0 +1,81 @@
+<html lang="en">
+    <head>
+        <title>{{ lootbox.name }}</title>
+        <meta property="og:title" content="{{ lootbox.name }}">
+        <script src="https://trove.aallyn.xyz/js/lootboxes.js"></script>
+        
+        {% include 'head.html' %}
+        <style>
+            content * {
+                font-family: monospace;
+            }
+            .form-control{color:#b1b1b1;background-color:#222;border:1px solid #515151}.form-control:focus{color:#b1b1b1;background-color:#222;border-color:#9badbf;box-shadow:0 0 0 .25rem rgba(55,90,127,.25)}.form-control::-moz-placeholder{color:#5a5a5a}.form-control:-ms-input-placeholder{color:#5a5a5a}.form-control::placeholder{color:#5a5a5a}.form-control:disabled,.form-control[readonly]{background-color:#222}.form-control::-webkit-file-upload-button{color:#b1b1b1;background-color:#3b3b3b;border-color:inherit}.form-control::file-selector-button{color:#b1b1b1;background-color:#3b3b3b;border-color:inherit}.form-control:hover:not(:disabled):not([readonly])::-webkit-file-upload-button{background-color:#383838}.form-control:hover:not(:disabled):not([readonly])::file-selector-button{background-color:#383838}.form-control::-webkit-file-upload-button{color:#b1b1b1;background-color:#3b3b3b;border-color:inherit}.form-control:hover:not(:disabled):not([readonly])::-webkit-file-upload-button{background-color:#383838}
+            input, label {
+                display:block;
+            }
+        </style>    
+    </head>
+
+    <body>
+        <main>
+            {% include 'header.html' %}
+            <content>
+                <div class="container px-5 my-3">
+                    <div class="gx-1">
+                        {% for table in tables %}
+                            <h1 class="text-primary">{{ table.name }} <span class="badge">Opened {{ table.opened_str }}</span></h1>
+                            <table class="table table-dark table-striped table-bordered table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Item</th>
+                                        <th>Quantity</th>
+                                        <th>Rolls</th>
+                                        <th>Probability</th>
+                                        <th>1 per boxes</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for loot in table.loot %}
+                                        <tr class="current">
+                                            <td>{{ loot.name }}</td>
+                                            <td>{% if loot.quantity_min > 0 %}{{ loot.quantity_min }} - {% endif %}{{ loot.quantity_max }}</td>
+                                            <td>{{ loot.obtained_str }}</td>
+                                            <td>{{ loot.chance_str }}</td>
+                                            <td>{{ loot.alt_chance_str }} boxes</td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                            <!-- Left labelled text inputs for each loot, they are separated and in row -->
+                            <div class="card" style="padding: 10px">
+                                <div id="table-{{ table.name }}" class="row gx-1" total="{{ table.opened }}">
+                                    <h2 class="text-primary">Box Calculator</h2>
+                                    {% for loot in table.form_loot %}
+                                        <div class="col-2">
+                                            <input type="number" id="loot-input-{{ loot[0] }}" name="{{ loot[0] }}" class="form-control" chance="{{ loot[2] }}" value="0">
+                                            <label class="text-primary" for="loot-{{ loot[0] }}">{{ loot[0] }}</label>
+                                        </div>
+                                    {% endfor %}
+                                    <div class="col-2">
+                                        <button class="form-control" onclick="calculateBoxes('{{ table.name }}');">Calculate</button>
+                                        <label class="text-primary">&zwnj;</label>
+                                    </div>
+                                    <div class="col-2">
+                                        <button class="form-control" onclick="clearBoxes('{{ table.name }}');">Clear</button>
+                                        <label class="text-primary">&zwnj;</label>
+                                    </div>
+                                    <hr style="border-color: transparent">
+                                    <h3 class="text-primary">Boxes required: <span id="table-value-{{ table.name }}">0</span></h3>
+                                </div>
+                            </div>
+                            {% if not loop.last %}
+                                <hr style="border-color: #bbb;">
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                </div>
+            </content>
+        </main>
+        {% include 'footer.html' %}
+    </body>
+</html>

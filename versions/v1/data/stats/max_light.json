@@ -1,0 +1,97 @@
+[
+    {
+        "name": "Mystic 1 Weapon",
+        "value": 2340,
+        "perm": true
+    },
+    {
+        "name": "Mystic 1 Hat",
+        "value": 1170,
+        "perm": true
+    },
+    {
+        "name": "Mystic 1 Face",
+        "value": 1170,
+        "perm": true
+    },
+    {
+        "name": "Crystal Cosmic Empowered Gem",
+        "value": 1450,
+        "perm": true
+    },
+    {
+        "name": "Crystal Cosmic Lesser Gem 1",
+        "value": 1350,
+        "perm": true
+    },
+    {
+        "name": "Crystal Cosmic Lesser Gem 2",
+        "value": 1350,
+        "perm": true
+    },
+    {
+        "name": "Banner (Leviathan Permanent Torch U10/U11)",
+        "value": 900,
+        "perm": true
+    },
+    {
+        "name": "Crystal 4 Ring",
+        "value": 325,
+        "perm": true
+    },
+    {
+        "name": "Ally",
+        "value": 400,
+        "perm": true
+    },
+    {
+        "name": "Food (Premium Fish)",
+        "value": 400,
+        "perm": true
+    },
+    {
+        "name": "Subclass (Solarion) / Solarion",
+        "value": 140,
+        "perm": true
+    },
+    {
+        "name": "Star Chart",
+        "value": 250,
+        "perm": true
+    },
+    {
+        "name": "Geode Mastery (Level 100)",
+        "value": 1000,
+        "perm": true
+    },
+    {
+        "name": "Taeryn Veernok (Cosmic Primordial Dragon)",
+        "value": 415,
+        "perm": true
+    },
+    {
+        "name": "Charl (Chaos Dragon)",
+        "value": 50,
+        "perm": true
+    },
+    {
+        "name": "Zeuztian (Irradiant Dragon)",
+        "value": 25,
+        "perm": true
+    },
+    {
+        "name": "Rune (Works on top of food)",
+        "value": 50,
+        "perm": false
+    },
+    {
+        "name": "Berserker Battler (Empowered Cosmic Gem Ability)",
+        "value": 750,
+        "perm": false
+    },
+    {
+        "name": "Enlightened Buff",
+        "value": 0.01,
+        "perm": false
+    }
+]

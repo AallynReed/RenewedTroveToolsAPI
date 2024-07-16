@@ -8,6 +8,7 @@ import traceback
 import urllib.parse
 import re
 from utils import render_json
+from fuzzy_search import FuzzyPhraseSearcher
 
 mods_path = Path("mods")
 mods_path.mkdir(parents=True, exist_ok=True)
@@ -132,6 +133,81 @@ async def search_mods():
     except:
         traceback.print_exc()
         return "Failed to search mods", 200
+    found = []
+    for mod in mods:
+        found_mod = mods_list[str(mod.id)]
+        if found_mod is None:
+            await mod.delete()
+            continue
+        found.append(found_mod.model_dump(by_alias=True))
+    response = render_json(found)
+    response.headers["count"] = mods_count
+    return response
+
+
+@mods.route("/improved_search")
+async def improved_search():
+    if not hasattr(current_app, "mods_list"):
+        return abort(503, "Mods list is not populated.")
+    config = {
+        "char_match_threshold": 0.6,
+        "ngram_threshold": 0.5,
+        "levenshtein_threshold": 0.6,
+        "ignorecase": False,
+        "max_length_variance": 3,
+        "ngram_size": 2,
+        "skip_size": 2,
+    }
+    mods_list = current_app.mods_list
+    params = request.args
+    query = params.get("query", None)
+    if query is not None:
+        query = query.lower()
+    type = params.get("type", None)
+    sub_type = params.get("sub_type", None)
+    limit = int(params.get("limit", 999999))
+    offset = int(params.get("offset", 0))
+    mod_names = await SearchMod.distinct("name")
+    mod_authors = await SearchMod.distinct("authors")
+    name_searcher = FuzzyPhraseSearcher(config=config, phrase_model=mod_names)
+    author_searcher = FuzzyPhraseSearcher(config=config, phrase_model=mod_authors)
+    result_names = [i.phrase.phrase_string for i in name_searcher.find_matches(query)]
+    result_authors = [
+        i.phrase.phrase_string for i in author_searcher.find_matches(query)
+    ]
+    print(result_names)
+    print(result_authors)
+    config = {
+        "char_match_threshold": 0.6,
+        "ngram_threshold": 0.5,
+        "levenshtein_threshold": 0.6,
+        "ignorecase": False,
+        "max_length_variance": 3,
+        "ngram_size": 2,
+        "skip_size": 2,
+    }
+    mod_search = SearchMod.find(
+        {
+            "$and": [
+                *(
+                    [
+                        {
+                            "$or": [
+                                {"name": {"$in": result_names}},
+                                {"authors": {"$elemMatch": {"$in": result_authors}}},
+                            ]
+                        }
+                    ]
+                    if query is not None
+                    else []
+                ),
+                *([{"type": type}] if type is not None else []),
+                *([{"sub_type": sub_type}] if sub_type is not None else []),
+            ]
+        }
+    )
+    mods = await mod_search.skip(offset).limit(limit).to_list()
+    mods_count = await mod_search.count()
     found = []
     for mod in mods:
         found_mod = mods_list[str(mod.id)]

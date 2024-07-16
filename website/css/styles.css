@@ -4173,12 +4173,6 @@ textarea.form-control-lg {
   background-clip: border-box;
   border: var(--bs-card-border-width) solid var(--bs-card-border-color);
   border-radius: var(--bs-card-border-radius);
-  transition: 0.2s ease-in-out;
-}
-
-.card:hover {
-  transform: scale(1.1);
-  transition: 0.2s ease-in-out;
 }
 
 .card > hr {

@@ -13,10 +13,10 @@
                     <div class="col-lg-8 col-md-10 col-12">
                         <h2 class="display-5 fw-bolder mt-xxl-3"><span class="text-gradient d-inline">Change Log</span></h2>
                         {% for changes in change_log %}
-                            <h5 class="mt-4 text-primary"> <span class="p-2 bg-dark shadow rounded text-primary"> <a class="link-success" href="https://github.com/Aallyn0511/RenewedTroveTools/releases/tag/{{ changes.version }}" target="_blank">Version {{ changes.version }}</a></span> - {{ changes.change.time }}</h5>
+                            <h5 class="mt-4 text-primary"> <span class="p-2 bg-dark shadow rounded text-primary"> <a class="link-success" href="https://github.com/AallynReed/RenewedTroveTools/releases/tag/{{ changes.version }}" target="_blank">Version {{ changes.version }}</a></span> - {{ changes.change.time }}</h5>
                             <ul class="list-unstyled mt-3">
                                 {% for change in changes.change.commits %}
-                                    <li class="text-muted ml-3 text-primary"><i class="mdi mdi-circle-medium mr-2"></i><a href="{{ change.url }}" target="_blank"><code>{{ change.id }}</code></a> - <i><code>{{ change.author }}</code> - <code>{{ change.date }}</code> - {{ change.message }}<span></span></li>
+                                    <li class="text-muted ml-3 text-primary"><i class="mdi mdi-circle-medium mr-2"></i><a href="{{ change.url }}" target="_blank"><code>{{ change.id }}</code></a> - {% if change.author == "Aallyn" %}<img src="https://avatars.githubusercontent.com/u/47339373" width="20" style="border-radius:15px">{% endif %} <i><code>{{ change.author }}</code> - <code>{{ change.date }}</code> - {{ change.message }}<span></span></li>
                                 {% endfor %}
                             </ul>
                         {% endfor %}

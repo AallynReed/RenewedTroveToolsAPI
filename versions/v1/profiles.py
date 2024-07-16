@@ -102,6 +102,7 @@ async def list_profiles():
         {"owner_id": user.discord_id, "deleted": False}, fetch_links=True
     ).to_list()
     for profile in profiles:
+        mods = [m for m in profile.mods]
         hashes = [mod.hash for mod in profile.mods]
         trovesaurus_mods = {}
         for hash, data in current_app.mods_list.get_all_hashed_mods(hashes).items():
@@ -115,7 +116,12 @@ async def list_profiles():
                 authors=[ModAuthor(**a) for a in data["authors"]],
                 description=data["description"],
             )
-        profile.mods = [trovesaurus_mods.get(mod.hash, mod) for mod in profile.mods]
+        for mod in trovesaurus_mods.values():
+            for m in mods:
+                if m.hash == mod.hash:
+                    profile.mods.remove(m)
+                    break
+            profile.mods.append(mod)
     result = [profile.dict() for profile in profiles]
     for profile in result:
         profile["clones"] = await ModProfile.find(

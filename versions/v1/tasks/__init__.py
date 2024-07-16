@@ -13,6 +13,9 @@ import time
 from beanie import BulkWriter
 from hashlib import md5
 from ..utils.logger import l
+from datetime import datetime, UTC, timedelta
+from json import loads, dumps
+from ..models.database.api import API
 
 
 @tasks.loop(minutes=5)
@@ -118,7 +121,7 @@ async def update_change_log():
     version_count = 10
     async with ClientSession() as session:
         async with session.get(
-            "https://api.github.com/repos/AallynDev/RenewedTroveTools/releases",
+            "https://api.github.com/repos/AallynReed/RenewedTroveTools/releases",
             headers={
                 "Authorization": "Bearer {}".format(os.getenv("GITHUB_TOKEN")),
             },
@@ -133,7 +136,7 @@ async def update_change_log():
             (
                 version,
                 published_at,
-                f"https://api.github.com/repos/AallynDev/RenewedTroveTools/compare/{versions[next][0]}...{version}",
+                f"https://api.github.com/repos/AallynReed/RenewedTroveTools/compare/{versions[next][0]}...{version}",
             )
         )
     async with ClientSession() as session:
@@ -167,16 +170,27 @@ async def before_update_change_log():
     print("Change log update task starting.")
 
 
-@tasks.loop(minutes=5)
+@tasks.loop(minutes=10)
 async def get_versions():
+    current_app.app_versions = []
     async with ClientSession() as session:
-        async with session.get(
-            "https://api.github.com/repos/AallynDev/RenewedTroveTools/releases"
-        ) as response:
-            try:
-                current_app.app_versions = await response.json()
-            except Exception as e:
-                ...
+        i = 1
+        while True:
+            async with session.get(
+                "https://api.github.com/repos/AallynReed/RenewedTroveTools/releases?per_page=100&page={}".format(
+                    i
+                ),
+                headers={
+                    "Authorization": "Bearer {}".format(os.getenv("GITHUB_TOKEN")),
+                },
+            ) as response:
+                if response.status != 200:
+                    break
+                data = await response.json()
+                current_app.app_versions.extend(data)
+                if len(data) < 100:
+                    break
+                i += 1
 
 
 @get_versions.before_loop
@@ -214,3 +228,84 @@ async def before_twitch_streams_fetch():
                 os.getenv("TWITCH_CLIENT_ID"),
                 data["access_token"],
             )
+
+
+@tasks.loop(minutes=180)
+async def update_allies():
+    print("Allies data fetch task starting.")
+    async with ClientSession() as session:
+        async with session.get(
+            "https://trovesaurus.com/collection/Pets.json"
+        ) as result:
+            allies_list = await result.json()
+            now = int(datetime.now(UTC).timestamp())
+            i = 0
+            x = 0
+            y = 0
+            z = 0
+            old_allies = loads(open("versions/v1/data/allies.json").read())
+            allies = loads(open("versions/v1/data/allies.json").read())
+            found_allies = []
+            for ally_item in allies_list:
+                i += 1
+                ally = ally_item.split("/")[-1]
+                found_allies.append(ally)
+                stop = False
+                for data in old_allies.keys():
+                    if ally == data:
+                        if old_allies[data]["updated_at"] + 86400 * 7 > now:
+                            stop = True
+                            break
+                if stop:
+                    continue
+                ally_result = await session.get(
+                    "https://trovesaurus.com/collections/pet/" + ally + ".json"
+                )
+                ally_data = await ally_result.json()
+                if ally in allies.keys():
+                    old_ally = allies[ally]
+                    ally_data["updated_at"] = old_ally["updated_at"]
+                    if ally_data == old_ally:
+                        continue
+                    x += 1
+                else:
+                    z += 1
+                ally_data["updated_at"] = now
+                allies[ally] = ally_data
+            to_delete = []
+            for qualified_name in old_allies.keys():
+                if qualified_name not in found_allies:
+                    to_delete.append(qualified_name)
+                    y += 1
+            for dele in to_delete:
+                del allies[dele]
+            with open("versions/v1/data/allies.json", "w+") as f:
+                f.write(dumps(allies, indent=4, sort_keys=True))
+            print(
+                f"Done - Checked: **{i}** | Updated: **{x}** | Removed: **{y}** | Added: **{z}**"
+            )
+
+
+# @tasks.loop(seconds=1)
+# async def reset_biomes():
+#     try:
+#         print("Biomes reset task starting.")
+#         api = await API.find_one({"_id": "api"})
+#         print(api.biomes.current)
+#         history_length = len(api.biomes.history)
+#         now = datetime.now(UTC) - timedelta(hours=11)
+#         gap = 60 * 60 * 3
+#         begin_day = datetime(now.year, now.month, now.day, 0, 0, 0, 0, UTC)
+#         time_day = now - begin_day
+#         _, wait = divmod(time_day.total_seconds(), gap)
+#         await asyncio.sleep(gap - wait + randint(0, 15))
+#         api = await API.find_one({"_id": "api"})
+#         if len(api.biomes.history) == history_length:
+#             api.biomes.current.sort(key=lambda x: len(x[1]), reverse=True)
+#             api.biomes.previous = [b for b, _ in api.biomes.current[:3]]
+#             api.biomes.history.append(api.biomes.current)
+#             api.biomes.current = []
+#             await api.save()
+#     except Exception as e:
+#         print(traceback.format_exc())
+#         print("Biomes reset task failed.")

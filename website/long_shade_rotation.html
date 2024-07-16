@@ -1,0 +1,142 @@
+<html lang="en">
+    <head>
+        <title>Long Shade Rotation</title>
+        <meta property="og:title" content="Long Shade Rotation">
+        <meta http-equiv="refresh" content="120">
+        {% include 'head.html' %}
+        <style>
+            td, th {
+                color: #bbb;
+                border: 1px solid gray;
+                padding-left: 5px;
+                background: transparent;
+            }
+            th {
+                height: 50px;
+                text-align: center;
+                font-size: 24px;
+            }
+            tr.current {
+                height: 35px;
+                font-weight: bolder;
+                background-color: rgba(5, 94, 5, 0.479);
+            }
+            pill {
+                background: transparent;
+                color: #bbb;
+                border: 1px solid #bbb;
+                margin-left: 3px;
+                margin-right: 3px;
+                padding: 3px 3px 3px 3px;
+                border-radius: 7px;
+                margin-bottom: 4px;
+            }
+            .star {
+                vertical-align: middle;
+                margin-right: 10px;
+            }
+            .star-middle {
+                vertical-align: middle;
+            }
+            .star-gold {
+                color: gold;
+            }
+            .star-silver {
+                color: silver;
+            }
+            
+            .star-bronze {
+                color: #b08d57;
+            }
+            .star-red {
+                color: transparent;
+            }
+            .star-blank {
+                color: #0cc;
+            }
+        </style>
+    </head>
+
+    <body>
+        <main>
+            {% include 'header.html' %}
+            <div class="container px-5 my-2">
+                <div class="row gx-5 justify-content-center">
+                    <h1 class="my-2 text-center text-primary">Long Shade Rotation</h1>
+                    <!-- <span style="color: #999;text-align: center;">You can put your mouse over or click the names to highlight biomes in the table</span>
+                    <span style="color: #999;text-align: center;">You can see subbiome names if put your mouse over a biome in the table</span> -->
+                    <div class="row justify-content-md-center my-2">
+                        {% for biome in biomes %}
+                            <pill class="col-md-auto" style="font-size: 15px" biome="{{ biome[0] }}" onclick="clickBiomeName(this);" onmouseenter="hoverBiomeNames(this);" onmouseleave="unHoverBiomeNames(this);" >
+                                <img src="https://kiwiapi.aallyn.xyz/v1/misc/assets/images/biomes/{{ biome[1] }}.png" width="15"> {{ biome[0] }}
+                            </pill>
+                        {% endfor %}
+                    </div>
+                    <div class="row justify-content-md-center my-2">
+                        {% for icon in biome_icons %}
+                            <pill class="col-md-auto" onclick="clickBiomeIcon(this);" onmouseenter="hoverBiomeIcons(this);" onmouseleave="unHoverBiomeIcons(this);" biome_icon="{{ icon }}">
+                                <img src="https://kiwiapi.aallyn.xyz/v1/misc/assets/images/biomes/{{ icon }}.png" width="24">
+                            </pill>
+                        {% endfor %}
+                    </div>
+                    <div style="display:flex;justify-content: center;color: transparent">
+                        <span style="color: #999;text-align: center;margin-right:40px;"><span class="material-icons star-middle star-blank">landscape</span> - Size/Existence of caves</span>
+                        <span style="color: #999;text-align: center;"><span class="material-icons star-middle star-blank">diamond</span> - Rating of farmability of ores</span>
+                    </div>
+                    <table class="my-2">
+                        {% for x in history %}
+                            <tr {% if x[5] %}class="current"{% endif %}>
+                                <td class="time" timestamp="{{ x[0][1] }}">{{ x[0][0] }}</td>
+                                {% for y in x[2:5] %}
+                                    {% if advanced %}
+                                        <td id="biome" onmouseenter="hoverBiomeNames(this);" onmouseleave="unHoverBiomeNames(this);" biome="{{ y.name }}" biome_icon="{{ y.icon }}">
+                                            <div style="display: flex;justify-content: space-between;">
+                                                <div data-toggle="tooltip" title="{{ y.final_name }}">
+                                                    <img src="https://kiwiapi.aallyn.xyz/v1/misc/assets/images/biomes/{{ y.icon }}.png" width="24">
+                                                    <span>{{ y.name }}</span>
+                                                </div>
+                                                <div style="width: fit-content">
+                                                    <span data-toggle="tooltip" title="Caves" class="material-icons star-middle {% if y.caves == 1 %}star-bronze{% elif y.caves == 2 %}star-silver{% elif y.caves == 3 %}star-gold{% else %}star-red{% endif %}">
+                                                        landscape
+                                                    </span>
+                                                    <span data-toggle="tooltip" title="Ores" class="material-icons star {% if y.farm == 1 %}star-bronze{% elif y.farm == 2 %}star-silver{% elif y.farm == 3 %}star-gold{% else %}star-red{% endif %}">
+                                                        diamond
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    {% else %}
+                                        <td id="biome" onmouseenter="hoverBiomeNames(this);" onmouseleave="unHoverBiomeNames(this);" biome="{{ y.final_name }}" biome_icon="{{ y.icon }}">
+                                            <div style="display: flex;justify-content: space-between;">
+                                                <div data-toggle="tooltip" title="{{ y.name }}">
+                                                    <img src="https://kiwiapi.aallyn.xyz/v1/misc/assets/images/biomes/{{ y.icon }}.png" width="24">
+                                                    <span>{{ y.final_name }}</span>
+                                                </div>
+                                                <div style="width: fit-content">
+                                                    <span data-toggle="tooltip" title="Caves" class="material-icons star-middle {% if y.caves == 1 %}star-bronze{% elif y.caves == 2 %}star-silver{% elif y.caves == 3 %}star-gold{% else %}star-red{% endif %}">
+                                                        landscape
+                                                    </span>
+                                                    <span data-toggle="tooltip" title="Ores" class="material-icons star {% if y.farm == 1 %}star-bronze{% elif y.farm == 2 %}star-silver{% elif y.farm == 3 %}star-gold{% else %}star-red{% endif %}">
+                                                        diamond
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    {% endif %}
+                                {% endfor %}
+                            </tr>
+                        {% endfor %}
+                    </table>
+                    <span class="my-1" style="color: #999;text-align: center;">Special thanks for helping gathering information on the biomes:</span>
+                    <span class="my-1" style="color: #999;text-align: center;">
+                        <span class="badge" style="font-size: 18px">Nikstar</span>
+                        <span class="badge" style="font-size: 18px">Hackerdu77</span>
+                        <span class="badge" style="font-size: 18px">Nina</span>
+                        <span class="badge" style="font-size: 18px">Criteox</span>
+                    </span>
+                </div>
+            </div>
+        </main>
+        {% include 'footer.html' %}
+    </body>
+</html>

@@ -10,6 +10,8 @@ from versions.v1.utils.authorization import authorize
 from json import loads
 from base64 import b64encode
 from utils import render_json
+from versions.v1.utils.tooltip import Ally, Tooltip
+
 
 stats = Blueprint("stats", __name__, url_prefix="/stats")
 stats_folder = Path("versions/v1/data")
@@ -74,6 +76,7 @@ async def update_mastery():
     await mastery.save()
     return "OK", 200
 
+
 @stats.route("/gear_builds", methods=["POST"])
 async def gear_builds():
     builds = loads(builds_file.read_text())
@@ -86,3 +89,27 @@ async def gear_builds():
         t = "light"
     build = builds[c][t]
     return render_json(build)
+
+
+@stats.route("ally_tooltip/<name>")
+async def ally_tooltip(name):
+    data = loads(open("versions/v1/data/allies.json", "r").read())
+    ally = data.get(name)
+    if not ally:
+        allies = []
+        for x in data.values():
+            if x["name"].lower() == name.replace("_", " ").lower():
+                allies.append(Ally(x))
+        for x in data.values():
+            if x["name"].lower().startswith(name.replace("_", " ").lower()):
+                allies.append(Ally(x))
+        if not allies:
+            return abort(404, "Ally not found")
+        ally = allies[0]
+    tooltip = Tooltip(ally)
+    file = BytesIO()
+    tooltip.generate_image().save(file, format="PNG")
+    file.seek(0)
+    return await send_file(
+        file, mimetype="image/png", attachment_filename=f"{name}.png"
+    )

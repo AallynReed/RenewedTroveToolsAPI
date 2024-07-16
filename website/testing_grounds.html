@@ -1,0 +1,84 @@
+<html lang="en">
+    <head>
+        <title>Testing Grounds</title>
+        <meta property="og:title" content="Testing Grounds">
+        <meta http-equiv="refresh" content="120">
+        {% include 'head.html' %}
+        <style>
+            .long-shade-container {
+                position: relative;
+                width: 300px;
+                height: 300px;
+                background-image: url('https://trovesaurus.com/images/biomes/long_shade.png');
+                background-size: cover;
+                overflow: hidden;
+                transform: scale(0.4);
+            }
+
+            .rotating-image {
+                position: absolute;
+                top: 45%;
+                left: 45%;
+                width: 65px;
+                height: 65px;
+                transform-origin: 50px 0;
+            }
+
+            #image1 {
+                transform: rotate(0deg) translateX(-65px) rotate(0deg);
+                animation: rotate-around1 15s linear infinite;
+            }
+
+            #image2 {
+                transform: rotate(120deg) translateX(-65px) rotate(-120deg);
+                animation: rotate-around2 15s linear infinite;
+            }
+
+            #image3 {
+                transform: rotate(240deg) translateX(-65px) rotate(-240deg);
+                animation: rotate-around3 15s linear infinite;
+            }
+
+            @keyframes rotate-around1 {
+                from {
+                    transform: rotate(0deg) translateX(-65px) rotate(0deg);
+                }
+                to {
+                    transform: rotate(360deg) translateX(-65px) rotate(-360deg);
+                }
+            }
+            @keyframes rotate-around2 {
+                from {
+                    transform: rotate(120deg) translateX(-65px) rotate(-120deg);
+                }
+                to {
+                    transform: rotate(480deg) translateX(-65px) rotate(-480deg);
+                }
+            }
+            @keyframes rotate-around3 {
+                from {
+                    transform: rotate(240deg) translateX(-65px) rotate(-240deg);
+                }
+                to {
+                    transform: rotate(600deg) translateX(-65px) rotate(-600deg);
+                }
+            }
+        </style>
+    </head>
+
+    <body>
+        <main>
+            {% include 'header.html' %}
+            <div class="container px-5 my-2">
+                <div class="row gx-5 justify-content-center">
+                    <div class="long-shade-container">
+                        <img src="https://kiwiapi.aallyn.xyz/v1/misc/assets/images/biomes/neon.png" alt="Image 1" class="rotating-image" id="image1">
+                        <img src="https://kiwiapi.aallyn.xyz/v1/misc/assets/images/biomes/neon.png" alt="Image 2" class="rotating-image" id="image2">
+                        <img src="https://kiwiapi.aallyn.xyz/v1/misc/assets/images/biomes/neon.png" alt="Image 3" class="rotating-image" id="image3">
+                    </div>
+                </div>
+            </div>
+        </main>
+        {% include 'footer.html' %}
+    </body>
+</html>

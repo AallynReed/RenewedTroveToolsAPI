@@ -69,6 +69,8 @@ Add to Profile»»Add to Profile
 Add to profile»»Add to profile
 Added {file_name}»»Added {file_name}
 Additional shields will be needed for future bosses.»»Additional shields will be needed for future bosses.
+Admin Panel»»Admin Panel
+Adobe Animate is a professional animation software that is used to create visual effects.»»Adobe Animate is a professional animation software that is used to create visual effects.
 Advanced Settings»»Advanced Settings
 Advanced mode allows for people to have old vs new changed files in a separate directory»»Advanced mode allows for people to have old vs new changed files in a separate directory
 Advanced mode enabled»»Advanced mode enabled
@@ -125,15 +127,19 @@ Augmentation Costs»»Augmentation Costs
 Author»»Author
 Auto Fix Mod Names»»Auto Fix Mod Names
 Auto Generate and Fix CFG files for UI mods»»Auto Generate and Fix CFG files for UI mods
+Auto-use»»Auto-use
 Automatically fix mod names on directory reading»»Automatically fix mod names on directory reading
 Automatically generate and fix cfg files for UI mods»»Automatically generate and fix cfg files for UI mods
+BNK Replacer is a free tool that is used to replace sound effects in Trove's sound bank.»»BNK Replacer is a free tool that is used to replace sound effects in Trove's sound bank.
 Banner»»Banner
+Banner (Leviathan Permanent Torch U10/U11)»»Banner (Leviathan Permanent Torch U10/U11)
 Banners»»Banners
 Bard»»Bard
 Base Damage»»Base Damage
 Beamer»»Beamer
 Berserk Battler (Cosmic)»»Berserk Battler (Cosmic)
 Berserker Battler»»Berserker Battler
+Berserker Battler (Empowered Cosmic Gem Ability)»»Berserker Battler (Empowered Cosmic Gem Ability)
 Best»»Best
 Blue»»Blue
 Blueprints»»Blueprints
@@ -158,6 +164,7 @@ Builder's Precise Focus»»Builder's Precise Focus
 Builder's Rough Focus»»Builder's Rough Focus
 Builder's Superior Focus»»Builder's Superior Focus
 Built TMod {name}»»Built TMod {name}
+But it comes with the caveat that it will have the wrong results if you use any other tool, this is because it won't have the information that an extraction or update happened, so when trying to track changes through this cache it will assume a state that may not match.If you only plan to use this tool as your only extraction method, you may enable this with no worryIf you plan on using any other extraction method however, be weary of the issues this cache may present to the accuracy of change tracking.Even out of performance mode, this app will most likely manage faster speeds than other methods (I know of).»»But it comes with the caveat that it will have the wrong results if you use any other tool, this is because it won't have the information that an extraction or update happened, so when trying to track changes through this cache it will assume a state that may not match.If you only plan to use this tool as your only extraction method, you may enable this with no worryIf you plan on using any other extraction method however, be weary of the issues this cache may present to the accuracy of change tracking.Even out of performance mode, this app will most likely manage faster speeds than other methods (I know of).
 CB»»CB
 Cancel»»Cancel
 Cancel extraction»»Cancel extraction
@@ -177,12 +184,14 @@ Changes»»Changes
 Chaos Contained Flare»»Chaos Contained Flare
 Chaos Contained Spark»»Chaos Contained Spark
 Chaos Forge can reroll the second stat on equipment!»»Chaos Forge can reroll the second stat on equipment!
+Charl (Chaos Dragon)»»Charl (Chaos Dragon)
 Chinese(Simplified)»»简体中文
 Chloromancer»»Chloromancer
 Chronomantic»»Chronomantic
 Class»»Class
 Class Bonus»»Class Bonus
 Class Gem»»Class Gem
+Class level 30»»Class level 30
 Clear»»Clear
 Clear all overrides»»Clear all overrides
 Clear config»»Clear config
@@ -190,6 +199,7 @@ Clear files»»Clear files
 Clear overrides»»Clear overrides
 Clear preview»»Clear preview
 Clear project folder»»Clear project folder
+Click to preview image»»Click to preview image
 Close»»Close
 Clover»»Clover
 Club Fixture»»Club Fixture
@@ -199,6 +209,7 @@ Compare changes with»»Compare changes with
 Config»»Config
 Config file»»Config file
 Confirm»»Confirm
+Confirm extraction»»Confirm extraction
 Conjurer's Crucible Vial»»Conjurer's Crucible Vial
 Continue to grow your strength and prove Might is better then brains.»»Continue to grow your strength and prove Might is better then brains.
 Copied build GB-{buildid} to clipboard»»Copied build GB-{buildid} to clipboard
@@ -222,12 +233,22 @@ Critical»»Critical
 Critical Damage»»Critical Damage
 Critical Hit»»Critical Hit
 Crystal»»Crystal
+Crystal 4 Ring»»Crystal 4 Ring
+Crystal 5 Face»»Crystal 5 Face
+Crystal 5 Hat»»Crystal 5 Hat
+Crystal 5 Weapon»»Crystal 5 Weapon
+Crystal Cosmic Empowered Gem»»Crystal Cosmic Empowered Gem
+Crystal Cosmic Lesser Gem 1»»Crystal Cosmic Lesser Gem 1
+Crystal Cosmic Lesser Gem 2»»Crystal Cosmic Lesser Gem 2
+Crystal Gems»»Crystal Gems
 Cubic Curtain»»Cubic Curtain
 Cubic Curtain/Explosive Epilogue»»Cubic Curtain/Explosive Epilogue
 Cubic Curtain/Mired Mojo»»Cubic Curtain/Mired Mojo
+Current»»Current
 Custom»»Custom
 Custom Directories»»Custom Directories
 Cyan»»Cyan
+D15 Biomes»»Long Shade Rotation
 Daily Bonuses»»Daily Bonuses
 Damage»»Damage
 Damage Bonus»»Damage Bonus
@@ -249,6 +270,7 @@ Directory List»»Directory List
 Disable»»Disable
 Disabled»»Disabled
 Disabled ({amount})»»Disabled ({amount})
+Do you really wish to extract {ExtractionType} from {ExtractFrom} into {ExtractTo}»»Do you really wish to extract {ExtractionType} from {ExtractFrom} into {ExtractTo}
 Don't show again»»Don't show again
 Donate»»Donate
 Double Chance To Find Flux Artifacts»»Double Chance To Find Flux Artifacts
@@ -281,6 +303,8 @@ Eliminating the need of 1gb folders for each update and keeping it streamlined t
 Elixir»»Elixir
 Elysian Bandolier»»Elysian Bandolier
 Emblem»»Emblem
+Emblem 1»»Emblem 1
+Emblem 2»»Emblem 2
 Emblem 2.5x»»Emblem 2.5x
 Empowered»»Empowered
 Empowered Air Gem»»Empowered Air Gem
@@ -296,6 +320,7 @@ Energy Regen»»Energy Regen
 Energy Regen Bonus»»Energy Regen Bonus
 Energy Regeneration»»Energy Regeneration
 Enlightened»»Enlightened
+Enlightened Buff»»Enlightened Buff
 Enter changes»»Enter changes
 Even though most magic classes have good range, here is some stability so you don't go flying.»»Even though most magic classes have good range, here is some stability so you don't go flying.
 Events»»Events
@@ -305,6 +330,9 @@ Experience Gain Bonus»»Experience Gain Bonus
 Exploring and armoring up.»»Exploring and armoring up.
 Explosive Epilogue»»Explosive Epilogue
 Extra flasks are always good.»»Extra flasks are always good.
+Extract All [{value}]»»Extract All [{value}]
+Extract Changes [{value}]»»Extract Changes [{value}]
+Extract Selected [{value}]»»Extract Selected [{value}]
 Extract TMod»»Extract TMod
 Extract all»»Extract all
 Extract changed files»»Extract changed files
@@ -312,11 +340,14 @@ Extract from archives»»Extract from archives
 Extract overrides»»Extract overrides
 Extract selected directories»»Extract selected directories
 Extract to»»Extract to
+Extraction Complete»»Extraction Complete
+Extraction confirmation»»Extraction confirmation
 Extractor Idle»»Extractor Idle
 Face»»Face
 Face Damage»»Face Damage
 Fae Trickster»»Fae Trickster
 Failed to get game version, please open trove at least once»»Failed to get game version, please open trove at least once
+Failed to toggle {name} mod, a mod with this name already exists»»Failed to toggle {name} mod, a mod with this name already exists
 Farm»»Farm
 Fast Invasions»»Fast Invasions
 Feedback»»Feedback
@@ -351,9 +382,11 @@ Fly even faster.»»Fly even faster.
 Fly free you fools in the Sundered Uplands.»»Fly free you fools in the Sundered Uplands.
 Fly, you fools, Fly to the end of that Delve.»»Fly, you fools, Fly to the end of that Delve.
 Food»»Food
+Food (Premium Fish)»»Food (Premium Fish)
 Freerange Electrolytic Crystals»»Freerange Electrolytic Crystals
 French»»French
 Friday»»Friday
+GIMP is a free image and photo editing software that is used to create and edit textures.»»GIMP is a free image and photo editing software that is used to create and edit textures.
 GUI»»GUI
 Gain 15% health when a nearby enemy dies.»»Gain 15% health when a nearby enemy dies.
 Gain a movement speed boost when a nearby enemy dies.»»Gain a movement speed boost when a nearby enemy dies.
@@ -376,6 +409,8 @@ Gem Upgrade Dust Cost Reduced By 10%»»Gem Upgrade Dust Cost Reduced By 10%
 Gem Upgrade Dust Cost Reduced By 20%»»Gem Upgrade Dust Cost Reduced By 20%
 Gem level changed to {level}»»Gem level changed to {level}
 Gems»»Gems
+Geode Mastery»»Geode Mastery
+Geode Mastery (Level 100)»»Geode Mastery (Level 100)
 Geode Mastery Buffs»»Geode Mastery Buffs
 German»»German
 Get Modding Software»»Get Modding Software
@@ -456,8 +491,10 @@ Install»»Install
 Installed»»Installed
 Intellect»»Intellect
 Intense searching has led you to greater speed and adaptability.»»Intense searching has led you to greater speed and adaptability.
+Invalid directory selected, select your mods folder»»Invalid directory selected, select your mods folder
 Invalid pass key»»Invalid pass key
 Jingles»»Jingles
+Jpexs Free Flash Decompiler is a free tool that is used to decompile and edit SWF files.»»Jpexs Free Flash Decompiler is a free tool that is used to decompile and edit SWF files.
 Jump»»Jump
 Jump up without being pushed around by bullies.»»Jump up without being pushed around by bullies.
 Keeping the app up to date is important to ensure that you have the latest features and bug fixes.»»Keeping the app up to date is important to ensure that you have the latest features and bug fixes.
@@ -532,6 +569,7 @@ Magic Damage Bonus»»Magic Damage Bonus
 Magic Find»»Magic Find
 Magic Find Bonus»»Magic Find Bonus
 Magic power from gathering so much knowledge.»»Magic power from gathering so much knowledge.
+MagicaVoxel is a free lightweight 8-bit voxel editor and interactive path tracing renderer.»»MagicaVoxel is a free lightweight 8-bit voxel editor and interactive path tracing renderer.
 Major star of Bounty Hunt Boon»»Major star of Bounty Hunt Boon
 Major star of Depths Boon»»Major star of Depths Boon
 Major star of Draining Kiss»»Major star of Draining Kiss
@@ -560,12 +598,16 @@ Mastery Level»»Mastery Level
 Mastery Levels»»Mastery Levels
 Mastery Points»»Mastery Points
 Max»»Max
+Max Light»»Max Light
 Max Mastery»»Max Mastery
+Max Power Rank»»Max Power Rank
+Max Stats»»Max Stats
 Max mastery is 1000»»Max mastery is 1000
 Maximum Health»»Maximum Health
 Maximum Health %»»Maximum Health %
 Maximum Health%»»Maximum Health%
 Medium Cost»»Medium Cost
+Metaforge is a free in-game voxel editor that is used to create and edit voxel models.»»Metaforge is a free in-game voxel editor that is used to create and edit voxel models.
 Min»»Min
 Mine with ease of being able to jump a little more.»»Mine with ease of being able to jump a little more.
 Mining»»Mining
@@ -608,6 +650,7 @@ Mired Mojo»»Mired Mojo
 Mod Profiles»»Mod Profiles
 Mod Profiles (Not working yet)»»Mod Profiles (Not working yet)
 Mod data is not valid»»Mod data is not valid
+Mod image preview»»Mod image preview
 Mod version changed to {version}»»Mod version changed to {version}
 Modder»»Modder
 Modder Tools»»Modder Tools
@@ -623,17 +666,24 @@ Move Boost»»Move Boost
 Movement Speed»»Movement Speed
 My Mods»»My Mods
 My Mods tiles toggle mods»»My Mods tiles toggle mods
+Mystic 1 Face»»Mystic 1 Face
+Mystic 1 Hat»»Mystic 1 Hat
+Mystic 1 Weapon»»Mystic 1 Weapon
 NPCs»»NPCs
 Neon Ninja»»Neon Ninja
 New version»»New version
 Next»»Next
+Next in {}»»Next in {}
 No»»No
 No Trove installation found»»No Trove installation found
 No authors»»No authors
+No biomes submitted yet.»»No biomes submitted yet.
+No changes were queried.»»No changes were queried.
 No custom directories»»No custom directories
 No events are currently going on.»»No events are currently going on.
 No files added»»No files added
 No files found»»No files found
+No mods in this directory»»No mods in this directory
 No picked directory (Pick your mods folder)»»No picked directory (Pick your mods folder)
 No project folder selected, please select one in the settings tab»»No project folder selected, please select one in the settings tab
 No projects found in selected folder»»No projects found in selected folder
@@ -662,12 +712,14 @@ PD/Light»»PD/Light
 PTS Geode Mastery»»PTS Geode Mastery
 PTS Trove Mastery»»PTS Trove Mastery
 Page»»Page
+Paint.NET is a free image and photo editing software that is used to create and edit textures.»»Paint.NET is a free image and photo editing software that is used to create and edit textures.
 Particles»»Particles
 Path»»Path
 Patreon»»Patreon
 Patron»»Patron
 Performance Mode»»Performance Mode
 Performance mode enabled»»Performance mode enabled
+Performance mode is a very sensitive mode, it will create a cache of some of the file's data and improve performance of changes detection beyond imaginable»»Performance mode is a very sensitive mode, it will create a cache of some of the file's data and improve performance of changes detection beyond imaginable
 Physical»»Physical
 Physical Damage»»Physical Damage
 Physical Damage Bonus»»Physical Damage Bonus
@@ -675,6 +727,7 @@ Pink»»Pink
 Pirate Captain»»Pirate Captain
 Please provide a valid number»»Please provide a valid number
 Points»»Points
+PopcornFX is a free particle editor that is used to create visual effects.»»PopcornFX is a free particle editor that is used to create visual effects.
 Portuguese»»Portuguese
 Power Rank»»Power Rank
 Preference»»Preference
@@ -687,11 +740,12 @@ Private»»Private
 Project folder»»Project folder
 Project folder cleared»»Project folder cleared
 Project folder selected»»Project folder selected
-Projects (BETA)»»Projects (BETA)
+Projects»»Projects
 Protection»»Protection
 Purple»»Purple
 Pve»»Pve
 Pyrodisc»»Pyrodisc
+Qubicle is a professional voxel editor that is used to create voxel models.»»Qubicle is a professional voxel editor that is used to create voxel models.
 Radiant»»Radiant
 Rage»»Rage
 Rage 1.5»»Rage 1.5
@@ -712,6 +766,7 @@ Reflection 3.0»»Reflection 3.0
 Refresh changed/added files list»»Refresh changed/added files list
 Refresh directory list»»Refresh directory list
 Refresh files list»»Refresh files list
+Refreshed Trovesaurus»»Refreshed Trovesaurus
 Renewed Trove Tools»»Renewed Trove Tools
 Report a bug»»Report a bug
 Reroll Stat»»Reroll Stat
@@ -723,6 +778,7 @@ Role SubClass»»Role SubClass
 Root star of Combat»»Root star of Combat
 Root star of Gathering»»Root star of Gathering
 Root star of Pve»»Root star of Pve
+Rune (Works on top of food)»»Rune (Works on top of food)
 Russian»»Russian
 Saturday»»Saturday
 Save»»Save
@@ -784,12 +840,15 @@ Strength»»Strength
 Strength and Intellect»»Strength and Intellect
 Stunburst»»Stunburst
 Subclass»»Subclass
+Subclass (Solarion) / Solarion»»Subclass (Solarion) / Solarion
 Subclass active»»Subclass active
+Subclass level 30»»Subclass level 30
 Sundard Flight»»Sundard Flight
 Sunday»»Sunday
 Sunday Loot Day»»Sunday Loot Day
 Sundered Flight 2.0»»Sundered Flight 2.0
 Sundered Flight 3.0»»Sundered Flight 3.0
+Supporters»»Supporters
 Swap»»Swap
 Switch to debug version»»Switch to debug version
 Switch to release version»»Switch to release version
@@ -797,11 +856,13 @@ TMod File»»TMod File
 TMod extracted»»TMod extracted
 TMod file is required»»TMod file is required
 TMod overrides extracted»»TMod overrides extracted
+Taeryn Veernok (Cosmic Primordial Dragon)»»Taeryn Veernok (Cosmic Primordial Dragon)
 Tank»»Tank
 Teal»»Teal
 Test overrides»»Test overrides
 Textures»»Textures
 Thanks for using my application. <3»»Thanks for using my application. <3
+Thanks to the people below who've supported the project financially.»»Thanks to the people below who've supported the project financially.
 The Star Chart was critically well received by the players.\\nThey had nothing negative to say about it.»»The Star Chart was critically well received by the players.\\nThey had nothing negative to say about it.
 The application will download update and close itself to install it.»»The application will download update and close itself to install it.
 The final star spell is ready. Are you ready to cast it?»»The final star spell is ready. Are you ready to cast it?
@@ -823,6 +884,7 @@ Thursday»»Thursday
 Titan Soul»»Titan Soul
 Title»»Title
 Tomb Raiser»»Tomb Raiser
+Too many changes to be displayed.»»Too many changes to be displayed.
 Trailblazing»»Trailblazing
 Triple Chance To Find Flux Artifacts»»Triple Chance To Find Flux Artifacts
 Triple Chance To Find Talismans»»Triple Chance To Find Talismans
@@ -831,8 +893,10 @@ Triple Crystal Drops»»Triple Crystal Drops
 Triple Inert Geode Drops»»Triple Inert Geode Drops
 Triple Radiant Shard Drops»»Triple Radiant Shard Drops
 Triple Shadow Shard Drops»»Triple Shadow Shard Drops
+Trove Mastery»»Trove Mastery
 Trove Time»»Trove Time
 Trove directory»»Trove directory
+Troxel is a free online voxel editor that is used to create and edit voxel models.»»Troxel is a free online voxel editor that is used to create and edit voxel models.
 Try running program as administrator or go to settings and add the directory manually.»»Try running program as administrator or go to settings and add the directory manually.
 Tuesday»»Tuesday
 Twitch Streams»»Twitch Streams
@@ -861,6 +925,7 @@ Vanguardian»»Vanguardian
 Version {}»»Version {}
 Volatile Velocity»»Volatile Velocity
 Voting»»Voting
+VoxelShop is a free voxel editor that is used to create and edit voxel models.»»VoxelShop is a free voxel editor that is used to create and edit voxel models.
 WIP»»WIP
 Water»»Water
 Water Gem Dust»»Water Gem Dust
@@ -884,6 +949,7 @@ When taking damage, you have a 20% chance to gain a 30% reflect shield for 10 se
 When taking damage, you have a 30% chance to gain a 45% reflect shield and 30% damage reduction for 10 seconds. Has a 1 minute cooldown.»»When taking damage, you have a 30% chance to gain a 45% reflect shield and 30% damage reduction for 10 seconds. Has a 1 minute cooldown.
 When visiting the final frontier, it's always good to have speed.»»When visiting the final frontier, it's always good to have speed.
 Whether mod tiles in My Mods enable/disable mods»»Whether mod tiles in My Mods enable/disable mods
+Whilst keeping track of changes in a versioned folder in {value}»»Whilst keeping track of changes in a versioned folder in {value}
 Why are flasks so OP... here is a random one.»»Why are flasks so OP... here is a random one.
 Will need to double check numbers to make sure this is not too much strength.»»Will need to double check numbers to make sure this is not too much strength.
 Wings»»Wings
@@ -902,7 +968,10 @@ You did so much Mining it improved your Physical Damage. Noice.»»You did so mu
 You get a buff and you get a buff, everybody gets a buff.»»You get a buff and you get a buff, everybody gets a buff.
 You have found the Weakness, now keep on attacking.»»You have found the Weakness, now keep on attacking.
 Zealous»»Zealous
+Zephyr Rune»»Zephyr Rune
 Zero»»Zero
+Zeuztian (Irradiant Dragon)»»Zeuztian (Irradiant Dragon)
+Zoxel is a free voxel editor that is used to create and edit voxel models.»»Zoxel is a free voxel editor that is used to create and edit voxel models.
 [BETA] Trove Calculation Tool»»[BETA] Trove Calculation Tool
 [LT|MS] Staruable»»[LT|MS] Staruable
 [MD] Chronomancer Qubesly»»[MD] Chronomancer Qubesly
@@ -918,6 +987,7 @@ Zero»»Zero
 [PD|LT] Earnie»»[PD|LT] Earnie
 [PD|LT] Jingles»»[PD|LT] Jingles
 [PD|LT] Scorpius»»[PD|LT] Scorpius
+enabled»»enabled
 fluxion»»fluxion
 none»»none
 not found»»not found

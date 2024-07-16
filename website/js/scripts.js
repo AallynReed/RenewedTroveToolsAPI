@@ -73,6 +73,172 @@ function setDownloadCountHtml() {
     });
 }
 
+function hoverBiomeNames(biome) {
+    var biome_name = biome.getAttribute("biome");
+    var elements = document.querySelectorAll(`[biome="${biome_name}"]`);
+    for (index = 0; index < elements.length; index++) {
+        var element = elements[index];
+        var computedStyle = window.getComputedStyle(element);
+        var backgroundColor = computedStyle.backgroundColor;
+        if (backgroundColor == "rgba(0, 0, 0, 0)") {
+            element.style.background = "rgba(94, 5, 94, 0.48)";
+        }
+    }
+}
+
+function unHoverBiomeNames(biome) {
+    var biome_name = biome.getAttribute("biome");
+    var elements = document.querySelectorAll(`[biome="${biome_name}"]`);
+    for (var index = 0; index < elements.length; index++) {
+        var element = elements[index];
+        var computedStyle = window.getComputedStyle(element);
+        var backgroundColor = computedStyle.backgroundColor;
+        if (backgroundColor == "rgba(94, 5, 94, 0.48)") {
+            element.style.background = "transparent";
+        }
+    }
+}
+
+
+function clickBiomeName(biome) {
+    var computedStyle = window.getComputedStyle(biome);
+    var backgroundColor = computedStyle.backgroundColor;
+    if (backgroundColor == "rgba(5, 94, 94, 0.48)") {
+        var elements = document.querySelectorAll(`pill`);
+        for (index = 0; index < elements.length; index++) {
+            elements[index].style.background = "";
+        }
+        var elements = document.querySelectorAll(`td`);
+        for (index = 0; index < elements.length; index++) {
+            elements[index].style.background = "";
+        }
+        return;
+    }
+    var biome_name = biome.getAttribute("biome");
+    var elements = document.querySelectorAll(`pill`);
+    for (index = 0; index < elements.length; index++) {
+        if (elements[index].getAttribute("biome") != biome_name) {
+            elements[index].style.background = "";
+        } else {
+            elements[index].style.background = "rgba(5, 94, 94, 0.48)";
+        }
+    }
+    var elements = document.querySelectorAll(`td`);
+    for (index = 0; index < elements.length; index++) {
+        if (elements[index].getAttribute("biome") != biome_name) {
+            elements[index].style.background = "";
+        } else {
+            elements[index].style.background = "rgba(5, 94, 94, 0.48)";
+        }
+    }
+}
+
+function hoverBiomeIcons(biome) {
+    var biome_name = biome.getAttribute("biome_icon");
+    var elements = document.querySelectorAll(`[biome_icon="${biome_name}"]`);
+    for (index = 0; index < elements.length; index++) {
+        var element = elements[index];
+        var computedStyle = window.getComputedStyle(element);
+        var backgroundColor = computedStyle.backgroundColor;
+        if (backgroundColor == "rgba(0, 0, 0, 0)") {
+            element.style.background = "rgba(94, 5, 94, 0.48)";
+        }
+    }
+}
+
+function unHoverBiomeIcons(biome) {
+    var biome_name = biome.getAttribute("biome_icon");
+    var elements = document.querySelectorAll(`[biome_icon="${biome_name}"]`);
+    for (var index = 0; index < elements.length; index++) {
+        var element = elements[index];
+        var computedStyle = window.getComputedStyle(element);
+        var backgroundColor = computedStyle.backgroundColor;
+        if (backgroundColor == "rgba(94, 5, 94, 0.48)") {
+            element.style.background = "transparent";
+        }
+    }
+}
+
+
+function clickBiomeIcon(biome) {
+    var computedStyle = window.getComputedStyle(biome);
+    var backgroundColor = computedStyle.backgroundColor;
+    if (backgroundColor == "rgba(5, 94, 94, 0.48)") {
+        var elements = document.querySelectorAll(`pill`);
+        for (index = 0; index < elements.length; index++) {
+            elements[index].style.background = "";
+        }
+        var elements = document.querySelectorAll(`td`);
+        for (index = 0; index < elements.length; index++) {
+            elements[index].style.background = "";
+        }
+        return;
+    }
+    var biome_name = biome.getAttribute("biome_icon");
+    var elements = document.querySelectorAll(`pill`);
+    for (index = 0; index < elements.length; index++) {
+        if (elements[index].getAttribute("biome_icon") != biome_name) {
+            elements[index].style.background = "";
+        } else {
+            elements[index].style.background = "rgba(5, 94, 94, 0.48)";
+        }
+    }
+    var elements = document.querySelectorAll(`td`);
+    for (index = 0; index < elements.length; index++) {
+        if (elements[index].getAttribute("biome_icon") != biome_name) {
+            elements[index].style.background = "";
+        } else {
+            elements[index].style.background = "rgba(5, 94, 94, 0.48)";
+        }
+    }
+}
+
+function setDateText(element) {
+    console.log(element.getAttribute("timestamp"));
+    const now = Date.now();
+    const date = new Date(parseInt(element.getAttribute("timestamp")));
+    // check if now and date are within 10 seconds
+    if (Math.abs(now - date) < 10000) {
+        element.innerHTML = "Happening now";
+        return;
+    }
+    const months = [
+        "January", "February", "March", "April", "May", "June",
+        "July", "August", "September", "October", "November", "December"
+    ];
+
+    const getOrdinalSuffix = (day) => {
+        if (day > 3 && day < 21) return 'th'; // Handles 11th, 12th, 13th
+        switch (day % 10) {
+            case 1: return "st";
+            case 2: return "nd";
+            case 3: return "rd";
+            default: return "th";
+        }
+    };
+
+    const day = date.getDate();
+    const month = months[date.getMonth()];
+    const hour = String(date.getHours()).padStart(2, '0');
+    const minute = String(date.getMinutes()).padStart(2, '0');
+
+    const ordinalSuffix = getOrdinalSuffix(day);
+    element.innerHTML = `${month}, ${day}${ordinalSuffix} at ${hour}:${minute}`;
+}
+
+function setAllDates() {
+    var elements = document.querySelectorAll(`td[class="time"]`);
+    for (index = 0; index < elements.length; index++) {
+        setDateText(elements[index]);
+    }
+}
+
+window.addEventListener('DOMContentLoaded', (event) => {
+    setVersionHtml();
+    setDownloadCountHtml();
+    setAllDates();
+});
+
 // function setDownloadReleaseURL() {
 //     var download_tags = document.querySelectorAll("a.set-download-release");
 //     getLatestDownloadRelease().then(download => {
@@ -81,10 +247,6 @@ function setDownloadCountHtml() {
 //         }
 //     });
 // }
-
-setVersionHtml();
-setDownloadCountHtml();
 // setDownloadReleaseURL();
-
 
   

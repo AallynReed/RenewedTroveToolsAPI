@@ -1,0 +1,121 @@
+<html lang="en">
+    <head>
+        <title>Gem Builds</title>
+        <meta property="og:title" content="Gem Builds">
+        {% include 'head.html' %}
+        
+        <style>
+            .form-control{color:#b1b1b1;background-color:#222;border:1px solid #515151}.form-control:focus{color:#b1b1b1;background-color:#222;border-color:#9badbf;box-shadow:0 0 0 .25rem rgba(55,90,127,.25)}.form-control::-moz-placeholder{color:#5a5a5a}.form-control:-ms-input-placeholder{color:#5a5a5a}.form-control::placeholder{color:#5a5a5a}.form-control:disabled,.form-control[readonly]{background-color:#222}.form-control::-webkit-file-upload-button{color:#b1b1b1;background-color:#3b3b3b;border-color:inherit}.form-control::file-selector-button{color:#b1b1b1;background-color:#3b3b3b;border-color:inherit}.form-control:hover:not(:disabled):not([readonly])::-webkit-file-upload-button{background-color:#383838}.form-control:hover:not(:disabled):not([readonly])::file-selector-button{background-color:#383838}.form-control::-webkit-file-upload-button{color:#b1b1b1;background-color:#3b3b3b;border-color:inherit}.form-control:hover:not(:disabled):not([readonly])::-webkit-file-upload-button{background-color:#383838}
+            td {font-family: Consolas}
+            @media screen and (max-width: 600px) {
+                table {
+                    width: 250%;
+                }
+            }
+        </style> 
+    </head>
+
+    <body>
+        <main>
+            {% include 'header.html' %}
+            <h1 class="text-primary">Not ready</h1>
+            <div class="container mt-2 text-primary">
+                <div class="col m-1">
+                    <div class="row justify-content-between mb-2">
+                        <div class="col-xl-4 card">
+                            <div class="row mb-1 mt-1">
+                                <div class="col-6">
+                                    <img src="https://kiwiapi.aallyn.xyz/v1/misc/assets/images/classes/{{ config.character.name }}.png" width="192">
+                                    <img style="position:absolute;top:15px;left:15px" src="https://kiwiapi.aallyn.xyz/v1/misc/assets/images/classes/icons/{{ config.subclass.name }}.png" width="32">
+                                </div>
+                                <div class="col-6">
+                                    <label>Class:</label>
+                                    <select id="class" class="form-select form-control">
+                                        {% for class in classes %}
+                                            <option value="{{ class.name }}" {% if class == config.character %}selected{% endif %}>{{ class.value }}</option>
+                                        {% endfor %}
+                                    </select>
+                                    <label>Subclass:</label>
+                                    <select id="subclass" class="form-select form-control">
+                                        {% for class in classes %}
+                                            <option value="{{ class.name }}" {% if class == config.subclass %}selected{% endif %}>{{ class.value }}</option>
+                                        {% endfor %}
+                                    </select>
+                                    <label>Build Types:</label>
+                                    <select id="subclass" class="form-select form-control">
+                                        {% for build_type in build_types %}
+                                            <option value="{{ build_type.name }}" {% if build_type == config.build_type %}selected{% endif %}>{{ build_type.value }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xl-3 card">
+                            <div class="row mt-1 mb-1">
+                                <label class="switch">
+                                    <input type="checkbox" class="form-check-input" {% if not config.no_face %}checked{% endif %}>
+                                    Face Damage
+                                </label>
+                            </div>
+                        </div>
+                        <div class="col-xl-4 card">
+                            <div class="row mt-1 mb-1">
+                                <label class="switch">
+                                    <input type="checkbox" class="form-check-input" {% if not config.no_face %}checked{% endif %}>
+                                    Face Damage
+                                </label>
+                                <label class="switch">
+                                    <input type="checkbox" class="form-check-input" {% if config.subclass_active %}checked{% endif %}>
+                                    Subclass active
+                                </label>
+                                <label class="switch">
+                                    <input type="checkbox" class="form-check-input" {% if config.berserker_battler %}checked{% endif %}>
+                                    Berserker Battler
+                                </label>
+                                <label class="switch">
+                                    <input type="checkbox" class="form-check-input" {% if config.litany %}checked{% endif %}>
+                                    Enlightened
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 card mb-2" style="overflow-x: auto">
+                        <table class="text-primary m-2">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Build</th>
+                                    <th>Deviation</th>
+                                    <th>Coefficient</th>
+                                    <th>Light</th>
+                                    <th>Base Damage</th>
+                                    <th>Bonus Damage</th>
+                                    <th>Damage</th>
+                                    <th>Critical Damage</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for i in range(10) %}
+                                    <tr>
+                                        <td>{{ i + 1 }}</td>
+                                        <td>9/0/3/15</td>
+                                        <td>Best</td>
+                                        <td>18044230</td>
+                                        <td>11995</td>
+                                        <td>262041.5</td>
+                                        <td>115%</td>
+                                        <td>563389.23</td>
+                                        <td>3102.8%</td>
+                                        <td>10000</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </main>
+        {% include 'footer.html' %}
+    </body>
+</html>

@@ -1,0 +1,58 @@
+webpage: "encrusted_trunk_boxes"
+name: "Encrusted Runic Trunk"
+boxes:
+  - name: "Encrusted Runic Trunk"
+    opened: 100713
+    loot_table:
+      - name: "Soul of The Depths"
+        quantity_min: 0
+        quantity_max: 1
+        obtained: 2899
+      - name: "Depths Core"
+        quantity_min: 0
+        quantity_max: 1
+        obtained: 4778
+      - name: "Pyric Essence"
+        quantity_min: 0
+        quantity_max: 1
+        obtained: 9571
+      - name: "Abyssal Essence"
+        quantity_min: 0
+        quantity_max: 1
+        obtained: 9426
+      - name: "Zephyr Essence"
+        quantity_min: 0
+        quantity_max: 1
+        obtained: 9480
+      - name: "Runic Key Fragment"
+        quantity_min: 0
+        quantity_max: 1
+        obtained: 9309
+      - name: "Runic Essence"
+        quantity_min: 0
+        quantity_max: 1
+        obtained: 9552
+      - name: "Ink Bladder"
+        quantity_min: 0
+        quantity_max: 1
+        obtained: 5751
+      - name: "Fish Bone"
+        quantity_min: 0
+        quantity_max: 1
+        obtained: 5558
+      - name: "Depths Sand"
+        quantity_min: 0
+        quantity_max: 1
+        obtained: 5821
+      - name: "Lichenstone"
+        quantity_min: 0
+        quantity_max: 1
+        obtained: 18976
+      - name: "Chunk of Runic Ore"
+        quantity_min: 0
+        quantity_max: 1
+        obtained: 9426
+      - name: "Deepstone"
+        quantity_min: 0
+        quantity_max: 1
+        obtained: 168

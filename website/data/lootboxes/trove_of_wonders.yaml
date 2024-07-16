@@ -1,0 +1,72 @@
+webpage: "trove_of_wonders"
+name: "Trove of Wonders"
+boxes:
+  - name: "Trove of Wonders"
+    opened: 1049995
+    loot_table:
+      - name: "Fragment of Wonder"
+        tech_name: "Fragment of Wonder"
+        quantity_min: 0
+        quantity_max: 4
+        obtained: 204730
+        hide: true
+      - name: "Fragment of Wonder"
+        tech_name: "Fragment of Wonder"
+        quantity_min: 5
+        quantity_max: 8
+        obtained: 547476
+        hide: true
+      - name: "Fragment of Wonder"
+        tech_name: "Fragment of Wonder"
+        quantity_min: 9
+        quantity_max: 10
+        obtained: 137444
+        hide: true
+      - name: "Fragment of Wonder"
+        tech_name: "Fragment of Wonder"
+        quantity_min: 0
+        quantity_max: 50
+        obtained: 67379
+        hide: true
+      - name: "Mount: Ganda, the Sky Shepherd"
+        quantity_min: 0
+        quantity_max: 1
+        obtained: 128
+      - name: "Mount: Fortras, the Herald of Battle"
+        quantity_min: 0
+        quantity_max: 1
+        obtained: 623
+      - name: "Mount: Albairn, Voice of Dawn"
+        quantity_min: 0
+        quantity_max: 1
+        obtained: 614
+      - name: "Mount: F4-S.T. Prototype Rocket"
+        quantity_min: 0
+        quantity_max: 1
+        obtained: 3488
+      - name: "Mount: Turtle Tank"
+        quantity_min: 0
+        quantity_max: 1
+        obtained: 3404
+      - name: "Mount: Royal Tortoise"
+        quantity_min: 0
+        quantity_max: 1
+        obtained: 3416
+      - name: "Wings: Radical Rainbow Wings"
+        quantity_min: 0
+        quantity_max: 1
+        obtained: 3456
+      - name: "Mount: Kabiri, the Firetamer"
+        quantity_min: 0
+        quantity_max: 1
+        obtained: 3441
+      - name: "Mount: Illuri of the North Wind"
+        quantity_min: 0
+        quantity_max: 1
+        obtained: 3465
+      - name: "Mount: Hadori, the Promise of Spring"
+        quantity_min: 0
+        quantity_max: 1
+        obtained: 3477
+      
+      

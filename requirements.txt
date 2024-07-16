@@ -10,3 +10,5 @@ binary-reader
 pillow
 matplotlib
 pycountry
+fuzzy-search
+humanize
