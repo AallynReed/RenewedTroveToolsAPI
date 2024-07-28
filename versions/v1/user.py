@@ -14,10 +14,8 @@ from .models.database.user import User
 from datetime import datetime, UTC
 from beanie import PydanticObjectId
 from aiohttp import ClientSession
-from random import randint
 from .utils.discord import send_embed
 from utils import render_json
-from quart_cors import cors
 
 user = Blueprint("user", __name__, url_prefix="/user", template_folder="templates")
 

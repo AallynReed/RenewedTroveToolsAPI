@@ -65,26 +65,28 @@ async def update_mods_list():
                                 f"https://trovesaurus.com/client/pokehash.php?fileid={file.id}"
                             )
                             continue
-                        mod_entries.append(
-                            ModEntry(
-                                hash=file.hash,
-                                name=ts_mod.name,
-                                format=file.format,
-                                description=ts_mod.description,
-                                authors=ts_mod.authors,
+                        # Crit can't fucking read
+                        if file.format.lower() in ["zip", "tmod"]:
+                            mod_entries.append(
+                                ModEntry(
+                                    hash=file.hash,
+                                    name=ts_mod.name,
+                                    format=file.format,
+                                    description=ts_mod.description,
+                                    authors=ts_mod.authors,
+                                )
                             )
-                        )
-                        path = Path(f"mods/{file.hash}.{file.format}")
-                        if file.hash not in mod_files:
-                            req = f"https://trovesaurus.com/client/downloadfile.php?fileid={file.id}"
-                            async with session.get(req) as file_response:
-                                file_data = await file_response.read()
-                                if md5(file_data).hexdigest() == file.hash:
-                                    path.write_bytes(file_data)
-                                else:
-                                    l("Mod List").error(
-                                        f"Mod payload doesn't match hash: {file.hash}"
-                                    )
+                            path = Path(f"mods/{file.hash}.{file.format}")
+                            if file.hash not in mod_files:
+                                req = f"https://trovesaurus.com/client/downloadfile.php?fileid={file.id}"
+                                async with session.get(req) as file_response:
+                                    file_data = await file_response.read()
+                                    if md5(file_data).hexdigest() == file.hash:
+                                        path.write_bytes(file_data)
+                                    else:
+                                        l("Mod List").error(
+                                            f"Mod payload doesn't match hash: {file.hash}"
+                                        )
                 cache.process_hashes()
                 current_app.mods_list = cache
                 asyncio.create_task(offload_database_saves(mod_entries, mod_searches))

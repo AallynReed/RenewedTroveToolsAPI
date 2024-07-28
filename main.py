@@ -10,6 +10,7 @@ from versions.v1.models.database.mod import ModEntry, SearchMod
 from versions.v1.models.database.profile import ModProfile
 from versions.v1.models.database.gem import GemBuild
 from versions.v1.models.database.api import API
+from versions.v1.models.database.market import MarketItem, MarketListing
 import versions.v1.tasks as tasks
 from flask_discord import DiscordOAuth2Session
 from versions.v1.utils.logger import Logger
@@ -33,7 +34,7 @@ config = {
 
 app = Quart(__name__, template_folder="website", static_folder="website")
 app.config.from_mapping(config)
-app = cors(app, allow_origin=re.compile(r"https:\/\/(.*\.)?aallyn\.xyz"))
+app = cors(app, allow_origin=re.compile(r"https:\/\/(\w+\.)?aallyn\.xyz"))
 app.register_blueprint(versions.api_v1)
 app.register_blueprint(kiwiapp)
 
@@ -75,6 +76,8 @@ async def startup():
             ModEntry,
             ModProfile,
             SearchMod,
+            MarketItem,
+            MarketListing
         ],
     )
     tasks.update_mods_list.start()

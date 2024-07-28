@@ -825,6 +825,20 @@
         "tooltip": "<p>Ally</p>\r\n<ul>\r\n<li>8 Jump</li>\r\n<li>10 Movement Speed</li>\r\n</ul>",
         "updated_at": 1718447153
     },
+    "bunny_icecream": {
+        "blueprint": "2024/allies/bunny_icecream/c_c_bunny_icecream_ui",
+        "category": "Store",
+        "desc": "A hoppin' treat.",
+        "designer": "Trove Team",
+        "file": "Pets",
+        "filename": "collections/pet/bunny_icecream",
+        "mastery": "20",
+        "mastery_geode": "0",
+        "name": "Cherry Jerry",
+        "powerrank": "20",
+        "tooltip": "",
+        "updated_at": 1721332064
+    },
     "bunny_kamivp": {
         "blueprint": "c_c_bunny_kamivp_ui",
         "category": "Luminopolis",
@@ -1546,12 +1560,12 @@
         "designer": "TheStimerGames",
         "file": "Pets",
         "filename": "collections/pet/caterpillar_lavalarva",
-        "mastery": "0",
+        "mastery": "20",
         "mastery_geode": "0",
         "name": "Lava Larva",
-        "powerrank": "0",
+        "powerrank": "75",
         "tooltip": "",
-        "updated_at": 1718447153
+        "updated_at": 1721750457
     },
     "caterpillar_lucky": {
         "blueprint": "2024/allies/caterpillar_lucky/c_c_caterpillar_lucky_ui",
@@ -10988,6 +11002,20 @@
         "powerrank": "20",
         "tooltip": "",
         "updated_at": 1718447153
+    },
+    "tato_icecream": {
+        "blueprint": "2024/allies/tato_icecream/c_c_tato_icecream_ui",
+        "category": "Store",
+        "desc": "The five second rule can always apply, if you are not queasy.",
+        "designer": "Trove Team",
+        "file": "Pets",
+        "filename": "collections/pet/tato_icecream",
+        "mastery": "20",
+        "mastery_geode": "0",
+        "name": "Splat",
+        "powerrank": "20",
+        "tooltip": "",
+        "updated_at": 1721332064
     },
     "tato_naomi": {
         "blueprint": "c_c_tato_naomi_ui[naomi]",
