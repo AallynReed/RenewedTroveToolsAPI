@@ -5,7 +5,7 @@ import re
 import os
 import asyncio
 from .utils.discord import send_embed
-from datetime import datetime, UTC
+from datetime import datetime, UTC, timedelta
 from beanie import BulkWriter
 from aiohttp import ClientSession
 
@@ -16,19 +16,22 @@ leaderboards = Blueprint("leaderboards", __name__, url_prefix="/leaderboards")
 async def get_entries():
     params = request.args
     query = params.get("leaderboard_id", None)
-    created_before = int(params.get("created_before", 0)) or None
-    created_after = int(params.get("created_after", 0)) or None
-    if created_before and created_after and created_before < created_after:
-        return abort(400, "\"created_before\" can't be less than \"created_after\"")
+    created_at = int(params.get("created_at", 0)) or None
+    if created_at:
+        created_at_parse = datetime.fromtimestamp(created_at, UTC).replace(minute=0, second=0)
+        if created_at_parse.hour not in [0, 11]:
+            return abort(400, "Invalid timestamp, please give either UTC midnight or 11am (Trove time).")
+        if created_at_parse.hour == 0:
+            created_at_parse = created_at_parse.replace(hour=11)
+        created_at = created_at_parse.timestamp()
     limit = int(params.get("limit", 0)) or None
     offset = int(params.get("offset", 0))
     query_dump = {}
-    if query or created_before or created_after:
+    if query or created_at:
         query_dump = {
             "$and": [
                 *([{"leaderboard_id": query}] if query else []),
-                *([{"created_at": {"$lt": created_before}}] if created_before else []),
-                *([{"created_at": {"$gt": created_after}}] if created_after else []),
+                *([{"created_at": created_at}] if created_at else []),
             ]
         }
     final_query = LeaderboardEntry.find(query_dump).sort([("rank", 1)])
@@ -41,14 +44,23 @@ async def get_entries():
 @leaderboards.route("/list", methods=["GET"])
 async def get_list():
     items = await LeaderboardEntry.distinct("leaderboard_id")
-    return render_json(sorted([i for i in items]))
+    response = render_json(items)
+    response.headers["count"] = len(items)
+    return response
+
+@leaderboards.route("/timestamps", methods=["GET"])
+async def get_interest_items():
+    timestamps = await LeaderboardEntry.distinct("created_at")
+    return render_json(sorted(timestamps, reverse=True))
 
 async def insert_leaderboard_data(raw_data):
     data = raw_data.get("data", "")
     leaderboard_regex = re.compile(r"^(.+?) = (.+?)##(.+$)$", re.MULTILINE)
     entry_regex = re.compile(r"^(\d{1,4});([^;]+?);([^;]+?)$", re.MULTILINE)
     leaderboards_imported = []
-    submit_time = int(datetime.now(UTC).timestamp())
+    submit_time = int(
+        (datetime.now(UTC).replace(hour=11, minute=0, second=0, microsecond=0) - timedelta(days=1)).timestamp()
+    )
     for leaderboard_id, name, raw_entries in leaderboard_regex.findall(data):
         leaderboards_imported.append(name)
         async with BulkWriter() as bw:

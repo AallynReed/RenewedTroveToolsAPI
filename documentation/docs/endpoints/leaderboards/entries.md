@@ -14,8 +14,7 @@ Used to fetch Trove's leaderboard entries
 - `leaderboard_id` > `String` - ID of the leaderboard to filter
 - `limit` > `Integer` - Limit number of results (For paging/Lazy loading)
 - `offset` > `Integer` - Skip number of results (For paging/Lazy loading)
-- `created_after` > `UTC Timestamp [Seconds]` - When to start capturing based on creation date (Recommended start of UTC Day)
-- `created_before` > `UTC Timestamp [Seconds]` - When to stop capturing based on creation date (Recommended end of UTC Day)
+- `created_at` > `UTC Timestamp [Seconds]` - Day to extract leaderboard from. (Requires UTC or UTC+11 timestamp) which means it accepts 00:00 and 11:00 as valid entries.
 
 ## Success Response
 
@@ -51,6 +50,20 @@ Note: **May return empty array if misused**
 ```json
 {
   "message": "\"created_before\" can't be greater than \"created_after\"",
+  "status_code": 400,
+  "type": "error"
+}
+```
+
+**Condition** : If `created_at` is timestamp of any hour that's not 00:00 AM or 11:00 AM
+
+**Code** : `400 BAD REQUEST`
+
+**Content** :
+
+```json
+{
+  "message": "Invalid timestamp, please give either UTC midnight or 11am (Trove time).",
   "status_code": 400,
   "type": "error"
 }

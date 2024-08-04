@@ -152,7 +152,7 @@ async def get_last_hour():
                 "$and": [
                     {"name": item},
                     {"last_seen": {"$gt": current_capture.timestamp()}}
-                    ["created_at": {"$lt": current_capture.timestamp() + timedelta(hours=1).timestamp()}]
+                    ["created_at": {"$lt": (current_capture + timedelta(hours=1)).timestamp()}]
                 ]
             }
         ).to_list()
@@ -264,7 +264,7 @@ async def get_last_day():
                 "$and": [
                     {"name": item},
                     {"last_seen": {"$gt": current_capture.timestamp()}}
-                    ["created_at": {"$lt": current_capture.timestamp() + timedelta(days=1).timestamp()}]
+                    ["created_at": {"$lt": (current_capture + timedelta(days=1)).timestamp()}]
                 ]
             }
         ).to_list()

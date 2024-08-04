@@ -5,13 +5,14 @@ site_author: Aallyn Reed
 copyright: Aallyn - Copyright &copy; 2023 - Present
 nav:
   - Home: index.md
+  - Me: me.md
   - API Reference:
     - Overview: api.md
     - Market:
       - Endpoints:
-        - GET - Listings: endpoints/market/listings.md
         - GET - Interest Items: endpoints/market/interest_items.md
         - GET - Available Items: endpoints/market/available_items.md
+        - GET - Listings: endpoints/market/listings.md
         - GET - Hourly: endpoints/market/hourly.md
         - GET - Hourly Graph: endpoints/market/hourly_graph.md
         - GET - Daily: endpoints/market/daily.md
@@ -22,6 +23,7 @@ nav:
       - Endpoints:
         - GET - List: endpoints/leaderboards/list.md
         - GET - Entries: endpoints/leaderboards/entries.md
+        - GET - Timestamps: endpoints/leaderboards/timestamps.md
       - Models:
         - LeaderboardEntry: models/leaderboards/LeaderboardEntry.md
     - Misc:
@@ -30,7 +32,12 @@ nav:
       - Models:
         - D15BiomeSet: models/misc/D15BiomeSet.md
         - D15Biome: models/misc/D15Biome.md
-    - License: license.md
+  - APP Reference:
+    - Overview: app.md
+    - Features: 
+      - Projects: app/features/projects.md
+  - Terms of Use: terms_of_use.md
+  - License: license.md
 plugins:
   - search
 extra:
@@ -45,7 +52,7 @@ extra:
 theme:
   name: material
   logo: assets/favicon.png
-  favicon: assets/favicon.ico
+  favicon: https://trove.aallyn.xyz/favicon.ico
   primary: orange
   font:
     text: Roboto
@@ -68,5 +75,3 @@ theme:
       toggle:
         icon: material/brightness-4
         name: Switch to light mode
-
-

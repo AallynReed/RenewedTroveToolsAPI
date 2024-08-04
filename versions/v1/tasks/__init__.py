@@ -18,82 +18,92 @@ from json import loads, dumps
 from ..models.database.api import API
 
 
-@tasks.loop(minutes=5)
+@tasks.loop(seconds=5)
 async def update_mods_list():
     start = time.time()
     try:
-        async with ClientSession() as session:
-            async with session.get(
-                f"https://trovesaurus.com/mods/api/list?token={os.getenv('TROVESAURUS_TOKEN')}"
-            ) as response:
-                data = await response.json()
-                cache = ModCache()
-                mod_directory = Path("mods")
-                mod_files = [
-                    file.stem for file in mod_directory.iterdir() if file.is_file()
-                ]
-                mod_searches = []
-                mod_entries = []
-                for i, mod in enumerate(data, 1):
-                    ts_mod = TrovesaurusMod(**mod)
-                    last_update = ts_mod.date
-                    for d in ts_mod.files:
-                        if d.date > last_update:
-                            last_update = d.date
-                    mod_searches.append(
-                        SearchMod(
-                            id=ts_mod.id,
-                            name=ts_mod.name.lower(),
-                            authors=[
-                                author.Username.lower() for author in ts_mod.authors
-                            ],
-                            type=ts_mod.type,
-                            sub_type=ts_mod.sub_type,
-                            likes=ts_mod.likes,
-                            views=ts_mod.views,
-                            downloads=ts_mod.downloads,
-                            last_update=last_update,
+        if not current_app.main_worker:
+            mod_cache = current_app.get_object_from_redis("mods_cache")
+            if mod_cache is not None and (not hasattr(current_app, "mods_list_updated") or current_app.get_from_redis("mods_cache_updated") != current_app.mods_list_updated):
+                current_app.mods_list = mod_cache
+                current_app.mods_list_updated = current_app.get_from_redis("mods_cache_updated")
+                print("Mods list loaded from redis in", time.time() - start, "seconds")
+        else:
+            async with ClientSession() as session:
+                async with session.get(
+                    f"https://trovesaurus.com/mods/api/list?token={os.getenv('TROVESAURUS_TOKEN')}"
+                ) as response:
+                    data = await response.json()
+                    cache = ModCache()
+                    mod_directory = Path("mods")
+                    mod_files = [
+                        file.stem for file in mod_directory.iterdir() if file.is_file()
+                    ]
+                    mod_searches = []
+                    mod_entries = []
+                    for i, mod in enumerate(data, 1):
+                        ts_mod = TrovesaurusMod(**mod)
+                        last_update = ts_mod.date
+                        for d in ts_mod.files:
+                            if d.date > last_update:
+                                last_update = d.date
+                        mod_searches.append(
+                            SearchMod(
+                                id=ts_mod.id,
+                                name=ts_mod.name.lower(),
+                                authors=[
+                                    author.Username.lower() for author in ts_mod.authors
+                                ],
+                                type=ts_mod.type,
+                                sub_type=ts_mod.sub_type,
+                                likes=ts_mod.likes,
+                                views=ts_mod.views,
+                                downloads=ts_mod.downloads,
+                                last_update=last_update,
+                            )
                         )
-                    )
-                    cache[mod["id"]] = ts_mod
-                    for file in cache[mod["id"]].files:
-                        if not file.hash:
-                            l("Mod List").error(
-                                f"Trovesaurus file {file.id} has no hash"
-                            )
-                            await session.get(
-                                f"https://trovesaurus.com/client/pokehash.php?fileid={file.id}"
-                            )
-                            continue
-                        # Crit can't fucking read
-                        if file.format.lower() in ["zip", "tmod"]:
-                            mod_entries.append(
-                                ModEntry(
-                                    hash=file.hash,
-                                    name=ts_mod.name,
-                                    format=file.format,
-                                    description=ts_mod.description,
-                                    authors=ts_mod.authors,
+                        cache[mod["id"]] = ts_mod
+                        for file in cache[mod["id"]].files:
+                            if not file.hash:
+                                l("Mod List").error(
+                                    f"Trovesaurus file {file.id} has no hash"
                                 )
-                            )
-                            path = Path(f"mods/{file.hash}.{file.format}")
-                            if file.hash not in mod_files:
-                                req = f"https://trovesaurus.com/client/downloadfile.php?fileid={file.id}"
-                                async with session.get(req) as file_response:
-                                    file_data = await file_response.read()
-                                    if md5(file_data).hexdigest() == file.hash:
-                                        path.write_bytes(file_data)
-                                    else:
-                                        continue
-                                        l("Mod List").error(
-                                            f"Mod payload doesn't match hash: {file.hash}"
-                                        )
-                cache.process_hashes()
-                current_app.mods_list = cache
-                asyncio.create_task(offload_database_saves(mod_entries, mod_searches))
+                                await session.get(
+                                    f"https://trovesaurus.com/client/pokehash.php?fileid={file.id}"
+                                )
+                                continue
+                            # Crit can't fucking read
+                            if file.format.lower() in ["zip", "tmod"]:
+                                mod_entries.append(
+                                    ModEntry(
+                                        hash=file.hash,
+                                        name=ts_mod.name,
+                                        format=file.format,
+                                        description=ts_mod.description,
+                                        authors=ts_mod.authors,
+                                    )
+                                )
+                                path = Path(f"mods/{file.hash}.{file.format}")
+                                if file.hash not in mod_files:
+                                    req = f"https://trovesaurus.com/client/downloadfile.php?fileid={file.id}"
+                                    async with session.get(req) as file_response:
+                                        file_data = await file_response.read()
+                                        if md5(file_data).hexdigest() == file.hash:
+                                            path.write_bytes(file_data)
+                                        else:
+                                            continue
+                                            l("Mod List").error(
+                                                f"Mod payload doesn't match hash: {file.hash}"
+                                            )
+                    cache.process_hashes()
+                    current_app.mods_list = cache
+                    current_app.set_object_to_redis("mods_cache", cache)
+                    current_app.set_to_redis("mods_cache_updated", datetime.now(UTC).timestamp())
+                    asyncio.create_task(offload_database_saves(mod_entries, mod_searches))
+                    print("Mods list updated in", time.time() - start, "seconds")
+                    await asyncio.sleep(300)
     except Exception as e:
         print(traceback.format_exc())
-    print("Mods list updated in", time.time() - start, "seconds")
 
 
 async def offload_database_saves(mod_entries, search_mods):
@@ -111,14 +121,16 @@ async def offload_database_saves(mod_entries, search_mods):
 @update_mods_list.before_loop
 async def before_update_mods_list():
     l("Mod List").info("Mod list update task starting.")
-    try:
-        async for mod_entry in ModEntry.find_many({}):
-            path = Path(f"mods/{mod_entry.hash}.{mod_entry.format}")
-            if not path.exists():
-                print(f"Mod {mod_entry.hash} not found in mods directory")
-        print("Mod list check complete")
-    except Exception as e:
-        print(e)
+    if current_app.main_worker:
+        try:
+            async for mod_entry in ModEntry.find_many({}):
+                path = Path(f"mods/{mod_entry.hash}.{mod_entry.format}")
+                if not path.exists():
+                    print(f"Mod {mod_entry.hash} not found in mods directory")
+                await mod_entry.delete()
+            print("Mod list check complete")
+        except Exception as e:
+            print(e)
 
 
 @tasks.loop(minutes=10)
@@ -168,7 +180,8 @@ async def update_change_log():
                             "date": commit["commit"]["author"]["date"],
                         }
                     )
-    current_app.github_change_log = change_log
+    # current_app.github_change_log = change_log
+    current_app.set_to_redis("change_log", change_log)
 
 
 @update_change_log.before_loop
@@ -197,6 +210,7 @@ async def get_versions():
                 if len(data) < 100:
                     break
                 i += 1
+    current_app.set_to_redis("app_versions", current_app.app_versions)
 
 
 @get_versions.before_loop
