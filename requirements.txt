@@ -1,4 +1,6 @@
 beanie
+PyYAML
+uvicorn
 quart
 quart-cors
 python-dotenv
@@ -12,3 +14,4 @@ matplotlib
 pycountry
 fuzzy-search
 humanize
+mkdocs

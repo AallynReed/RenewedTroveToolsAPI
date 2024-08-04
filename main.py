@@ -10,7 +10,8 @@ from versions.v1.models.database.mod import ModEntry, SearchMod
 from versions.v1.models.database.profile import ModProfile
 from versions.v1.models.database.gem import GemBuild
 from versions.v1.models.database.api import API
-from versions.v1.models.database.market import MarketItem, MarketListing
+from versions.v1.models.database.market import MarketListing
+from versions.v1.models.database.leaderboards import LeaderboardEntry
 import versions.v1.tasks as tasks
 from flask_discord import DiscordOAuth2Session
 from versions.v1.utils.logger import Logger
@@ -64,7 +65,7 @@ def setup_loggers():
 async def startup():
     setup_loggers()
     app.environment_variables = os.environ
-    client = AsyncIOMotorClient()
+    client = AsyncIOMotorClient(port=27018)
     app.database_client = client
     await init_beanie(
         client.trove_api,
@@ -76,8 +77,8 @@ async def startup():
             ModEntry,
             ModProfile,
             SearchMod,
-            MarketItem,
-            MarketListing
+            MarketListing,
+            LeaderboardEntry
         ],
     )
     tasks.update_mods_list.start()

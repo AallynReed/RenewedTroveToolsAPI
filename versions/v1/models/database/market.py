@@ -10,7 +10,7 @@ class MarketListing(Document):
     id: UUID = Field(default_factory=uuid4, alias="_id", unique=True)
     name: str
     type: Optional[str] = None
-    stack: int = Field(alias="size")
+    stack: int
     price: int
     last_seen: int
 
@@ -44,7 +44,3 @@ class MarketListing(Document):
     def expired(self) -> bool:
         now = datetime.now(UTC).timestamp()
         return (now - self.created_at > 86400 * 7) or (now - self.last_seen > 3600 * 3)
-
-class MarketItem(Document):
-    name: Indexed(str, unique=True)
-    type: Optional[str] = None

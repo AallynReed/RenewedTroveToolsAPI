@@ -84,6 +84,7 @@ async def update_mods_list():
                                     if md5(file_data).hexdigest() == file.hash:
                                         path.write_bytes(file_data)
                                     else:
+                                        continue
                                         l("Mod List").error(
                                             f"Mod payload doesn't match hash: {file.hash}"
                                         )
@@ -92,7 +93,7 @@ async def update_mods_list():
                 asyncio.create_task(offload_database_saves(mod_entries, mod_searches))
     except Exception as e:
         print(traceback.format_exc())
-    l("Mod List").info("Mods list updated in", time.time() - start, "seconds")
+    print("Mods list updated in", time.time() - start, "seconds")
 
 
 async def offload_database_saves(mod_entries, search_mods):
@@ -104,17 +105,20 @@ async def offload_database_saves(mod_entries, search_mods):
         await SearchMod.find_one(SearchMod.id == mod.id).update(
             {"$set": mod.model_dump(by_alias=True, exclude=["id"])}, upsert=True
         )
-    l("Mod List").info("Mod list update task complete.")
+    print("Mod list update task complete.")
 
 
 @update_mods_list.before_loop
 async def before_update_mods_list():
     l("Mod List").info("Mod list update task starting.")
-    async for mod_entry in ModEntry.find_many({}):
-        path = Path(f"mods/{mod_entry.hash}.{mod_entry.format}")
-        if not path.exists():
-            l("Mods List").error(f"Mod {mod_entry.hash} not found in mods directory")
-    l("Mod List").info("Mod list check complete")
+    try:
+        async for mod_entry in ModEntry.find_many({}):
+            path = Path(f"mods/{mod_entry.hash}.{mod_entry.format}")
+            if not path.exists():
+                print(f"Mod {mod_entry.hash} not found in mods directory")
+        print("Mod list check complete")
+    except Exception as e:
+        print(e)
 
 
 @tasks.loop(minutes=10)

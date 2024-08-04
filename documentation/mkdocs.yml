@@ -1,0 +1,72 @@
+site_name: RenewedTroveTools API Documentation
+site_description: Documentation for the RenewedTroveTools API
+site_url: https://docs.aallyn.xyz/
+site_author: Aallyn Reed
+copyright: Aallyn - Copyright &copy; 2023 - Present
+nav:
+  - Home: index.md
+  - API Reference:
+    - Overview: api.md
+    - Market:
+      - Endpoints:
+        - GET - Listings: endpoints/market/listings.md
+        - GET - Interest Items: endpoints/market/interest_items.md
+        - GET - Available Items: endpoints/market/available_items.md
+        - GET - Hourly: endpoints/market/hourly.md
+        - GET - Hourly Graph: endpoints/market/hourly_graph.md
+        - GET - Daily: endpoints/market/daily.md
+        - GET - Daily Graph: endpoints/market/daily_graph.md
+        - Models:
+          - MarketListing: models/market/MarketListing.md
+    - Leaderboards:
+      - Endpoints:
+        - GET - List: endpoints/leaderboards/list.md
+        - GET - Entries: endpoints/leaderboards/entries.md
+      - Models:
+        - LeaderboardEntry: models/leaderboards/LeaderboardEntry.md
+    - Misc:
+      - Endpoints:
+        - GET - D15 Biomes: endpoints/misc/d15_biomes.md
+      - Models:
+        - D15BiomeSet: models/misc/D15BiomeSet.md
+        - D15Biome: models/misc/D15Biome.md
+    - License: license.md
+plugins:
+  - search
+extra:
+  generator: false
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/AallynReed/RenewedTroveToolsAPI
+    - icon: fontawesome/brands/discord
+      link: https://discord.gg/WTq6YxYzut
+    - icon: fontawesome/brands/paypal
+      link: https://kiwiapi.aallyn.xyz/v1/misc/paypal
+theme:
+  name: material
+  logo: assets/favicon.png
+  favicon: assets/favicon.ico
+  primary: orange
+  font:
+    text: Roboto
+  features:
+    - navigation.sections
+    - navigation.expand
+    - navigation.footer
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: deep orange
+      toggle:
+        icon: material/brightness-7 
+        name: Switch to dark mode
+
+    # Palette toggle for dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: deep orange  
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+
+
