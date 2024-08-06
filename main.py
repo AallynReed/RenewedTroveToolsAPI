@@ -12,6 +12,7 @@ from versions.v1.models.database.gem import GemBuild
 from versions.v1.models.database.api import API
 from versions.v1.models.database.market import MarketListing
 from versions.v1.models.database.leaderboards import LeaderboardEntry
+from versions.v1.models.database.scraping import ChaosChestEntry, ChallengeEntry
 import versions.v1.tasks as tasks
 from flask_discord import DiscordOAuth2Session
 from versions.v1.utils.logger import Logger
@@ -103,11 +104,11 @@ async def startup():
             ModProfile,
             SearchMod,
             MarketListing,
-            LeaderboardEntry
+            LeaderboardEntry,
+            ChaosChestEntry,
+            ChallengeEntry,
         ],
     )
-    # tasks.twitch_streams_fetch.start()
-    # tasks.reset_biomes.start()
     app.redis = redis.Redis(host="localhost", port=6379)
     app.get_from_redis = get_from_redis
     app.set_to_redis = set_to_redis
@@ -119,14 +120,18 @@ async def startup():
         main_worker = datetime.fromtimestamp(int(main_worker), UTC)
         if (datetime.now(UTC) - main_worker).total_seconds() > 5:
             app.redis.set("main_worker", int(datetime.now(UTC).timestamp()))
-            app.redis.delete("change_log", "app_versions", "mods_cache", "mods_cache_updated")
+            app.redis.delete(
+                "change_log", "app_versions", "mods_cache", "mods_cache_updated"
+            )
             app.main_worker = True
             tasks.update_change_log.start()
             tasks.get_versions.start()
             tasks.update_allies.start()
     else:
         app.redis.set("main_worker", int(datetime.now(UTC).timestamp()))
-        app.redis.delete("change_log", "app_versions", "mods_cache", "mods_cache_updated")
+        app.redis.delete(
+            "change_log", "app_versions", "mods_cache", "mods_cache_updated"
+        )
         app.main_worker = True
         tasks.update_change_log.start()
         tasks.get_versions.start()
@@ -288,6 +293,7 @@ async def home():
 async def redirect_long_shade_rotation():
     return redirect("https://app.aallyn.xyz/long_shade_rotation")
 
+
 @app.route("/long_shade_rotation", subdomain="app")
 async def long_shade_rotation():
     advanced = "advanced" in request.args
@@ -353,6 +359,7 @@ async def long_shade_rotation():
 @app.route("/lootboxes/<lootbox>", subdomain="trove")
 async def redirect_lootbox(lootbox):
     return redirect(f"https://app.aallyn.xyz/lootboxes/{lootbox}")
+
 
 @app.route("/lootboxes/<lootbox>", subdomain="app")
 async def lootbox(lootbox):

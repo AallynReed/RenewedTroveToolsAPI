@@ -394,12 +394,14 @@ async def get_assets(subpath):
         return abort(404)
     return await send_file(file, mimetype="image/png")
 
+
 @misc.route("/file/assets/<path:subpath>", methods=["GET"])
 async def get_assets_files(subpath):
     file = assets_folder.joinpath(subpath)
     if not file.exists():
         return abort(404)
     return await send_file(file)
+
 
 @misc.route("/d15_biomes", methods=["GET"])
 async def d15_biomes_get():

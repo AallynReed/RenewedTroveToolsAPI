@@ -18,9 +18,14 @@ async def get_entries():
     query = params.get("leaderboard_id", None)
     created_at = int(params.get("created_at", 0)) or None
     if created_at:
-        created_at_parse = datetime.fromtimestamp(created_at, UTC).replace(minute=0, second=0)
+        created_at_parse = datetime.fromtimestamp(created_at, UTC).replace(
+            minute=0, second=0
+        )
         if created_at_parse.hour not in [0, 11]:
-            return abort(400, "Invalid timestamp, please give either UTC midnight or 11am (Trove time).")
+            return abort(
+                400,
+                "Invalid timestamp, please give either UTC midnight or 11am (Trove time).",
+            )
         if created_at_parse.hour == 0:
             created_at_parse = created_at_parse.replace(hour=11)
         created_at = created_at_parse.timestamp()
@@ -41,6 +46,7 @@ async def get_entries():
     response.headers["count"] = entries_count
     return response
 
+
 @leaderboards.route("/list", methods=["GET"])
 async def get_list():
     items = await LeaderboardEntry.distinct("leaderboard_id")
@@ -48,10 +54,12 @@ async def get_list():
     response.headers["count"] = len(items)
     return response
 
+
 @leaderboards.route("/timestamps", methods=["GET"])
 async def get_interest_items():
     timestamps = await LeaderboardEntry.distinct("created_at")
     return render_json(sorted(timestamps, reverse=True))
+
 
 async def insert_leaderboard_data(raw_data):
     data = raw_data.get("data", "")
@@ -59,12 +67,17 @@ async def insert_leaderboard_data(raw_data):
     entry_regex = re.compile(r"^(\d{1,4});([^;]+?);([^;]+?)$", re.MULTILINE)
     leaderboards_imported = []
     submit_time = int(
-        (datetime.now(UTC).replace(hour=11, minute=0, second=0, microsecond=0) - timedelta(days=1)).timestamp()
+        (
+            datetime.now(UTC).replace(hour=11, minute=0, second=0, microsecond=0)
+            - timedelta(days=1)
+        ).timestamp()
     )
     for leaderboard_id, name, raw_entries in leaderboard_regex.findall(data):
         leaderboards_imported.append(name)
         async with BulkWriter() as bw:
-            for rank, player_name, score in entry_regex.findall("\n".join(raw_entries.split("|"))):
+            for rank, player_name, score in entry_regex.findall(
+                "\n".join(raw_entries.split("|"))
+            ):
                 await LeaderboardEntry.insert_one(
                     document=LeaderboardEntry(
                         leaderboard_id=leaderboard_id,
@@ -74,10 +87,12 @@ async def insert_leaderboard_data(raw_data):
                         score=float(score),
                         created_at=submit_time,
                     ),
-                    bulk_writer=bw
+                    bulk_writer=bw,
                 )
     async with ClientSession() as session:
-        await session.get(f"https://trovesaurus.com/leaderboards?update&key={os.getenv('TROVESAURUS_MARKET_TOKEN')}")
+        await session.get(
+            f"https://trovesaurus.com/leaderboards?update&key={os.getenv('TROVESAURUS_MARKET_TOKEN')}"
+        )
     await send_embed(
         os.getenv("LEADERBOARD_WEBHOOK"),
         {
@@ -88,6 +103,7 @@ async def insert_leaderboard_data(raw_data):
             "color": 0x00FF00,
         },
     )
+
 
 @leaderboards.route("/insert", methods=["POST"])
 async def insert_entries():

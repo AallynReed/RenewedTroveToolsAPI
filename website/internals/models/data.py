@@ -76,7 +76,7 @@ class DataLoot(BaseModel):
     @property
     def alt_chance_str(self):
         return f"1 out of {round(self.alt_chance, 2):,}"
-    
+
     @property
     def obtained_str(self):
         return f"{self.obtained:,}"
@@ -156,5 +156,4 @@ class Table(BaseModel):
         return tables
 
     @property
-    def forms(self):
-        ...
+    def forms(self): ...

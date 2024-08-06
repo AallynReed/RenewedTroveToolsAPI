@@ -37,7 +37,7 @@ class ExponentialBackoff(Generic[T]):
         self._base: int = base
         self._exp: int = 0
         self._max: int = 10
-        self._reset_time: int = base * 2 ** 11
+        self._reset_time: int = base * 2**11
         self._last_invocation: float = time.monotonic()
         rand = random.Random()
         rand.seed()
@@ -46,16 +46,13 @@ class ExponentialBackoff(Generic[T]):
         )
 
     @overload
-    def delay(self: ExponentialBackoff[Literal[False]]) -> float:
-        ...
+    def delay(self: ExponentialBackoff[Literal[False]]) -> float: ...
 
     @overload
-    def delay(self: ExponentialBackoff[Literal[True]]) -> int:
-        ...
+    def delay(self: ExponentialBackoff[Literal[True]]) -> int: ...
 
     @overload
-    def delay(self: ExponentialBackoff[bool]) -> Union[int, float]:
-        ...
+    def delay(self: ExponentialBackoff[bool]) -> Union[int, float]: ...
 
     def delay(self) -> Union[int, float]:
         invocation = time.monotonic()
@@ -64,7 +61,7 @@ class ExponentialBackoff(Generic[T]):
         if interval > self._reset_time:
             self._exp = 0
         self._exp = min(self._exp + 1, self._max)
-        return self._randfunc(0, self._base * 2 ** self._exp)
+        return self._randfunc(0, self._base * 2**self._exp)
 
 
 def compute_timedelta(dt: datetime.datetime) -> float:

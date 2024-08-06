@@ -26,16 +26,13 @@ from ...utils.trovesaurus import Mod, ModAuthor
 from beanie import Document, Indexed
 
 
-class NoFilesError(Exception):
-    ...
+class NoFilesError(Exception): ...
 
 
-class PropertyMalformedError(Exception):
-    ...
+class PropertyMalformedError(Exception): ...
 
 
-class MissingPropertyError(Exception):
-    ...
+class MissingPropertyError(Exception): ...
 
 
 class Property(BaseModel):

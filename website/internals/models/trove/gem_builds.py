@@ -57,6 +57,7 @@ class GemBuildConfig(BaseModel):
     def __ne__(self, other):
         return not self.__eq__(other)
 
+
 def generate_combinations(farm=False):
     first_set = [[i, 9 - i] for i in range(10)]
     second_set = [[i, 18 - i] for i in range(19)]

@@ -1,5 +1,5 @@
-site_name: RenewedTroveTools API Documentation
-site_description: Documentation for the RenewedTroveTools API
+site_name: Kiwi API Documentation
+site_description: Documentation for the Kiwi API, a place for everything Trove
 site_url: https://docs.aallyn.xyz/
 site_author: Aallyn Reed
 copyright: Aallyn - Copyright &copy; 2023 - Present
@@ -26,6 +26,16 @@ nav:
         - GET - Timestamps: endpoints/leaderboards/timestamps.md
       - Models:
         - LeaderboardEntry: models/leaderboards/LeaderboardEntry.md
+    - Rotations:
+      - Endpoints:
+        - GET - Chaos Chest: endpoints/rotations/chaoschest.md
+        - GET - Chaos Chest History: endpoints/rotations/chaoschest_history.md
+        - GET - Challenge: endpoints/rotations/challenge.md
+        - GET - Challenge History: endpoints/rotations/challenge_history.md
+      - Models:
+        - ChallengeEntry: models/rotations/ChallengeEntry.md
+        - ChallengeType: models/rotations/ChallengeType.md
+        - ChaosChestEntry: models/rotations/ChaosChestEntry.md
     - Misc:
       - Endpoints:
         - GET - D15 Biomes: endpoints/misc/d15_biomes.md

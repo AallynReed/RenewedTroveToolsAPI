@@ -6,16 +6,13 @@ from ..models.database.mod import ModEntry, SearchMod
 from ..utils.cache import ModCache
 from pathlib import Path
 import os
-from random import randint
 import asyncio
 import traceback
 import time
-from beanie import BulkWriter
 from hashlib import md5
 from ..utils.logger import l
-from datetime import datetime, UTC, timedelta
+from datetime import datetime, UTC
 from json import loads, dumps
-from ..models.database.api import API
 
 
 @tasks.loop(seconds=5)
@@ -24,10 +21,20 @@ async def update_mods_list():
     try:
         if not current_app.main_worker:
             mod_cache = current_app.get_object_from_redis("mods_cache")
-            if mod_cache is not None and (not hasattr(current_app, "mods_list_updated") or current_app.get_from_redis("mods_cache_updated") != current_app.mods_list_updated):
+            if mod_cache is not None and (
+                not hasattr(current_app, "mods_list_updated")
+                or current_app.get_from_redis("mods_cache_updated")
+                != current_app.mods_list_updated
+            ):
                 current_app.mods_list = mod_cache
-                current_app.mods_list_updated = current_app.get_from_redis("mods_cache_updated")
-                print("Mods list loaded from redis in", time.time() - start, "seconds")
+                current_app.mods_list_updated = current_app.get_from_redis(
+                    "mods_cache_updated"
+                )
+                print(
+                    "Mods list loaded from redis in",
+                    round(time.time() - start, 2),
+                    "seconds",
+                )
         else:
             async with ClientSession() as session:
                 async with session.get(
@@ -98,10 +105,16 @@ async def update_mods_list():
                     cache.process_hashes()
                     current_app.mods_list = cache
                     current_app.set_object_to_redis("mods_cache", cache)
-                    current_app.set_to_redis("mods_cache_updated", datetime.now(UTC).timestamp())
-                    asyncio.create_task(offload_database_saves(mod_entries, mod_searches))
-                    print("Mods list updated in", time.time() - start, "seconds")
-                    await asyncio.sleep(300)
+                    current_app.set_to_redis(
+                        "mods_cache_updated", datetime.now(UTC).timestamp()
+                    )
+                    asyncio.create_task(
+                        offload_database_saves(mod_entries, mod_searches)
+                    )
+                    print(
+                        "Mods list updated in", round(time.time() - start, 2), "seconds"
+                    )
+                    await asyncio.sleep(1800)
     except Exception as e:
         print(traceback.format_exc())
 
@@ -252,6 +265,13 @@ async def before_twitch_streams_fetch():
 
 @tasks.loop(minutes=180)
 async def update_allies():
+    last_allies_update = current_app.get_from_redis("allies_updated")
+    if (
+        last_allies_update is not None
+        and int(last_allies_update) + 86400 > datetime.now(UTC).timestamp()
+    ):
+        print("Allies data fetch task skipped.")
+        return
     print("Allies data fetch task starting.")
     async with ClientSession() as session:
         async with session.get(
@@ -304,6 +324,7 @@ async def update_allies():
             print(
                 f"Done - Checked: **{i}** | Updated: **{x}** | Removed: **{y}** | Added: **{z}**"
             )
+            current_app.set_to_redis("allies_updated", now)
 
 
 # @tasks.loop(seconds=1)

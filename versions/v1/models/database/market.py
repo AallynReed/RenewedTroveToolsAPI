@@ -38,7 +38,7 @@ class MarketListing(Document):
     @property
     def expires_at(self) -> int:
         return self.created_at + 86400 * 7
-    
+
     @computed_field
     @property
     def expired(self) -> bool:

@@ -64,15 +64,11 @@ class Stat:
         return cls(
             id=StatID[StatName(data["name"]).name].value,
             type=StatType[data["type"]].value,
-            value=data["value"]
+            value=data["value"],
         )
 
     def to_dict(self):
-        return {
-            "name": self.name,
-            "type": self.type_name,
-            "value": self.value
-        }
+        return {"name": self.name, "type": self.type_name, "value": self.value}
 
     @classmethod
     def decode(cls, encoded_value: int):
@@ -80,7 +76,7 @@ class Stat:
         stat_type = (encoded_value >> 54) & 0x07
         stat_value = encoded_value & ((1 << 51) - 1)
         if stat_value >= (1 << 50):
-            stat_value -= (1 << 51)
+            stat_value -= 1 << 51
         return cls(stat_id, stat_type, raw_value=stat_value)
 
     def encode(self):
@@ -88,14 +84,16 @@ class Stat:
             raise ValueError("stat id must be between 0 and 127")
         if not (0 <= self.type < 8):
             raise ValueError("stat type must be between 0 and 7")
-        if not (-2 ** 50 <= self._value < 2 ** 50):
+        if not (-(2**50) <= self._value < 2**50):
             raise ValueError("stat_value must fit in 51 bits as a signed integer")
-        encoded_value = (self.id << 57) | (self.type << 54) | (self._value & ((1 << 51) - 1))
+        encoded_value = (
+            (self.id << 57) | (self.type << 54) | (self._value & ((1 << 51) - 1))
+        )
         return encoded_value
 
 
 class Stats:
-    def __init__(self, stats: list[Stat]=None):
+    def __init__(self, stats: list[Stat] = None):
         self.stats = stats or []
 
     def __repr__(self):
@@ -114,8 +112,10 @@ class Stats:
             post_bonus = grouped_stats.get((stat_id, StatType.post_bonus.value), 0)
             total = flat * (1 + bonus) * (1 + class_bonus) * (1 + post_bonus)
             results[stat_id] = total
-        return [Stat(id=stat_id, type=StatType.flat.value, value=total) for stat_id, total in results.items()]
-    
+        return [
+            Stat(id=stat_id, type=StatType.flat.value, value=total)
+            for stat_id, total in results.items()
+        ]
+
     def add_stat(self, stat: Stat):
         self.stats.append(stat)
-

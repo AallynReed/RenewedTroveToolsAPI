@@ -10,6 +10,7 @@ from .stats import stats
 from .misc import misc
 from .market import market
 from .leaderboards import leaderboards
+from .rotations import rotations
 
 api_v1 = Blueprint("api_v1", __name__, url_prefix="/v1", subdomain="kiwiapi")
 # Register Endpoints
@@ -23,3 +24,4 @@ api_v1.register_blueprint(stats)
 api_v1.register_blueprint(misc)
 api_v1.register_blueprint(market)
 api_v1.register_blueprint(leaderboards)
+api_v1.register_blueprint(rotations)

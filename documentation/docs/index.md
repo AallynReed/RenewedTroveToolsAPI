@@ -2,7 +2,7 @@
 hide:
   - footer
 ---
-# Welcome to RenewedTroveTools API Documentation
+# Welcome to Kiwi API Documentation
 
 [![](https://dcbadge.limes.pink/api/server/WTq6YxYzut)](https://discord.gg/WTq6YxYzut)
 <br>
