@@ -6,15 +6,11 @@ from io import BytesIO
 import humanize
 from .utils.discord import send_embed
 import os
-import json
 from datetime import datetime, UTC
 import pycountry
 from pathlib import Path
 from base64 import b64encode
 from utils import render_json
-from versions.v1.models.database.api import API
-from .utils.authorization import authorize
-from copy import deepcopy
 from .utils.biome_rotation import get_rotation, system_epoch, system_interval
 
 

@@ -3,7 +3,7 @@ from pydantic import Field, computed_field, BaseModel
 from uuid import uuid4
 from uuid import UUID
 from typing import Optional
-from datetime import datetime, UTC, timedelta
+from datetime import datetime, UTC
 
 
 class MarketListing(Document):

@@ -1,22 +1,10 @@
-from quart import Blueprint, request, abort, current_app, send_file, Response
-from .models.database.scraping import ChaosChestEntry, ChallengeEntry, ChallengeType
-from pathlib import Path
+from quart import Blueprint, request, abort
+from .models.database.scraping import ChaosChestEntry, ChallengeEntry
 from utils import render_json
-from uuid import UUID
-import json
-from .utils.cache import SortOrder
-import re
 import os
 from aiohttp import ClientSession
-import asyncio
 from .utils.discord import send_embed
-from datetime import datetime, timedelta, UTC
-from beanie import BulkWriter
-import numpy as np
-from collections import Counter
-import matplotlib.pyplot as plt
-import matplotlib.dates as mdates
-from io import BytesIO
+from datetime import datetime, UTC
 
 
 rotations = Blueprint("rotations", __name__, url_prefix="/rotations")

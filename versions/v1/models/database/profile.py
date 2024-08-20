@@ -2,7 +2,6 @@ from __future__ import annotations
 
 from beanie import Document, Indexed, Link, Insert, Update, Replace, before_event
 from pydantic import Field
-from quart import current_app
 from .mod import ModEntry
 
 from string import ascii_letters, digits

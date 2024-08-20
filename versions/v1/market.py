@@ -1,10 +1,9 @@
-from quart import Blueprint, request, abort, current_app, send_file, Response
+from quart import Blueprint, request, abort, send_file
 from .models.database.market import MarketListing, MarketCapture, get_capture_query
 from pathlib import Path
 from utils import render_json
 from uuid import UUID
 import json
-from .utils.cache import SortOrder
 import re
 import os
 from aiohttp import ClientSession
@@ -12,8 +11,6 @@ import asyncio
 from .utils.discord import send_embed
 from datetime import datetime, timedelta, UTC
 from beanie import BulkWriter
-import numpy as np
-from collections import Counter
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 from matplotlib.ticker import FuncFormatter

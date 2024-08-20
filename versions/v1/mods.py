@@ -1,11 +1,10 @@
-from quart import Blueprint, request, abort, current_app, send_file, Response
+from quart import Blueprint, request, abort, current_app, send_file
 from .models.database.mod import ModEntry, ZMod, TMod, SearchMod
 from .utils.cache import SortOrder
 from pathlib import Path
 from io import BytesIO
 import base64
 import traceback
-import urllib.parse
 import re
 from utils import render_json
 from fuzzy_search import FuzzyPhraseSearcher

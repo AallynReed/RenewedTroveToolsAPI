@@ -1,5 +1,4 @@
 from quart import make_response, render_template, jsonify
-import re
 
 
 def render_json(data):

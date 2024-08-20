@@ -1,4 +1,4 @@
-from quart import Blueprint, request, abort, json
+from quart import Blueprint, request, abort
 from .models.database.star import StarBuild
 from utils import render_json
 from versions.v1.utils.authorization import authorize

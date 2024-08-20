@@ -1,11 +1,8 @@
 from pydantic import BaseModel, Field, field_validator, validator
 
-import re
 from datetime import datetime
 from enum import Enum
-from re import compile
 from typing import Union, Optional
-from aiohttp import ClientSession
 from beanie import Document, Indexed
 
 

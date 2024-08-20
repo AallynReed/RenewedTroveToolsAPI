@@ -1,10 +1,6 @@
-from quart import Blueprint, request, abort, current_app, send_file, Response
-from PIL import Image
-from enum import Enum
-from aiohttp import ClientSession
+from quart import Blueprint, request, abort, send_file
 from io import BytesIO
 from pathlib import Path
-from hashlib import md5
 from versions.v1.models.database.api import API, Mastery
 from versions.v1.utils.authorization import authorize
 from json import loads

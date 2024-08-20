@@ -1,5 +1,5 @@
 from dotenv import load_dotenv
-from quart import Quart, request, abort, make_response, redirect
+from quart import Quart, request, abort, redirect
 import os
 from motor.motor_asyncio import AsyncIOMotorClient
 import versions
@@ -14,11 +14,9 @@ from versions.v1.models.database.market import MarketListing
 from versions.v1.models.database.leaderboards import LeaderboardEntry
 from versions.v1.models.database.scraping import ChaosChestEntry, ChallengeEntry
 import versions.v1.tasks as tasks
-from flask_discord import DiscordOAuth2Session
 from versions.v1.utils.logger import Logger
 from pathlib import Path
 from datetime import datetime, UTC, timedelta
-from copy import deepcopy
 from aiohttp import ClientSession
 from utils import render_json, render
 from quart_cors import cors

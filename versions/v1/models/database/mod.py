@@ -18,7 +18,6 @@ from ...utils.functions import (
     ReadLeb128,
     WriteLeb128,
     calculate_hash,
-    fake_calculate_hash,
     chunks,
     get_attr,
 )
