@@ -17,8 +17,8 @@ nav:
         - GET - Hourly Graph: endpoints/market/hourly_graph.md
         - GET - Daily: endpoints/market/daily.md
         - GET - Daily Graph: endpoints/market/daily_graph.md
-        - Models:
-          - MarketListing: models/market/MarketListing.md
+      - Models:
+        - MarketListing: models/market/MarketListing.md
     - Leaderboards:
       - Endpoints:
         - GET - List: endpoints/leaderboards/list.md
@@ -26,6 +26,7 @@ nav:
         - GET - Timestamps: endpoints/leaderboards/timestamps.md
       - Models:
         - LeaderboardEntry: models/leaderboards/LeaderboardEntry.md
+        - LeaderboardMetadata: models/leaderboards/LeaderboardMetadata.md
     - Rotations:
       - Endpoints:
         - GET - Chaos Chest: endpoints/rotations/chaoschest.md
@@ -68,7 +69,7 @@ theme:
     text: Roboto
   features:
     - navigation.sections
-    - navigation.expand
+    #- navigation.expand
     - navigation.footer
   palette:
     - media: "(prefers-color-scheme: light)"

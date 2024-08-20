@@ -7,6 +7,7 @@ from random import sample
 from string import ascii_letters, digits
 from typing import Callable, Generic, Literal, TypeVar, Union, overload
 from binary_reader import BinaryReader
+import humanize
 
 
 def random_id(k=8):
@@ -173,3 +174,15 @@ def calculate_hash(data):
 
 def fake_calculate_hash(data):
     return 0 & 0xFFFFFFFF
+
+
+def intword(number):
+    if number >= 1_000_000:
+        return (
+            humanize.intword(number, format="%.2f")
+            .replace(" million", "M")
+            .replace(" billion", "B")
+            .replace(" trillion", "T")
+        )
+    else:
+        return humanize.intcomma(number)

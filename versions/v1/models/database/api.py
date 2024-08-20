@@ -1,12 +1,6 @@
 from beanie import Document, Indexed
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
 from datetime import datetime
-
-
-class D15Biomes(BaseModel):
-    current: list = Field(default_factory=list)
-    previous: list = Field(default_factory=list)
-    history: list = Field(default_factory=list)
 
 
 class MasteryServer(BaseModel):
@@ -23,5 +17,3 @@ class Mastery(BaseModel):
 class API(Document):
     id: str = Indexed(str, unique=True)
     mastery: Mastery
-    downloads: int = 0
-    biomes: D15Biomes

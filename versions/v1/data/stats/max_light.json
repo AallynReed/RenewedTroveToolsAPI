@@ -45,8 +45,8 @@
         "perm": true
     },
     {
-        "name": "Food (Premium Fish)",
-        "value": 400,
+        "name": "Rune",
+        "value": 450,
         "perm": true
     },
     {
@@ -78,11 +78,6 @@
         "name": "Zeuztian (Irradiant Dragon)",
         "value": 25,
         "perm": true
-    },
-    {
-        "name": "Rune (Works on top of food)",
-        "value": 50,
-        "perm": false
     },
     {
         "name": "Berserker Battler (Empowered Cosmic Gem Ability)",

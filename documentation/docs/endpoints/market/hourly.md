@@ -41,6 +41,7 @@ Models: [`MarketListing`](/models/market/MarketListing)
         ],
         "start":            <Integer>, # Start UTC timestamp of this block of listings
         "total_stack":      <Integer>  # Total number of items across all listings
+        "total_price":      <Integer>  # Total price of items across all listings
   }
 ]
 ```
@@ -71,6 +72,7 @@ Models: [`MarketListing`](/models/market/MarketListing)
         ...
     ],
     "start": 1722710202,
+    "total_price": 64221233,
     "total_stack": 106324
 }
 ```

@@ -290,9 +290,6 @@ async def latest_release_download_redirect():
         for asset in version.get("assets"):
             asset_name = asset.get("name")
             if "debug" not in asset_name and asset_name.endswith(".msi"):
-                api = await API.find_one({"_id": "api"})
-                api.downloads += 1
-                await api.save()
                 await send_embed(
                     os.getenv("APP_WEBHOOK"),
                     {

@@ -112,7 +112,7 @@ async def search_mods():
                     [
                         {
                             "$or": [
-                                {"name": {"$regex": ".*" + query + ".*"}},
+                                {"name": {"$regex": ".*" + re.escape(query) + ".*"}},
                                 {"authors": {"$in": [query]}},
                             ]
                         }

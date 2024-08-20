@@ -1,5 +1,5 @@
 from quart import Blueprint, request, abort, current_app, send_file, Response
-from .models.database.market import MarketListing
+from .models.database.market import MarketListing, MarketCapture, get_capture_query
 from pathlib import Path
 from utils import render_json
 from uuid import UUID
@@ -16,7 +16,9 @@ import numpy as np
 from collections import Counter
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
+from matplotlib.ticker import FuncFormatter
 from io import BytesIO
+from .utils.functions import intword
 
 
 data_path = Path("versions/v1/data")
@@ -54,7 +56,7 @@ async def get_listings():
     ):
         query_dump = {
             "$and": [
-                *([{{"name": query}}] if query else []),
+                *([{"name": query}] if query else []),
                 *([{"price": {"$lte": price_max}}] if price_max else []),
                 *([{"price": {"$gte": price_min}}] if price_min else []),
                 *([{"created_at": {"$lt": created_before}}] if created_before else []),
@@ -102,14 +104,24 @@ async def insert_market_data(raw_data):
         if int(price) > 50_000_000:
             continue
         if name in interest_items:
+            uuid = UUID(raw_uuid)
             listings.append(
                 MarketListing(
-                    id=UUID(raw_uuid),
+                    id=uuid,
                     name=name,
                     type=type or None,
                     stack=int(stack),
                     price=int(price),
+                    price_each=round(int(price) / int(stack), 3),
                     last_seen=now,
+                    created_at=int(
+                        (
+                            datetime(1582, 10, 15)
+                            + timedelta(microseconds=uuid.time / 10)
+                        )
+                        .replace(microsecond=0)
+                        .timestamp()
+                    ),
                 )
             )
         else:
@@ -122,7 +134,15 @@ async def insert_market_data(raw_data):
                 {"$set": {"last_seen": listing.last_seen}},
                 {
                     "$setOnInsert": listing.dict(
-                        include=["_id", "name", "type", "stack", "price"]
+                        include=[
+                            "_id",
+                            "name",
+                            "type",
+                            "stack",
+                            "price",
+                            "created_at",
+                            "price_each",
+                        ]
                     )
                 },
                 upsert=True,
@@ -168,62 +188,14 @@ async def get_last_hour():
     current_capture = now - timedelta(days=days, hours=hours)
     capture = []
     while current_capture < now:
-        captured_listings = await MarketListing.find(
-            {
-                "name": item,
-                "last_seen": {"$gt": int(current_capture.timestamp())}
-            }
-        ).to_list()
-        if not captured_listings:
-            candidate = {
-                "start": int(current_capture.timestamp()),
-                "end": int((current_capture + timedelta(hours=1, seconds=-1)).timestamp()),
-                "total_stack": 0,
-                "absolute_min": 0,
-                "absolute_max": 0,
-                "absolute_average": 0,
-                "iqr_min": 0,
-                "iqr_max": 0,
-                "iqr_average": 0,
-                "listings": [],
-            }
-            capture.append(candidate)
-            current_capture += timedelta(hours=1)
-            continue
-        captured_listings.sort(key=lambda x: x.price_each)
-        captured_listings = [
-            l.model_dump()
-            for l in captured_listings
-            if l.created_at < int(current_capture.timestamp())
-        ]
-        prices = np.array([l["price_each"] for l in captured_listings])
-        Q1 = np.percentile(prices, 20)
-        Q3 = np.percentile(prices, 80)
-        IQR = Q3 - Q1
-        k = 1.30
-        lower_bound = Q1 - k * IQR
-        upper_bound = Q3 + k * IQR
-        filtered_prices = prices[(prices >= lower_bound) & (prices <= upper_bound)]
-        # Calculate Weighed Average
-        frequency = Counter(list(filtered_prices))
-        total_weight = sum(frequency.values())
-        weighted_sum = sum([k * v for k, v in frequency.items()])
-        weighted_average = weighted_sum / total_weight
-        candidate = {
-            "start": int(current_capture.timestamp()),
-            "end": int((current_capture + timedelta(seconds=3599)).timestamp()),
-            "total_stack": sum(l["stack"] for l in captured_listings),
-            "absolute_min": min(prices),
-            "absolute_max": max(prices),
-            "absolute_average": round(np.average(prices), 3),
-            "iqr_min": min(list(filtered_prices)),
-            "iqr_max": max(list(filtered_prices)),
-            "iqr_average": round(weighted_average, 3),
-            "listings": [],
-        }
-        if not no_listings:
-            candidate["listings"] = captured_listings
-        capture.append(candidate)
+        start = int(current_capture.timestamp())
+        end = int((current_capture + timedelta(hours=1, seconds=-1)).timestamp())
+        captured_listings = (
+            await MarketListing.find({})
+            .aggregate(get_capture_query(item, start, end))
+            .to_list()
+        )
+        capture.append(captured_listings[0])
         current_capture += timedelta(hours=1)
     return render_json(sorted(capture, key=lambda x: x["start"]))
 
@@ -234,17 +206,18 @@ async def get_last_hour_graph():
     if not name:
         return abort(400, "Missing Item")
     hours = int(request.args.get("hours", 1))
+    days = int(request.args.get("days", 0))
     try:
         async with ClientSession() as session:
             async with session.get(
-                f"https://kiwiapi.aallyn.xyz/v1/market/hourly?item={name}&hours={hours}&no_listings"
+                f"https://kiwiapi.aallyn.xyz/v1/market/hourly?item={name}&hours={hours}&days={days}&no_listings"
             ) as response:
                 if response.status == 200:
                     data = await response.json()
                     times = [
                         datetime.fromtimestamp(item["start"], UTC) for item in data
                     ]
-                    iqr_avg = [item["iqr_average"] for item in data]
+                    iqr_avg = [item["iqr_avg"] for item in data]
                     iqr_max = [item["iqr_max"] for item in data]
                     iqr_min = [item["iqr_min"] for item in data]
                     plt.style.use("dark_background")
@@ -296,6 +269,92 @@ async def get_last_hour_graph():
     return abort(500, "Failed to fetch data")
 
 
+@market.route("/hourly_market_flux", methods=["GET"])
+async def get_last_hour_market_flux():
+    raw_data = request.args
+    days = int(raw_data.get("days", 0))
+    hours = int(raw_data.get("hours", 1))
+    now = datetime.now(UTC)
+    current_capture = now - timedelta(days=days, hours=hours)
+    capture = []
+    while current_capture < now:
+        start = int(current_capture.timestamp())
+        end = int((current_capture + timedelta(seconds=3599)).timestamp())
+        captured_listings = (
+            await MarketListing.find()
+            .aggregate(
+                [
+                    {
+                        "$match": {
+                            "last_seen": {"$gt": start},
+                            "created_at": {"$lt": end},
+                        }
+                    },
+                    {"$group": {"_id": None, "total_flux": {"$sum": "$price"}}},
+                ],
+                projection_model=MarketCapture,
+            )
+            .to_list()
+        )
+        candidate = {
+            "start": start,
+            "end": end,
+            "total_flux": captured_listings[0].total_flux,
+        }
+        capture.append(candidate)
+        current_capture += timedelta(hours=1)
+    return render_json(sorted(capture, key=lambda x: x["start"]))
+
+
+@market.route("/hourly_market_flux_graph", methods=["GET"])
+async def get_last_hour_market_flux_graph():
+    hours = int(request.args.get("hours", 1))
+    days = int(request.args.get("days", 0))
+    try:
+        async with ClientSession() as session:
+            async with session.get(
+                f"https://kiwiapi.aallyn.xyz/v1/market/hourly_market_flux?hours={hours}&days={days}"
+            ) as response:
+                if response.status == 200:
+                    data = await response.json()
+                    times = [
+                        datetime.fromtimestamp(item["start"], UTC) for item in data
+                    ]
+                    total_flux = [item["total_flux"] for item in data]
+                    plt.style.use("dark_background")
+                    fig, ax = plt.subplots(figsize=(12, 6))
+                    ax.plot(
+                        times,
+                        total_flux,
+                        label="Total Flux",
+                        marker="o",
+                        markeredgecolor="#555555",
+                        color="#d62728",
+                    )
+                    ax.set_ylabel("Total Flux")
+                    ax.set_title("Total Market Flux")
+                    ax.legend()
+                    ax.grid(True, color="#555555")
+                    ax.ticklabel_format(style="plain", axis="y")
+                    ax.xaxis.set_major_formatter(mdates.DateFormatter("%b-%d %H:%M"))
+                    ax.xaxis.set_major_locator(mdates.HourLocator(interval=1))
+                    ax.yaxis.set_major_formatter(FuncFormatter(lambda x, _: intword(x)))
+                    plt.setp(
+                        ax.xaxis.get_majorticklabels(), rotation=45, color="#555555"
+                    )
+                    plt.setp(ax.yaxis.get_majorticklabels(), color="#555555")
+                    for spine in ax.spines.values():
+                        spine.set_edgecolor("#555555")
+                    plt.tight_layout()
+                    buf = BytesIO()
+                    plt.savefig(buf, format="png")
+                    buf.seek(0)
+                    return await send_file(buf, mimetype="image/png")
+    except:
+        ...
+    return abort(500, "Failed to fetch data")
+
+
 @market.route("/daily", methods=["GET"])
 async def get_last_day():
     raw_data = request.args
@@ -309,62 +368,14 @@ async def get_last_day():
     current_capture = now - timedelta(days=days)
     capture = []
     while current_capture < now:
-        captured_listings = await MarketListing.find(
-            {
-                {"name": item},
-                {"last_seen": {"$gt": current_capture.timestamp()}}
-            }
-        ).to_list()
-        if not captured_listings:
-            candidate = {
-                "start": int(current_capture.timestamp()),
-                "end": int((current_capture + timedelta(seconds=86399)).timestamp()),
-                "total_stack": 0,
-                "absolute_min": 0,
-                "absolute_max": 0,
-                "absolute_average": 0,
-                "iqr_min": 0,
-                "iqr_max": 0,
-                "iqr_average": 0,
-                "listings": [],
-            }
-            capture.append(candidate)
-            current_capture += timedelta(days=1)
-            continue
-        captured_listings.sort(key=lambda x: x.price_each)
-        captured_listings = [
-            l.model_dump()
-            for l in captured_listings
-            if l.created_at < int(current_capture.timestamp())
-        ]
-        prices = np.array([l["price_each"] for l in captured_listings])
-        Q1 = np.percentile(prices, 25)
-        Q3 = np.percentile(prices, 75)
-        IQR = Q3 - Q1
-        k = 1.5
-        lower_bound = Q1 - k * IQR
-        upper_bound = Q3 + k * IQR
-        filtered_prices = prices[(prices >= lower_bound) & (prices <= upper_bound)]
-        frequency = Counter(list(filtered_prices))
-        # Calculate Weighed Average
-        total_weight = sum(frequency.values())
-        weighted_sum = sum([k * v for k, v in frequency.items()])
-        weighted_average = weighted_sum / total_weight
-        candidate = {
-            "start": int(current_capture.timestamp()),
-            "end": int((current_capture + timedelta(seconds=86399)).timestamp()),
-            "total_stack": sum(l["stack"] for l in captured_listings),
-            "absolute_min": min(prices),
-            "absolute_max": max(prices),
-            "absolute_average": round(np.average(prices), 3),
-            "iqr_min": min(list(filtered_prices)),
-            "iqr_max": max(list(filtered_prices)),
-            "iqr_average": round(weighted_average, 3),
-            "listings": [],
-        }
-        if not no_listings:
-            candidate["listings"] = captured_listings
-        capture.append(candidate)
+        start = int(current_capture.timestamp())
+        end = int((current_capture + timedelta(days=1, seconds=-1)).timestamp())
+        captured_listings = (
+            await MarketListing.find({})
+            .aggregate(get_capture_query(item, start, end))
+            .to_list()
+        )
+        capture.append(captured_listings[0])
         current_capture += timedelta(days=1)
     return render_json(sorted(capture, key=lambda x: x["start"]))
 
@@ -385,7 +396,7 @@ async def get_last_daily_graph():
                     times = [
                         datetime.fromtimestamp(item["start"], UTC) for item in data
                     ]
-                    iqr_avg = [item["iqr_average"] for item in data]
+                    iqr_avg = [item["iqr_avg"] for item in data]
                     iqr_max = [item["iqr_max"] for item in data]
                     iqr_min = [item["iqr_min"] for item in data]
                     plt.style.use("dark_background")
@@ -421,6 +432,88 @@ async def get_last_daily_graph():
                     ax.ticklabel_format(style="plain", axis="y")
                     ax.xaxis.set_major_formatter(mdates.DateFormatter("%b-%d"))
                     ax.xaxis.set_major_locator(mdates.DayLocator(interval=1))
+                    plt.setp(
+                        ax.xaxis.get_majorticklabels(), rotation=45, color="#555555"
+                    )
+                    plt.setp(ax.yaxis.get_majorticklabels(), color="#555555")
+                    for spine in ax.spines.values():
+                        spine.set_edgecolor("#555555")
+                    plt.tight_layout()
+                    buf = BytesIO()
+                    plt.savefig(buf, format="png")
+                    buf.seek(0)
+                    return await send_file(buf, mimetype="image/png")
+    except:
+        ...
+    return abort(500, "Failed to fetch data")
+
+
+@market.route("/daily_market_flux", methods=["GET"])
+async def get_last_day_market_flux():
+    raw_data = request.args
+    days = int(raw_data.get("days", 1))
+    now = datetime.now(UTC)
+    current_capture = now - timedelta(days=days)
+    capture = []
+    while current_capture < now:
+        captured_listings = (
+            await MarketListing.find()
+            .aggregate(
+                [
+                    {
+                        "$match": {
+                            "last_seen": {"$gt": int(current_capture.timestamp())},
+                            "created_at": {"$lt": int(current_capture.timestamp())},
+                        }
+                    },
+                    {"$group": {"_id": None, "total_flux": {"$sum": "$price"}}},
+                ],
+                projection_model=MarketCapture,
+            )
+            .to_list()
+        )
+        candidate = {
+            "start": int(current_capture.timestamp()),
+            "end": int((current_capture + timedelta(seconds=86399)).timestamp()),
+            "total_flux": captured_listings[0].total_flux,
+        }
+        capture.append(candidate)
+        current_capture += timedelta(days=1)
+    return render_json(sorted(capture, key=lambda x: x["start"]))
+
+
+@market.route("/daily_market_flux_graph", methods=["GET"])
+async def get_last_day_market_flux_graph():
+    days = int(request.args.get("days", 0))
+    try:
+        async with ClientSession() as session:
+            async with session.get(
+                f"https://kiwiapi.aallyn.xyz/v1/market/daily_market_flux?days={days}"
+            ) as response:
+                if response.status == 200:
+                    data = await response.json()
+                    times = [
+                        datetime.fromtimestamp(item["start"], UTC) for item in data
+                    ]
+                    total_flux = [item["total_flux"] for item in data]
+                    plt.style.use("dark_background")
+                    fig, ax = plt.subplots(figsize=(12, 6))
+                    ax.plot(
+                        times,
+                        total_flux,
+                        label="Total Flux",
+                        marker="o",
+                        markeredgecolor="#555555",
+                        color="#d62728",
+                    )
+                    ax.set_ylabel("Total Flux")
+                    ax.set_title("Total Market Flux")
+                    ax.legend()
+                    ax.grid(True, color="#555555")
+                    ax.ticklabel_format(style="plain", axis="y")
+                    ax.xaxis.set_major_formatter(mdates.DateFormatter("%b-%d"))
+                    ax.xaxis.set_major_locator(mdates.DayLocator(interval=1))
+                    ax.yaxis.set_major_formatter(FuncFormatter(lambda x, _: intword(x)))
                     plt.setp(
                         ax.xaxis.get_majorticklabels(), rotation=45, color="#555555"
                     )

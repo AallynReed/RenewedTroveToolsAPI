@@ -195,6 +195,20 @@
         "tooltip": "<p>Ally</p>\r\n<ul>\r\n<li>3 Jump</li>\r\n<li>5.0% Critical Damage</li>\r\n</ul>",
         "updated_at": 1718447153
     },
+    "bee_september2024_up": {
+        "blueprint": "2024/pets/bee_september2024_up/c_c_bee_september2024_up_ui",
+        "category": "Event",
+        "desc": "Given its size, its metabolism is out of this world. Or at least it would be, if ite were alive.",
+        "designer": "Trove Team",
+        "file": "Pets",
+        "filename": "collections/pet/bee_september2024_up",
+        "mastery": "0",
+        "mastery_geode": "0",
+        "name": "Buster the Brazen Buzzer",
+        "powerrank": "0",
+        "tooltip": "",
+        "updated_at": 1723166816
+    },
     "biped_bob": {
         "blueprint": "2022/allies/biped_bob/c_c_biped_bob_ui[knilpu]",
         "category": "Dev Dream",
@@ -3373,6 +3387,20 @@
         "tooltip": "",
         "updated_at": 1718447153
     },
+    "duodrak_september2024_down": {
+        "blueprint": "2024/pets/duodrak_september2024_down/c_c_duodrak_september2024_down_ui",
+        "category": "Event",
+        "desc": "Beware, it has the eyes of both predator and prey.",
+        "designer": "Trove Team",
+        "file": "Pets",
+        "filename": "collections/pet/duodrak_september2024_down",
+        "mastery": "0",
+        "mastery_geode": "0",
+        "name": "Cross-Eyed Crawler",
+        "powerrank": "0",
+        "tooltip": "",
+        "updated_at": 1723166816
+    },
     "duodrak_twoheads_battle": {
         "blueprint": "2022/allies/duodrak_twoheads_battle/c_c_duodrak_twoheads_battle_ui",
         "category": "BomberRoyale",
@@ -4689,6 +4717,20 @@
         "tooltip": "<p>Ally</p>\r\n<ul>\r\n<li>5 Jump</li>\r\n<li>0.3% Critical Hit</li>\r\n</ul>\r\n<p>Gain a movement speed boost when a nearby enemy dies.</p>",
         "updated_at": 1718447153
     },
+    "griffon_lunaraxolotl": {
+        "blueprint": "2024/pets/griffon_lunaraxolotl/c_c_griffon_lunaraxolotl_ui",
+        "category": "Event",
+        "desc": "Strong in both Moonlight and Moonshadow, and capable of the most adorable caterwauling.",
+        "designer": "Trove Team",
+        "file": "Pets",
+        "filename": "collections/pet/griffon_lunaraxolotl",
+        "mastery": "20",
+        "mastery_geode": "0",
+        "name": "Mothwing Nightlion",
+        "powerrank": "20",
+        "tooltip": "",
+        "updated_at": 1723792098
+    },
     "griffon_mastery": {
         "blueprint": "c_c_griffon_mastery_ui",
         "category": "Mastery",
@@ -5752,6 +5794,20 @@
         "powerrank": "20",
         "tooltip": "<p>Ally</p>\r\n<ul>\r\n<li>8.0% Energy Regen</li>\r\n</ul>\r\n<p>Gain 15% health when a nearby enemy dies.</p>",
         "updated_at": 1718447153
+    },
+    "llama_fantasy": {
+        "blueprint": "2024/allies/llama_fantasy/c_c_llama_fantasy_ui",
+        "category": "Store",
+        "desc": "Gentle and kind, with a heart pure and true.",
+        "designer": "Trove Team",
+        "file": "Pets",
+        "filename": "collections/pet/llama_fantasy",
+        "mastery": "0",
+        "mastery_geode": "0",
+        "name": "Fluffy Flumpful",
+        "powerrank": "0",
+        "tooltip": "",
+        "updated_at": 1723166816
     },
     "llama_fire": {
         "blueprint": "c_c_llama_fire_ui[jusiv]",
@@ -11758,6 +11814,20 @@
         "powerrank": "5",
         "tooltip": "",
         "updated_at": 1718447153
+    },
+    "unicorn_moonboar": {
+        "blueprint": "2024/pets/unicorn_moonboar/c_c_unicorn_moonboar_ui",
+        "category": "Event",
+        "desc": "Fierce yet friendly... mostly...",
+        "designer": "Trove Team",
+        "file": "Pets",
+        "filename": "collections/pet/unicorn_moonboar",
+        "mastery": "10",
+        "mastery_geode": "0",
+        "name": "Moonshadow Guardian",
+        "powerrank": "20",
+        "tooltip": "",
+        "updated_at": 1723792098
     },
     "unicorn_trove": {
         "blueprint": "c_c_unicorn_trove_ui[kentuky]",
