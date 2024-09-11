@@ -13,6 +13,7 @@ from hashlib import md5
 from ..utils.logger import l
 from datetime import datetime, UTC
 from json import loads, dumps
+from utils import Event, EventType
 
 
 @tasks.loop(seconds=5)
@@ -20,14 +21,14 @@ async def update_mods_list():
     start = time.time()
     try:
         if not current_app.main_worker:
-            mod_cache = current_app.get_object_from_redis("mods_cache")
+            mod_cache = await current_app.redis.get_object("mods_cache")
             if mod_cache is not None and (
                 not hasattr(current_app, "mods_list_updated")
-                or current_app.get_from_redis("mods_cache_updated")
+                or await current_app.redis.get_value("mods_cache_updated")
                 != current_app.mods_list_updated
             ):
                 current_app.mods_list = mod_cache
-                current_app.mods_list_updated = current_app.get_from_redis(
+                current_app.mods_list_updated = await current_app.redis.get_value(
                     "mods_cache_updated"
                 )
                 print(
@@ -36,6 +37,17 @@ async def update_mods_list():
                     "seconds",
                 )
         else:
+            async with ClientSession() as session:
+                response = await session.get(
+                    f"https://trovesaurus.com/mods/api/hot?token={os.getenv('TROVESAURUS_TOKEN')}"
+                )
+                hot_raw_data = await response.json()
+                hot_data = {}
+                for mod in hot_raw_data:
+                    mod_id = int(mod["modid"])
+                    if mod_id not in hot_data:
+                        hot_data[mod_id] = 0
+                    hot_data[mod_id] += 1
             async with ClientSession() as session:
                 async with session.get(
                     f"https://trovesaurus.com/mods/api/list?token={os.getenv('TROVESAURUS_TOKEN')}"
@@ -67,6 +79,7 @@ async def update_mods_list():
                                 views=ts_mod.views,
                                 downloads=ts_mod.downloads,
                                 last_update=last_update,
+                                hot=hot_data.get(ts_mod.id, 0),
                             )
                         )
                         cache[mod["id"]] = ts_mod
@@ -74,9 +87,6 @@ async def update_mods_list():
                             if not file.hash:
                                 l("Mod List").error(
                                     f"Trovesaurus file {file.id} has no hash"
-                                )
-                                await session.get(
-                                    f"https://trovesaurus.com/client/pokehash.php?fileid={file.id}"
                                 )
                                 continue
                             # Crit can't fucking read
@@ -92,11 +102,12 @@ async def update_mods_list():
                                 )
                                 path = Path(f"mods/{file.hash}.{file.format}")
                                 if file.hash not in mod_files:
-                                    req = f"https://trovesaurus.com/client/downloadfile.php?fileid={file.id}"
+                                    req = f"https://trovesaurus.com/client/downloadfile.php?fileid={file.id}&no_track"
                                     async with session.get(req) as file_response:
                                         file_data = await file_response.read()
                                         if md5(file_data).hexdigest() == file.hash:
                                             path.write_bytes(file_data)
+                                            print("Downloaded", ts_mod.name)
                                         else:
                                             continue
                                             l("Mod List").error(
@@ -104,8 +115,8 @@ async def update_mods_list():
                                             )
                     cache.process_hashes()
                     current_app.mods_list = cache
-                    current_app.set_object_to_redis("mods_cache", cache)
-                    current_app.set_to_redis(
+                    await current_app.redis.set_object("mods_cache", cache)
+                    await current_app.redis.set_value(
                         "mods_cache_updated", datetime.now(UTC).timestamp()
                     )
                     asyncio.create_task(
@@ -194,7 +205,7 @@ async def update_change_log():
                         }
                     )
     # current_app.github_change_log = change_log
-    current_app.set_to_redis("change_log", change_log)
+    await current_app.redis.set_value("change_log", change_log)
 
 
 @update_change_log.before_loop
@@ -223,7 +234,7 @@ async def get_versions():
                 if len(data) < 100:
                     break
                 i += 1
-    current_app.set_to_redis("app_versions", current_app.app_versions)
+    await current_app.redis.set_value("app_versions", current_app.app_versions)
 
 
 @get_versions.before_loop
@@ -242,7 +253,7 @@ async def twitch_streams_fetch():
             },
         ) as response:
             data = await response.json()
-            current_app.twitch_streams = data["data"]
+            await current_app.redis.set_value("twitch_streams", data)
 
 
 @twitch_streams_fetch.before_loop
@@ -265,7 +276,7 @@ async def before_twitch_streams_fetch():
 
 @tasks.loop(minutes=180)
 async def update_allies():
-    last_allies_update = current_app.get_from_redis("allies_updated")
+    last_allies_update = await current_app.redis.get_value("allies_updated")
     if (
         last_allies_update is not None
         and int(last_allies_update) + 86400 > datetime.now(UTC).timestamp()
@@ -324,7 +335,27 @@ async def update_allies():
             print(
                 f"Done - Checked: **{i}** | Updated: **{x}** | Removed: **{y}** | Added: **{z}**"
             )
-            current_app.set_to_redis("allies_updated", now)
+            await current_app.redis.set_value("allies_updated", now)
+
+
+@tasks.loop(seconds=2)
+async def sse_hearbeat():
+    await current_app.redis.publish_event(
+        Event(
+            id=int(datetime.now(UTC).timestamp()),
+            type=EventType.heartbeat,
+            data={"ping": "pong"},
+        )
+    )
+
+
+@sse_hearbeat.before_loop
+async def before_sse_hearbeat():
+    print("SSE heartbeat task starting.")
+
+
+@tasks.loop(seconds=1)
+async def luxion(): ...
 
 
 # @tasks.loop(seconds=1)

@@ -11,7 +11,10 @@ from versions.v1.models.database.profile import ModProfile
 from versions.v1.models.database.gem import GemBuild
 from versions.v1.models.database.api import API
 from versions.v1.models.database.market import MarketListing
-from versions.v1.models.database.leaderboards import LeaderboardEntry
+from versions.v1.models.database.leaderboards import (
+    LeaderboardEntry,
+    LeaderboardEntryArchive,
+)
 from versions.v1.models.database.scraping import ChaosChestEntry, ChallengeEntry
 import versions.v1.tasks as tasks
 from versions.v1.utils.logger import Logger
@@ -25,9 +28,9 @@ from humanize import precisedelta
 from website.internals.models import data
 from yaml import safe_load
 from website.internals.app import kiwiapp
-import redis
-from json import loads, dumps
-import pickle
+from utils import Redis
+from trove import TroveTime
+import asyncio
 
 config = {
     "DEBUG": True,
@@ -63,33 +66,11 @@ def setup_loggers():
     Logger("Mod List")
 
 
-def get_from_redis(key):
-    value = app.redis.get(key)
-    if value is None:
-        return value
-    return loads(value.decode("utf-8"))
-
-
-def set_to_redis(key, value):
-    return app.redis.set(key, dumps(value))
-
-
-def get_object_from_redis(key):
-    value = app.redis.get(key)
-    if value is None:
-        return value
-    return pickle.loads(value)
-
-
-def set_object_to_redis(key, value):
-    return app.redis.set(key, pickle.dumps(value))
-
-
 @app.before_serving
 async def startup():
     setup_loggers()
     app.environment_variables = os.environ
-    client = AsyncIOMotorClient(port=27018)
+    client = AsyncIOMotorClient()
     app.database_client = client
     await init_beanie(
         client.trove_api,
@@ -103,43 +84,63 @@ async def startup():
             SearchMod,
             MarketListing,
             LeaderboardEntry,
+            LeaderboardEntryArchive,
             ChaosChestEntry,
             ChallengeEntry,
         ],
     )
-    app.redis = redis.Redis(host="localhost", port=6379)
-    app.get_from_redis = get_from_redis
-    app.set_to_redis = set_to_redis
-    app.get_object_from_redis = get_object_from_redis
-    app.set_object_to_redis = set_object_to_redis
-    main_worker = app.redis.get("main_worker")
+    app.trove_time = TroveTime()
+    app.redis = Redis()
+    while not app.redis.is_connected:
+        await asyncio.sleep(1)
+    main_worker = await app.redis.get("main_worker")
     app.main_worker = False
+    remove_keys = ["leaderboard_search_*", "api_event_*"]
     if main_worker is not None:
         main_worker = datetime.fromtimestamp(int(main_worker), UTC)
         if (datetime.now(UTC) - main_worker).total_seconds() > 5:
-            app.redis.set("main_worker", int(datetime.now(UTC).timestamp()))
-            app.redis.delete(
-                "change_log", "app_versions", "mods_cache", "mods_cache_updated"
+            await app.redis.set("main_worker", int(datetime.now(UTC).timestamp()))
+            await app.redis.delete(
+                "change_log",
+                "app_versions",
+                "mods_cache",
+                "mods_cache_updated",
+                "twitch_streams",
             )
+            for remove_key in remove_keys:
+                async for key in app.redis.scan_iter(remove_key):
+                    await app.redis.delete(key)
             app.main_worker = True
             tasks.update_change_log.start()
             tasks.get_versions.start()
             tasks.update_allies.start()
+            tasks.twitch_streams_fetch.start()
+            tasks.sse_hearbeat.start()
     else:
-        app.redis.set("main_worker", int(datetime.now(UTC).timestamp()))
-        app.redis.delete(
-            "change_log", "app_versions", "mods_cache", "mods_cache_updated"
+        await app.redis.set("main_worker", int(datetime.now(UTC).timestamp()))
+        await app.redis.delete(
+            "change_log",
+            "app_versions",
+            "mods_cache",
+            "mods_cache_updated",
+            "twitch_streams",
         )
+        for remove_key in remove_keys:
+            async for key in app.redis.scan_iter(remove_key):
+                await app.redis.delete(key)
         app.main_worker = True
         tasks.update_change_log.start()
         tasks.get_versions.start()
         tasks.update_allies.start()
+        tasks.twitch_streams_fetch.start()
+        tasks.sse_hearbeat.start()
     tasks.update_mods_list.start()
 
 
-# @app.before_request
-# async def before_request():
-#     print(dict(request.headers))
+@app.before_request
+async def before_request():
+    if request.headers["Cf-Connecting-Ip"] == os.getenv("TROVESAURUS_IP"):
+        print(f"Request from Trovesaurus: {request.path}")
 
 
 @app.route("/favicon.ico")
@@ -401,7 +402,7 @@ async def donate():
 @app.route("/change_log")
 @app.route("/change_log", subdomain="trove")
 async def change_log():
-    change_log = app.get_from_redis("change_log")
+    change_log = await app.redis.get_value("change_log")
     if change_log is None:
         return abort(503, "Change log is not available.")
     change_log = [

@@ -1,5 +1,5 @@
-from quart import Blueprint, request, abort, current_app
-from .models.database.leaderboards import LeaderboardEntry
+from quart import Blueprint, request, abort, current_app, Response
+from .models.database.leaderboards import LeaderboardEntry, LeaderboardEntryArchive
 from utils import render_json
 import re
 import os
@@ -8,6 +8,10 @@ from .utils.discord import send_embed
 from datetime import datetime, UTC, timedelta
 from beanie import BulkWriter
 from aiohttp import ClientSession
+from hashlib import sha1
+import json
+from utils import Event, EventType
+
 
 leaderboards = Blueprint("leaderboards", __name__, url_prefix="/leaderboards")
 
@@ -17,7 +21,6 @@ async def get_entries():
     params = request.args
     query = params.get("name_id", None)
     category = params.get("category_id", None)
-    with_count = int(params.get("with_count", 1))
     created_at = int(params.get("created_at", 0)) or None
     remove_fields = params.get("remove_fields", "")
     remove_fields = remove_fields.split(",") if remove_fields else []
@@ -32,7 +35,7 @@ async def get_entries():
             )
         if created_at_parse.hour == 0:
             created_at_parse = created_at_parse.replace(hour=11)
-        created_at = created_at_parse.timestamp()
+        created_at = int(created_at_parse.timestamp())
     limit = int(params.get("limit", 0)) or None
     offset = int(params.get("offset", 0))
     query_dump = {}
@@ -44,23 +47,39 @@ async def get_entries():
                 *([{"created_at": created_at}] if created_at else []),
             ]
         }
-    final_query = LeaderboardEntry.find(query_dump).sort([("rank", 1)])
-    entries = await final_query.skip(offset).limit(limit).to_list()
-    response = render_json(
-        [
-            i.model_dump(
-                exclude=["id"]
-                + remove_fields
-                + (["created_at"] if created_at else [])
-                + (["name_id"] if query else [])
-                + (["category_id"] if category else [])
-            )
-            for i in entries
-        ]
+    pipeline = [
+        {"$match": query_dump} if query_dump else {},
+        {"$sort": {"rank": 1}},
+        {
+            "$project": {
+                "_id": 0,
+                **({"created_at": 0} if created_at else {}),
+                **({"name_id": 0} if query else {}),
+                **({"category_id": 0} if category else {}),
+            }
+        },
+        *([{"$skip": offset}] if offset else []),
+        *([{"$limit": limit}] if limit else []),
+    ]
+    pipeline_id = (
+        f"leaderboard_search_{created_at}"
+        + sha1(json.dumps(pipeline).encode()).hexdigest()
     )
-    if with_count:
-        entries_count = await final_query.count()
-        response.headers["count"] = entries_count
+    entries = await current_app.redis.get_object(pipeline_id)
+    if entries:
+        print("Cache hit")
+        for entry in entries:
+            for field in remove_fields:
+                entry.pop(field, None)
+        return Response(json.dumps(entries), content_type="application/json")
+    final_query = LeaderboardEntry.aggregate(pipeline)
+    entries = await final_query.to_list()
+    await current_app.redis.set_object(pipeline_id, entries)
+    await current_app.redis.expire(pipeline_id, 3600)
+    for entry in entries:
+        for field in remove_fields:
+            entry.pop(field, None)
+    response = Response(json.dumps(entries), content_type="application/json")
     return response
 
 
@@ -103,6 +122,120 @@ async def get_list():
         .to_list()
     )
     return render_json(items)
+
+
+async def archive_entries(submit_time):
+    delete_time = submit_time - timedelta(days=7)
+    old_entries = LeaderboardEntry.find(
+        {"created_at": {"$lt": delete_time.timestamp()}}
+    )
+    limit = 50000
+    offset = 0
+    while True:
+        print(f"Archiving {offset} to {offset + limit}...")
+        entries = await old_entries.skip(offset).limit(limit).to_list()
+        offset += limit
+        if not entries:
+            break
+        async with BulkWriter() as bw:
+            for entry in entries:
+                await LeaderboardEntryArchive.insert_one(
+                    document=LeaderboardEntryArchive(
+                        uuid=entry.uuid,
+                        name_id=entry.name_id,
+                        name=entry.name,
+                        category_id=entry.category_id,
+                        category=entry.category,
+                        player_name=entry.player_name,
+                        rank=entry.rank,
+                        score=entry.score,
+                        created_at=entry.created_at,
+                    ),
+                    bulk_writer=bw,
+                )
+    await LeaderboardEntry.find(
+        {"created_at": {"$lt": delete_time.timestamp()}}
+    ).delete_many()
+    print("Done archiving.")
+
+
+async def precache_entries(created_at, ts_date):
+    query = {"created_at": created_at}
+    items = (
+        await LeaderboardEntry.find(query)
+        .aggregate(
+            [
+                {
+                    "$group": {
+                        "_id": {
+                            "uuid": "$uuid",
+                            "name_id": "$name_id",
+                            "category_id": "$category_id",
+                        },
+                        "count": {"$sum": 1},
+                    }
+                },
+                {
+                    "$project": {
+                        "_id": 0,
+                        "uuid": "$_id.uuid",
+                        "name_id": "$_id.name_id",
+                        "category_id": "$_id.category_id",
+                        "count": 1,
+                    }
+                },
+                {"$sort": {"uuid": 1, "name_id": 1, "category_id": 1}},
+            ]
+        )
+        .to_list()
+    )
+    offset = 0
+    limit = None
+    for i, item in enumerate(items):
+        print(f"Precaching {i+1}/{len(items)}...")
+        name = item["name_id"]
+        category = item["category_id"]
+        query_dump = {}
+        if name or created_at or category:
+            query_dump = {
+                "$and": [
+                    *([{"name_id": name}] if name else []),
+                    *([{"category_id": category}] if category else []),
+                    *([{"created_at": created_at}] if created_at else []),
+                ]
+            }
+        pipeline = [
+            {"$match": query_dump} if query_dump else {},
+            {"$sort": {"rank": 1}},
+            {
+                "$project": {
+                    "_id": 0,
+                    **({"created_at": 0} if created_at else {}),
+                    **({"name_id": 0} if name else {}),
+                    **({"category_id": 0} if category else {}),
+                }
+            },
+            *([{"$skip": offset}] if offset else []),
+            *([{"$limit": limit}] if limit else []),
+        ]
+        pipeline_id = (
+            f"leaderboard_search_{created_at}"
+            + sha1(json.dumps(pipeline).encode()).hexdigest()
+        )
+        final_query = LeaderboardEntry.aggregate(pipeline)
+        entries = await final_query.to_list()
+        await current_app.redis.set_object(pipeline_id, entries)
+        await current_app.redis.expire(pipeline_id, 3600 * 24)
+    async with ClientSession() as session:
+        await session.get(
+            f"https://trovesaurus.com/leaderboards/?import&key={os.getenv('TROVESAURUS_MARKET_TOKEN')}&day={ts_date}"
+        )
+    await current_app.redis.publish_event(
+        Event(
+            id=created_at, type=EventType.leaderboards, data={"imported_at": created_at}
+        )
+    )
+    print(f"Precached {len(items)} leaderboards for {ts_date}.")
 
 
 @leaderboards.route("/categories", methods=["GET"])
@@ -173,6 +306,7 @@ async def insert_leaderboard_data(raw_data):
             - timedelta(days=1)
         ).timestamp()
     )
+    submit_time = raw_data.get("timestamp", submit_time)
     for (
         leaderboard_id,
         category_id,
@@ -202,10 +336,11 @@ async def insert_leaderboard_data(raw_data):
                     ),
                     bulk_writer=bw,
                 )
-    async with ClientSession() as session:
-        await session.get(
-            f"https://trovesaurus.com/leaderboards?update&key={os.getenv('TROVESAURUS_MARKET_TOKEN')}&timestamp={submit_time}"
-        )
+    submit_time = datetime.fromtimestamp(submit_time, UTC)
+    asyncio.create_task(archive_entries(submit_time))
+    year = submit_time.year
+    day = submit_time.timetuple().tm_yday
+    ts_date = f"{year}{day}"
     await send_embed(
         os.getenv("LEADERBOARD_WEBHOOK"),
         {
@@ -214,6 +349,7 @@ async def insert_leaderboard_data(raw_data):
             "color": 0x00FF00,
         },
     )
+    await precache_entries(int(submit_time.timestamp()), ts_date)
 
 
 @leaderboards.route("/insert", methods=["POST"])
@@ -222,4 +358,29 @@ async def insert_entries():
     if raw_data.get("Token") != os.getenv("TOKEN"):
         return abort(401)
     asyncio.create_task(insert_leaderboard_data(raw_data))
+    return "OK", 200
+
+
+@leaderboards.route("/insert_missing", methods=["GET", "POST"])
+async def insert_missing_leaderboards():
+    if request.method == "GET":
+        return """
+        <form method="post" enctype="multipart/form-data">
+            <input type="text" name="password">
+            <input type="file" name="files[]" multiple>
+            <input type="submit">
+        </form>
+        """
+
+    files = await request.files
+    if "files[]" not in files:
+        return abort(400)
+    for file in files.getlist("files[]"):
+        timestamp = int(file.filename.split(".")[0])
+        time = datetime.fromtimestamp(timestamp, UTC)
+        time = int(
+            time.replace(hour=11, minute=0, second=0, microsecond=0).timestamp() - 86400
+        )
+        data = {"timestamp": time, "data": file.read().decode("utf-8")}
+        asyncio.create_task(insert_leaderboard_data(data))
     return "OK", 200

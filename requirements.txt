@@ -1,6 +1,6 @@
 beanie
 PyYAML
-uvicorn
+uvicorn[standard]
 quart
 quart-cors
 python-dotenv
@@ -15,3 +15,5 @@ pycountry
 fuzzy-search
 humanize
 mkdocs
+aioredis
+websockets

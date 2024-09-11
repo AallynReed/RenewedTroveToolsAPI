@@ -1,4 +1,4 @@
-from quart import Blueprint, request, abort, send_file
+from quart import Blueprint, request, abort, send_file, current_app
 from .models.database.market import MarketListing, MarketCapture, get_capture_query
 from pathlib import Path
 from utils import render_json
@@ -16,6 +16,8 @@ import matplotlib.dates as mdates
 from matplotlib.ticker import FuncFormatter
 from io import BytesIO
 from .utils.functions import intword
+from utils import Event, EventType
+from hashlib import sha1
 
 
 data_path = Path("versions/v1/data")
@@ -63,7 +65,11 @@ async def get_listings():
                     if last_seen_before
                     else []
                 ),
-                *([{"last_seen": {"$gt": last_seen_after}}] if last_seen_after else []),
+                *(
+                    [{"last_seen": {"$gte": last_seen_after}}]
+                    if last_seen_after
+                    else []
+                ),
             ]
         }
     final_query = MarketListing.find(query_dump)
@@ -93,7 +99,8 @@ async def insert_market_data(raw_data):
     listing_regex = re.compile(
         r"([a-zA-Z0-9-]{36});([^;]+);([^;]*);(\d{1,4});(\d{1,8})", re.MULTILINE
     )
-    now = int(datetime.now(UTC).timestamp())
+    now = int(datetime.now(UTC).replace(second=0, microsecond=0).timestamp())
+    now = raw_data.get("timestamp", now)
     interest_items = json.loads(data_path.joinpath("market_items.json").read_text())
     result_listings = listing_regex.findall(raw_data.get("data", ""))
     imported = len(result_listings)
@@ -147,8 +154,11 @@ async def insert_market_data(raw_data):
             )
     async with ClientSession() as session:
         await session.get(
-            f"https://trovesaurus.com/market?update&key={os.getenv('TROVESAURUS_MARKET_TOKEN')}"
+            f"https://trovesaurus.com/market?update&key={os.getenv('TROVESAURUS_MARKET_TOKEN')}&last_seen_after={now}"
         )
+    await current_app.redis.publish_event(
+        Event(id=int(now), type=EventType.market, data={"imported_at": now})
+    )
     await send_embed(
         os.getenv("MARKET_WEBHOOK"),
         {
@@ -168,7 +178,74 @@ async def insert_listings():
     return "OK", 200
 
 
+async def insert_missing_market_data(files):
+    await asyncio.sleep(3)
+    for filename, content in files:
+        timestamp = int(filename.split(".")[0])
+        time = datetime.fromtimestamp(timestamp, UTC)
+        time = int(time.replace(second=0, microsecond=0).timestamp())
+        data = {"timestamp": time, "data": content}
+        await insert_market_data(data)
+
+
+@market.route("/insert_missing", methods=["GET", "POST"])
+async def insert_missing_market():
+    if request.method == "GET":
+        return """
+        <form method="post" enctype="multipart/form-data">
+            <input type="text" name="password">
+            <input type="file" name="files[]" multiple>
+            <input type="submit">
+        </form>
+        """
+
+    files = await request.files
+    if "files[]" not in files:
+        return abort(400)
+    read_files = [
+        (f.filename, f.read().decode("utf-8")) for f in files.getlist("files[]")
+    ]
+    asyncio.create_task(insert_missing_market_data(read_files))
+    return "OK", 200
+
+
+# async def cache_missing_trovesaurus():
+#     await asyncio.sleep(3)
+#     raw_data = open("missing.txt", "r").read()
+#     listing_uuids = {l.strip():"" for l in raw_data.splitlines() if l.strip()}
+#     documents = []
+#     i =0
+#     async for doc in MarketListing.find():
+#         if str(doc.id) in listing_uuids:
+#             continue
+#         i += 1
+#         print(i)
+#         documents.append(doc)
+#     await current_app.redis.set_object("trovesaurus_missing_market", [i.model_dump() for i in documents])
+#     await current_app.redis.expire("trovesaurus_missing_market", 3600)
+#     print("Done")
+
+
+# @market.route("/trovesaurus_missing")
+# async def trovesaurus_missing():
+#     data = await current_app.redis.get_object("trovesaurus_missing_market")
+#     if data is None:
+#         asyncio.create_task(cache_missing_trovesaurus())
+#         return "OK", 200
+#     return render_json(data)
+
+
 ### Statistical
+
+
+async def clear_old_market_searches():
+    last_listing = await MarketListing.find_one({}, sort=[("last_seen", -1)])
+    if last_listing:
+        last_seen = last_listing.last_seen
+        async for key in current_app.redis.scan_iter("market_search_*"):
+            timestamp = int(key.decode("utf-8").split("_")[-2])
+            if timestamp != last_seen:
+                await current_app.redis.delete(key)
 
 
 @market.route("/hourly", methods=["GET"])
@@ -181,20 +258,30 @@ async def get_last_hour():
     no_listings = "no_listings" in raw_data
     days = int(raw_data.get("days", 0))
     hours = int(raw_data.get("hours", 1))
-    now = datetime.now(UTC)
-    current_capture = now - timedelta(days=days, hours=hours)
-    capture = []
-    while current_capture < now:
-        start = int(current_capture.timestamp())
-        end = int((current_capture + timedelta(hours=1, seconds=-1)).timestamp())
-        captured_listings = (
-            await MarketListing.find({})
-            .aggregate(get_capture_query(item, start, end))
-            .to_list()
-        )
-        capture.append(captured_listings[0])
-        current_capture += timedelta(hours=1)
-    return render_json(sorted(capture, key=lambda x: x["start"]))
+    last_listing = await MarketListing.find_one({}, sort=[("last_seen", -1)])
+    meshed_search = (
+        f"market_search_{last_listing.last_seen}_"
+        + sha1(f"{item}{days}{hours}{int(no_listings)}".encode()).hexdigest()
+    )
+    await clear_old_market_searches()
+    data = await current_app.redis.get_object(meshed_search)
+    if data is None:
+        now = datetime.fromtimestamp(last_listing.last_seen, UTC)
+        current_capture = now - timedelta(days=days, hours=hours, minutes=-2)
+        capture = []
+        while current_capture < now:
+            start = int(current_capture.timestamp())
+            end = int((current_capture + timedelta(hours=1, seconds=-1)).timestamp())
+            captured_listings = (
+                await MarketListing.find({})
+                .aggregate(get_capture_query(item, start, end))
+                .to_list()
+            )
+            capture.append(captured_listings[0])
+            current_capture += timedelta(hours=1)
+        data = sorted(capture, key=lambda x: x["start"])
+        await current_app.redis.set_object(meshed_search, data)
+    return render_json(data)
 
 
 @market.route("/hourly_graph", methods=["GET"])
@@ -204,6 +291,15 @@ async def get_last_hour_graph():
         return abort(400, "Missing Item")
     hours = int(request.args.get("hours", 1))
     days = int(request.args.get("days", 0))
+    last_listing = await MarketListing.find_one({}, sort=[("last_seen", -1)])
+    meshed_search = (
+        f"market_search_graph_{last_listing.last_seen}_"
+        + sha1(f"{name}{days}{hours}".encode()).hexdigest()
+    )
+    await clear_old_market_searches()
+    data = await current_app.redis.get(meshed_search)
+    if data is not None:
+        return await send_file(BytesIO(data), mimetype="image/png")
     try:
         async with ClientSession() as session:
             async with session.get(
@@ -243,6 +339,7 @@ async def get_last_hour_graph():
                         markeredgecolor="#555555",
                         color="#2ca02c",
                     )
+                    ax.set_ylim(ymin=0)
                     ax.set_ylabel("Flux EA")
                     ax.set_title(name)
                     ax.legend()
@@ -260,6 +357,7 @@ async def get_last_hour_graph():
                     buf = BytesIO()
                     plt.savefig(buf, format="png")
                     buf.seek(0)
+                    await current_app.redis.set(meshed_search, buf.getvalue())
                     return await send_file(buf, mimetype="image/png")
     except:
         ...
@@ -271,8 +369,9 @@ async def get_last_hour_market_flux():
     raw_data = request.args
     days = int(raw_data.get("days", 0))
     hours = int(raw_data.get("hours", 1))
-    now = datetime.now(UTC)
-    current_capture = now - timedelta(days=days, hours=hours)
+    last_listing = await MarketListing.find_one({}, sort=[("last_seen", -1)])
+    now = datetime.fromtimestamp(last_listing.last_seen, UTC)
+    current_capture = now - timedelta(days=days, hours=hours, minutes=-2)
     capture = []
     while current_capture < now:
         start = int(current_capture.timestamp())
@@ -328,6 +427,7 @@ async def get_last_hour_market_flux_graph():
                         markeredgecolor="#555555",
                         color="#d62728",
                     )
+                    ax.set_ylim(ymin=0)
                     ax.set_ylabel("Total Flux")
                     ax.set_title("Total Market Flux")
                     ax.legend()
@@ -361,20 +461,30 @@ async def get_last_day():
         return abort(400, "Missing Item")
     no_listings = "no_listings" in raw_data
     days = int(raw_data.get("days", 1))
-    now = datetime.now(UTC)
-    current_capture = now - timedelta(days=days)
-    capture = []
-    while current_capture < now:
-        start = int(current_capture.timestamp())
-        end = int((current_capture + timedelta(days=1, seconds=-1)).timestamp())
-        captured_listings = (
-            await MarketListing.find({})
-            .aggregate(get_capture_query(item, start, end))
-            .to_list()
-        )
-        capture.append(captured_listings[0])
-        current_capture += timedelta(days=1)
-    return render_json(sorted(capture, key=lambda x: x["start"]))
+    last_listing = await MarketListing.find_one({}, sort=[("last_seen", -1)])
+    meshed_search = (
+        f"market_search_{last_listing.last_seen}_"
+        + sha1(f"{item}{days}{int(no_listings)}".encode()).hexdigest()
+    )
+    await clear_old_market_searches()
+    data = await current_app.redis.get_object(meshed_search)
+    if data is None:
+        now = datetime.fromtimestamp(last_listing.last_seen, UTC)
+        current_capture = now - timedelta(days=days, minutes=-2)
+        capture = []
+        while current_capture < now:
+            start = int(current_capture.timestamp())
+            end = int((current_capture + timedelta(days=1, seconds=-1)).timestamp())
+            captured_listings = (
+                await MarketListing.find({})
+                .aggregate(get_capture_query(item, start, end))
+                .to_list()
+            )
+            capture.append(captured_listings[0])
+            current_capture += timedelta(days=1)
+        data = sorted(capture, key=lambda x: x["start"])
+        await current_app.redis.set_object(meshed_search, data)
+    return render_json(data)
 
 
 @market.route("/daily_graph", methods=["GET"])
@@ -382,7 +492,16 @@ async def get_last_daily_graph():
     name = request.args.get("item")
     if not name:
         return abort(400, "Missing Item")
+    last_listing = await MarketListing.find_one({}, sort=[("last_seen", -1)])
     days = int(request.args.get("days", 1))
+    meshed_search = (
+        f"market_search_graph_{last_listing.last_seen}_"
+        + sha1(f"{name}{days}".encode()).hexdigest()
+    )
+    await clear_old_market_searches()
+    data = await current_app.redis.get(meshed_search)
+    if data is not None:
+        return await send_file(BytesIO(data), mimetype="image/png")
     try:
         async with ClientSession() as session:
             async with session.get(
@@ -422,6 +541,7 @@ async def get_last_daily_graph():
                         markeredgecolor="#555555",
                         color="#2ca02c",
                     )
+                    ax.set_ylim(ymin=0)
                     ax.set_ylabel("Flux EA")
                     ax.set_title(name)
                     ax.legend()
@@ -439,6 +559,7 @@ async def get_last_daily_graph():
                     buf = BytesIO()
                     plt.savefig(buf, format="png")
                     buf.seek(0)
+                    await current_app.redis.set(meshed_search, buf.getvalue())
                     return await send_file(buf, mimetype="image/png")
     except:
         ...
@@ -449,8 +570,9 @@ async def get_last_daily_graph():
 async def get_last_day_market_flux():
     raw_data = request.args
     days = int(raw_data.get("days", 1))
-    now = datetime.now(UTC)
-    current_capture = now - timedelta(days=days)
+    last_listing = await MarketListing.find_one({}, sort=[("last_seen", -1)])
+    now = datetime.fromtimestamp(last_listing.last_seen, UTC)
+    current_capture = now - timedelta(days=days, minutes=-2)
     capture = []
     while current_capture < now:
         captured_listings = (
@@ -503,6 +625,7 @@ async def get_last_day_market_flux_graph():
                         markeredgecolor="#555555",
                         color="#d62728",
                     )
+                    ax.set_ylim(ymin=0)
                     ax.set_ylabel("Total Flux")
                     ax.set_title("Total Market Flux")
                     ax.legend()

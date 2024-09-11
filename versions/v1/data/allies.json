@@ -198,7 +198,7 @@
     "bee_september2024_up": {
         "blueprint": "2024/pets/bee_september2024_up/c_c_bee_september2024_up_ui",
         "category": "Event",
-        "desc": "Given its size, its metabolism is out of this world. Or at least it would be, if ite were alive.",
+        "desc": "Given its size, its metabolism is out of this world. Or at least it would be, if it were alive.",
         "designer": "Trove Team",
         "file": "Pets",
         "filename": "collections/pet/bee_september2024_up",
@@ -207,7 +207,7 @@
         "name": "Buster the Brazen Buzzer",
         "powerrank": "0",
         "tooltip": "",
-        "updated_at": 1723166816
+        "updated_at": 1726025178
     },
     "biped_bob": {
         "blueprint": "2022/allies/biped_bob/c_c_biped_bob_ui[knilpu]",
@@ -1427,6 +1427,20 @@
         "tooltip": "<p>Ally</p>\r\n<ul>\r\n<li>8.0% Health Regen</li>\r\n</ul>\r\n<p>Gain 1% health each time you damage an enemy.</p>",
         "updated_at": 1718447153
     },
+    "cat_snowflake": {
+        "blueprint": "2024/allies/cat_snowflake/c_c_cat_snowflake_ui[kiki]",
+        "category": "Dev Dream",
+        "desc": "The cutest cat in a whole wide world!",
+        "designer": "Kiki",
+        "file": "Pets",
+        "filename": "collections/pet/cat_snowflake",
+        "mastery": "0",
+        "mastery_geode": "0",
+        "name": "Unicorn Snowflake",
+        "powerrank": "0",
+        "tooltip": "",
+        "updated_at": 1726025178
+    },
     "cat_snowlynx": {
         "blueprint": "c_c_cat_snowlynx_store",
         "category": "Treasure Isles",
@@ -1692,6 +1706,20 @@
         "powerrank": "20",
         "tooltip": "<p>Ally</p>\r\n<ul>\r\n<li>8 Jump</li>\r\n<li>40 Magic Find</li>\r\n</ul>",
         "updated_at": 1718447153
+    },
+    "cragglepod_lamp": {
+        "blueprint": "2024/allies/cragglepod_lamp/c_c_cragglepod_lamp_ui",
+        "category": "Store",
+        "desc": "Knowledge is light.",
+        "designer": "Trove Team",
+        "file": "Pets",
+        "filename": "collections/pet/cragglepod_lamp",
+        "mastery": "0",
+        "mastery_geode": "0",
+        "name": "Lustrous Lamp",
+        "powerrank": "0",
+        "tooltip": "",
+        "updated_at": 1726025178
     },
     "cube_companion": {
         "blueprint": "c_c_cube_companion",
@@ -3261,6 +3289,20 @@
         "tooltip": "<p>Ally</p>\r\n<ul>\r\n<li>100 Light</li>\r\n<li>9% Attack Speed</li>\r\n<li>15.0% Critical Damage</li>\r\n</ul>",
         "updated_at": 1718447153
     },
+    "dreambro_krakenegg": {
+        "blueprint": "2024/allies/dreambro_krakenegg/c_c_dreambro_krakenegg_ui",
+        "category": "Depths",
+        "desc": "Not going to hatch. Probably.",
+        "designer": "Trove Team",
+        "file": "Pets",
+        "filename": "collections/pet/dreambro_krakenegg",
+        "mastery": "0",
+        "mastery_geode": "0",
+        "name": "Krakenspawn Egg Sac",
+        "powerrank": "0",
+        "tooltip": "",
+        "updated_at": 1726025178
+    },
     "dreambro_kriv_green": {
         "blueprint": "2022/allies/dreambro_kriv_green/c_c_dreambro_kriv_green_ui[bliza]",
         "category": "Dev Dream",
@@ -3554,6 +3596,20 @@
         "powerrank": "20",
         "tooltip": "<p>Ally</p>\r\n<ul>\r\n<li>58 Magic Damage</li>\r\n</ul>\r\n<p>Gain 1% health each time you damage an enemy.</p>",
         "updated_at": 1718447153
+    },
+    "fae_folklore": {
+        "blueprint": "2024/allies/fae_folklore/c_c_fae_folklore_ui",
+        "category": "Curiosities",
+        "desc": "Makes you write the best songs in the world.",
+        "designer": "Trove Team",
+        "file": "Pets",
+        "filename": "collections/pet/fae_folklore",
+        "mastery": "0",
+        "mastery_geode": "0",
+        "name": "Tenacious Tengu",
+        "powerrank": "0",
+        "tooltip": "",
+        "updated_at": 1726025178
     },
     "fae_gardening": {
         "blueprint": "c_c_fae_gardening_fairy_ui",
@@ -4227,6 +4283,20 @@
         "tooltip": "<p>Ally</p>\r\n<ul>\r\n<li>5 Jump</li>\r\n</ul>\r\n<p>Increases cooldown recovery speed by 25%.</p>",
         "updated_at": 1718447153
     },
+    "froleek_catawan": {
+        "blueprint": "2024/allies/froleek_catawan/c_c_froleek_catawan_ui[thrimin]",
+        "category": "Dev Dream",
+        "desc": "Crafting galaxies of plans, with paws poised on the pulse of consequence!",
+        "designer": "Thrimin",
+        "file": "Pets",
+        "filename": "collections/pet/froleek_catawan",
+        "mastery": "0",
+        "mastery_geode": "0",
+        "name": "Catawan",
+        "powerrank": "0",
+        "tooltip": "",
+        "updated_at": 1726025178
+    },
     "froleek_eggman": {
         "blueprint": "2023/allies/froleek_eggman/c_c_froleek_eggman_ui",
         "category": "Event Vault",
@@ -4366,6 +4436,20 @@
         "powerrank": "20",
         "tooltip": "<p>Ally</p>\r\n<ul>\r\n<li>20% Magic Damage</li>\r\n<li>-8% Incoming Damage</li>\r\n<li>10 Jump</li>\r\n</ul>\r\n<p>Damaging enemies has a chance to blast them with fire.</p>",
         "updated_at": 1718447153
+    },
+    "goat_folklore": {
+        "blueprint": "2024/allies/goat_folklore/c_c_goat_folklore_ui",
+        "category": "Curiosities",
+        "desc": "Always gets found first, but still loves hide-and-skeek games.",
+        "designer": "Trove Team",
+        "file": "Pets",
+        "filename": "collections/pet/goat_folklore",
+        "mastery": "0",
+        "mastery_geode": "0",
+        "name": "Raucous Racoon",
+        "powerrank": "0",
+        "tooltip": "",
+        "updated_at": 1726025178
     },
     "goat_goatguud": {
         "blueprint": "c_c_goat_goatguud_ui[morgana]",
@@ -4563,6 +4647,48 @@
         "tooltip": "<p>Ally</p>\r\n<ul>\r\n<li>100 Light</li>\r\n<li>10 Movement Speed</li>\r\n</ul>\r\n<p>Slightly increases your size while equipped.</p>",
         "updated_at": 1718447153
     },
+    "goldfish_depths_air": {
+        "blueprint": "2024/npcs/goldfish_depths_air/c_c_goldfish_depths_air_ui",
+        "category": "Depths",
+        "desc": "Obviously not as light as air. Unless it's only faking...",
+        "designer": "Trove Team",
+        "file": "Pets",
+        "filename": "collections/pet/goldfish_depths_air",
+        "mastery": "0",
+        "mastery_geode": "0",
+        "name": "Zephyr Flopper",
+        "powerrank": "0",
+        "tooltip": "",
+        "updated_at": 1726025178
+    },
+    "goldfish_depths_fire": {
+        "blueprint": "2024/npcs/goldfish_depths_fire/c_c_goldfish_depths_fire_ui",
+        "category": "Depths",
+        "desc": "Occasionally crackles and pops, either due to internal combustion or old bones.",
+        "designer": "Trove Team",
+        "file": "Pets",
+        "filename": "collections/pet/goldfish_depths_fire",
+        "mastery": "0",
+        "mastery_geode": "0",
+        "name": "Pyric Flopper",
+        "powerrank": "0",
+        "tooltip": "",
+        "updated_at": 1726025178
+    },
+    "goldfish_depths_water": {
+        "blueprint": "2024/npcs/goldfish_depths_water/c_c_goldfish_depths_water_ui",
+        "category": "Depths",
+        "desc": "Slippery when... well, always slippery.",
+        "designer": "Trove Team",
+        "file": "Pets",
+        "filename": "collections/pet/goldfish_depths_water",
+        "mastery": "0",
+        "mastery_geode": "0",
+        "name": "Abyssal Flopper",
+        "powerrank": "0",
+        "tooltip": "",
+        "updated_at": 1726025178
+    },
     "goldfish_kamipro": {
         "blueprint": "c_c_goldfish_kamipro_ui",
         "category": "Luminopolis",
@@ -4576,6 +4702,20 @@
         "powerrank": "0",
         "tooltip": "<p>Ally</p>\r\n<ul>\r\n<li>1.0% Critical Hit</li>\r\n</ul>",
         "updated_at": 1718447153
+    },
+    "goldfish_megabite": {
+        "blueprint": "2024/allies/goldfish_megabite/c_c_goldfish_megabite_ui[silentbob]",
+        "category": "Dev Dream",
+        "desc": "Just keep swimming!",
+        "designer": "SilentBob",
+        "file": "Pets",
+        "filename": "collections/pet/goldfish_megabite",
+        "mastery": "0",
+        "mastery_geode": "0",
+        "name": "MegaBite",
+        "powerrank": "0",
+        "tooltip": "",
+        "updated_at": 1726025178
     },
     "goldfish_mudskipper": {
         "blueprint": "c_c_goldfish_mudskipper_ui[srayer]",
@@ -4702,6 +4842,20 @@
         "powerrank": "20",
         "tooltip": "<p>Ally</p>\r\n<ul>\r\n<li>5 Jump</li>\r\n<li>0.3% Critical Hit</li>\r\n</ul>",
         "updated_at": 1718447153
+    },
+    "griffon_folklore": {
+        "blueprint": "2024/allies/griffon_folklore/c_c_griffon_folklore_ui",
+        "category": "Curiosities",
+        "desc": "Can shapeshift at will.",
+        "designer": "Trove Team",
+        "file": "Pets",
+        "filename": "collections/pet/griffon_folklore",
+        "mastery": "0",
+        "mastery_geode": "0",
+        "name": "Kind Kitsune",
+        "powerrank": "0",
+        "tooltip": "",
+        "updated_at": 1726025178
     },
     "griffon_kamipink": {
         "blueprint": "c_c_griffon_kamipink_ui",
@@ -5529,6 +5683,34 @@
         "tooltip": "<p>Ally</p>\r\n<ul>\r\n<li>100 Light</li>\r\n<li>6 Jump</li>\r\n</ul>",
         "updated_at": 1718447153
     },
+    "joystick_bear": {
+        "blueprint": "2024/allies/joystick_bear/c_c_joystick_bear_ui[demian]",
+        "category": "Dev Dream",
+        "desc": "Part bear, part helicopter, all adorable!",
+        "designer": "Demian",
+        "file": "Pets",
+        "filename": "collections/pet/joystick_bear",
+        "mastery": "0",
+        "mastery_geode": "0",
+        "name": "Whirlybear",
+        "powerrank": "0",
+        "tooltip": "",
+        "updated_at": 1726025178
+    },
+    "joystick_book": {
+        "blueprint": "2024/allies/joystick_book/c_c_joystick_book_ui",
+        "category": "Store",
+        "desc": "Watch it fly!",
+        "designer": "Trove Team",
+        "file": "Pets",
+        "filename": "collections/pet/joystick_book",
+        "mastery": "0",
+        "mastery_geode": "0",
+        "name": "Gliding Grimoire",
+        "powerrank": "0",
+        "tooltip": "",
+        "updated_at": 1726025178
+    },
     "joystick_calculator": {
         "blueprint": "2023/allies/joystick_calculator/c_c_joystick_calculator_ui",
         "category": "Curiosities",
@@ -5822,6 +6004,20 @@
         "powerrank": "20",
         "tooltip": "<p>Ally</p>\r\n<ul>\r\n<li>2.0% Critical Hit</li>\r\n<li>5.0% Critical Damage</li>\r\n</ul>",
         "updated_at": 1718447153
+    },
+    "llama_folklore": {
+        "blueprint": "2024/allies/llama_folklore/c_c_llama_folklore_ui",
+        "category": "Curiosities",
+        "desc": "Woof!",
+        "designer": "Trove Team",
+        "file": "Pets",
+        "filename": "collections/pet/llama_folklore",
+        "mastery": "0",
+        "mastery_geode": "0",
+        "name": "Wonderful Ward Dog",
+        "powerrank": "0",
+        "tooltip": "",
+        "updated_at": 1726025178
     },
     "llama_luna": {
         "blueprint": "2023/allies/llama_luna/c_c_llama_luna_ui[ash]",
@@ -6509,6 +6705,20 @@
         "tooltip": "<p>Ally</p>\r\n<ul>\r\n<li>10% Attack Speed</li>\r\n<li>10% Magic Damage</li>\r\n<li>-5% Incoming Damage</li>\r\n</ul>",
         "updated_at": 1718447153
     },
+    "monkey_folklore": {
+        "blueprint": "2024/allies/monkey_folklore/c_c_monkey_folklore_ui",
+        "category": "Curiosities",
+        "desc": "Very fond of cucumbers!",
+        "designer": "Trove Team",
+        "file": "Pets",
+        "filename": "collections/pet/monkey_folklore",
+        "mastery": "0",
+        "mastery_geode": "0",
+        "name": "Rambunctious River Spirit",
+        "powerrank": "0",
+        "tooltip": "",
+        "updated_at": 1726025178
+    },
     "monkey_gnome": {
         "blueprint": "c_c_monkey_gnome_ui[undiegnome]",
         "category": "Extra Life",
@@ -6648,6 +6858,20 @@
         "powerrank": "20",
         "tooltip": "<p>Ally</p>\r\n<ul>\r\n<li>8% Maximum Health</li>\r\n<li>10 Magic Find</li>\r\n<li>-4% Incoming Damage</li>\r\n</ul>\r\n<p>Chance to reduce ability cooldowns when a nearby enemy dies.</p>",
         "updated_at": 1718447153
+    },
+    "monkey_ratbeard": {
+        "blueprint": "2024/allies/monkey_ratbeard/c_c_monkey_ratbeard_ui[ratbeard]",
+        "category": "Dev Dream",
+        "desc": "Finest buccaneer of the Spiral.",
+        "designer": "Ratbeard",
+        "file": "Pets",
+        "filename": "collections/pet/monkey_ratbeard",
+        "mastery": "0",
+        "mastery_geode": "0",
+        "name": "Ratbeard",
+        "powerrank": "0",
+        "tooltip": "",
+        "updated_at": 1726025178
     },
     "monkey_simian_toad": {
         "blueprint": "2021/allies/cc_monkey_simian_toad/c_c_monkey_simian_ui[thestimergames]",
@@ -7041,6 +7265,20 @@
         "tooltip": "<p>Ally</p>\r\n<ul>\r\n<li>40 Lasermancy</li>\r\n</ul>",
         "updated_at": 1718447153
     },
+    "octopus_kraken": {
+        "blueprint": "2024/allies/octopus_kraken/c_c_octopus_kraken_ui",
+        "category": "Depths",
+        "desc": "Amiable when well fed.",
+        "designer": "Trove Team",
+        "file": "Pets",
+        "filename": "collections/pet/octopus_kraken",
+        "mastery": "0",
+        "mastery_geode": "0",
+        "name": "Befriended Krakenspawn",
+        "powerrank": "0",
+        "tooltip": "",
+        "updated_at": 1726025178
+    },
     "octopus_luna": {
         "blueprint": "2021/allies/cc_octopus_luna/c_c_octopus_luna_ui[pendk]",
         "category": "Chaotic",
@@ -7376,6 +7614,20 @@
         "powerrank": "20",
         "tooltip": "<p>Ally</p>\r\n<ul>\r\n<li>8 Jump</li>\r\n</ul>",
         "updated_at": 1718447153
+    },
+    "papercrane_bruh": {
+        "blueprint": "2024/allies/papercrane_bruh/c_c_papercrane_bruh_ui[voluntaddelacalle]",
+        "category": "Dev Dream",
+        "desc": "An expert in secondhand embarrassment.",
+        "designer": "VoluntadDeLacalle",
+        "file": "Pets",
+        "filename": "collections/pet/papercrane_bruh",
+        "mastery": "0",
+        "mastery_geode": "0",
+        "name": "Bruh",
+        "powerrank": "0",
+        "tooltip": "",
+        "updated_at": 1726025178
     },
     "papercrane_lifeguard_carys": {
         "blueprint": "2022/allies/papercrane_lifeguard_carys/c_c_papercrane_lifeguard_carys_ui",
@@ -7853,6 +8105,20 @@
         "tooltip": "",
         "updated_at": 1718447153
     },
+    "pebble_unicorn": {
+        "blueprint": "2024/allies/pebble_unicorn/c_c_pebble_unicorn_ui[bliza]",
+        "category": "Dev Dream",
+        "desc": "The master of PVP in any universe!",
+        "designer": "Bliza",
+        "file": "Pets",
+        "filename": "collections/pet/pebble_unicorn",
+        "mastery": "0",
+        "mastery_geode": "0",
+        "name": "Roberto",
+        "powerrank": "0",
+        "tooltip": "",
+        "updated_at": 1726025178
+    },
     "pebble_wonderfan": {
         "blueprint": "2021/allies/pebble_wonderfan/c_c_pebble_wonderfan_ui",
         "category": "Store",
@@ -8118,6 +8384,20 @@
         "powerrank": "75",
         "tooltip": "<p>Ally</p>\r\n<ul>\r\n<li>6.0% Magic Damage</li>\r\n<li>2.3% Critical Hit</li>\r\n<li>15.0% Critical Damage</li>\r\n</ul>",
         "updated_at": 1718447153
+    },
+    "punchbot_folklore": {
+        "blueprint": "2024/allies/punchbot_folklore/c_c_punchbot_folklore_ui",
+        "category": "Curiosities",
+        "desc": "Charming elegance.",
+        "designer": "Trove Team",
+        "file": "Pets",
+        "filename": "collections/pet/punchbot_folklore",
+        "mastery": "0",
+        "mastery_geode": "0",
+        "name": "Drifting Doll",
+        "powerrank": "0",
+        "tooltip": "",
+        "updated_at": 1726025178
     },
     "punchbot_holiday": {
         "blueprint": "c_c_punchbotbaby_holiday_body",
@@ -9596,12 +9876,12 @@
         "designer": "0sita",
         "file": "Pets",
         "filename": "collections/pet/qubrik_victoria",
-        "mastery": "0",
+        "mastery": "20",
         "mastery_geode": "0",
         "name": "Victorian Clockwork",
-        "powerrank": "0",
+        "powerrank": "75",
         "tooltip": "",
-        "updated_at": 1718447153
+        "updated_at": 1724241880
     },
     "raptor_baby": {
         "blueprint": "c_c_raptor_baby_head",
@@ -11087,6 +11367,20 @@
         "tooltip": "<p>Ally</p>\r\n<ul>\r\n<li>1 Maximum Energy</li>\r\n<li>10.0% Physical Damage</li>\r\n</ul>",
         "updated_at": 1718447153
     },
+    "tato_noodles": {
+        "blueprint": "2024/allies/tato_noodles/c_c_tato_noodles_ui[jessi]",
+        "category": "Dev Dream",
+        "desc": "Burns thrice. If you know, you know.",
+        "designer": "Jessi",
+        "file": "Pets",
+        "filename": "collections/pet/tato_noodles",
+        "mastery": "0",
+        "mastery_geode": "0",
+        "name": "Hot Noodles",
+        "powerrank": "0",
+        "tooltip": "",
+        "updated_at": 1726025178
+    },
     "tato_pastrywreath": {
         "blueprint": "2021/allies/tato_pastrywreath/c_c_tato_pastrywreath_ui",
         "category": "Store",
@@ -11744,6 +12038,20 @@
         "powerrank": "75",
         "tooltip": "<p>Ally</p>\r\n<ul>\r\n<li>50 Magic Find</li>\r\n</ul>",
         "updated_at": 1718447153
+    },
+    "unicorn_allyan": {
+        "blueprint": "2024/allies/unicorn_allyan/c_c_unicorn_allyan_ui[alyan]",
+        "category": "Dev Dream",
+        "desc": "Free the Pinatas!",
+        "designer": "Alyan",
+        "file": "Pets",
+        "filename": "collections/pet/unicorn_allyan",
+        "mastery": "0",
+        "mastery_geode": "0",
+        "name": "Ally-an",
+        "powerrank": "0",
+        "tooltip": "",
+        "updated_at": 1726025178
     },
     "unicorn_blue": {
         "blueprint": "c_c_unicorn_blue_ui",
@@ -12420,16 +12728,16 @@
     "zardille_iguana": {
         "blueprint": "c_c_zardille_iguana_ui[delicious]",
         "category": "Gardening",
-        "desc": "This tiny terror can be found traipsing through gardens.\\n\\nGreen Thumbzilla is a Gardening badge reward.",
+        "desc": "This tiny terror can be found traipsing through gardens.\\n\\nGreen Thumb Zardille is a Gardening badge reward.",
         "designer": "Delicious",
         "file": "Pets",
         "filename": "collections/pet/zardille_iguana",
         "mastery": "10",
         "mastery_geode": "0",
-        "name": "Green Thumbzilla",
+        "name": "Green Thumb Zardille",
         "powerrank": "5",
         "tooltip": "<p>Ally</p>\r\n<ul>\r\n<li>5 Magic Find</li>\r\n</ul>\r\n<p>Harvests all eligible plants within a small radius.</p>",
-        "updated_at": 1718447153
+        "updated_at": 1726025178
     },
     "zardille_ittyaxo": {
         "blueprint": "2022/allies/zardille_ittyaxo/c_c_zardille_ittyaxo_ui[skyrider3217]",
@@ -12920,5 +13228,19 @@
         "powerrank": "20",
         "tooltip": "<p>Ally</p>\r\n<ul>\r\n<li>20% Magic Damage</li>\r\n<li>20.0% Critical Damage</li>\r\n<li>200 Light</li>\r\n</ul>",
         "updated_at": 1718447153
+    },
+    "zepperay_voidcat": {
+        "blueprint": "2024/allies/zepperay_voidcat/c_c_zepperay_voidcat_ui[demian]",
+        "category": "Dev Dream",
+        "desc": "I gazed into the abyss, and all I got was this useless ally...",
+        "designer": "Demian",
+        "file": "Pets",
+        "filename": "collections/pet/zepperay_voidcat",
+        "mastery": "0",
+        "mastery_geode": "0",
+        "name": "Kitten of Ulthar",
+        "powerrank": "0",
+        "tooltip": "",
+        "updated_at": 1726025178
     }
 }

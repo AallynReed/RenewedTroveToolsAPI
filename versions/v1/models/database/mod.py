@@ -738,3 +738,4 @@ class SearchMod(Document):
     likes: int
     authors: list[str]
     last_update: int
+    hot: int

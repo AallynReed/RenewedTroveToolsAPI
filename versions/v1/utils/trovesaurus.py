@@ -39,6 +39,7 @@ class TrovesaurusMod(BaseModel):
     likes: int
     image_full_url: str = Field(alias="image_full")
     files: list[TrovesaurusModFile] = Field(alias="downloads")
+    obsolete: int
 
     @field_validator("image_url", "image_full_url")
     @classmethod

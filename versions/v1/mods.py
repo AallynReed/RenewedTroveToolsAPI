@@ -96,7 +96,7 @@ async def search_mods():
     limit = int(params.get("limit", 999999))
     offset = int(params.get("offset", 0))
     sort_by = params.get(
-        "sort_by", "downloads:desc,likes:desc,name:asc,last_update:desc"
+        "sort_by", "hot:desc,downloads:desc,likes:desc,name:asc,last_update:desc"
     )
     processed_sort_by = [
         (field, SortOrder[order].value)
@@ -174,8 +174,6 @@ async def improved_search():
     result_authors = [
         i.phrase.phrase_string for i in author_searcher.find_matches(query)
     ]
-    print(result_names)
-    print(result_authors)
     config = {
         "char_match_threshold": 0.6,
         "ngram_threshold": 0.5,

@@ -81,7 +81,7 @@ async def feedback():
 
 @misc.route("/change_log")
 async def change_log():
-    change_log = current_app.get_from_redis("change_log")
+    change_log = await current_app.redis.get_value("change_log")
     if change_log is None:
         return abort(503, "Change log is not available.")
     return render_json(change_log)
@@ -89,9 +89,10 @@ async def change_log():
 
 @misc.route("/twitch_streams")
 async def streams():
-    if not hasattr(current_app, "twitch_streams"):
+    streams = await current_app.redis.get_value("twitch_streams")
+    if streams is None:
         return abort(503, "Twitch streams are not available.")
-    return render_json(current_app.twitch_streams)
+    return render_json(streams)
 
 
 @misc.route("/opn_chart")
@@ -182,7 +183,7 @@ async def opn_chart():
 
 @misc.route("/handshake")
 async def handshake():
-    app_versions = current_app.get_from_redis("app_versions")
+    app_versions = await current_app.redis.get_value("app_versions")
     if app_versions is None:
         return abort(503, "Latest release is not available.")
     headers = request.headers
@@ -233,7 +234,7 @@ async def handshake():
 
 @misc.route("latest_version")
 async def latest_version():
-    app_versions = current_app.get_from_redis("app_versions")
+    app_versions = await current_app.redis.get_value("app_versions")
     if app_versions is None:
         return abort(503, "Latest version is not available.")
     for version in app_versions:
@@ -246,7 +247,7 @@ async def latest_version():
 
 @misc.route("/latest_release")
 async def latest_release():
-    app_versions = current_app.get_from_redis("app_versions")
+    app_versions = await current_app.redis.get_value("app_versions")
     if app_versions is None:
         return abort(503, "Latest release is not available.")
     for version in app_versions:
@@ -259,7 +260,7 @@ async def latest_release():
 
 @misc.route("/latest_release/download")
 async def latest_release_download():
-    app_versions = current_app.get_from_redis("app_versions")
+    app_versions = await current_app.redis.get_value("app_versions")
     if app_versions is None:
         return abort(503, "Latest release is not available.")
     for version in app_versions:
@@ -272,7 +273,7 @@ async def latest_release_download():
 
 @misc.route("latest_release/download/redirect")
 async def latest_release_download_redirect():
-    app_versions = current_app.get_from_redis("app_versions")
+    app_versions = await current_app.redis.get_value("app_versions")
     if app_versions is None:
         return abort(503, "Latest release is not available.")
     headers = request.headers
@@ -304,7 +305,7 @@ async def latest_release_download_redirect():
 
 @misc.route("/downloads_count")
 async def downloads_count():
-    app_versions = current_app.get_from_redis("app_versions")
+    app_versions = await current_app.redis.get_value("app_versions")
     if app_versions is None:
         return abort(503, "Latest release is not available.")
     count = 0
@@ -316,7 +317,7 @@ async def downloads_count():
 
 @misc.route("/latest_release/debug")
 async def latest_release_debug():
-    app_versions = current_app.get_from_redis("app_versions")
+    app_versions = await current_app.redis.get_value("app_versions")
     if app_versions is None:
         return abort(503, "Latest release is not available.")
     for version in app_versions:
@@ -329,7 +330,7 @@ async def latest_release_debug():
 
 @misc.route("latest_release/debug/redirect")
 async def latest_release_debug_redirect():
-    app_versions = current_app.get_from_redis("app_versions")
+    app_versions = await current_app.redis.get_value("app_versions")
     if app_versions is None:
         return abort(503, "Latest release is not available.")
     for version in app_versions:
