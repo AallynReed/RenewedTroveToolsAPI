@@ -27,6 +27,8 @@ nav:
       - Models:
         - LeaderboardEntry: models/leaderboards/LeaderboardEntry.md
         - LeaderboardMetadata: models/leaderboards/LeaderboardMetadata.md
+        - ContestType: models/leaderboards/ContestType.md
+        - ResetTime: models/leaderboards/ResetTime.md
     - Rotations:
       - Endpoints:
         - GET - Chaos Chest: endpoints/rotations/chaoschest.md
