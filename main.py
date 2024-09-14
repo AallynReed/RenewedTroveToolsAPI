@@ -12,6 +12,7 @@ from versions.v1.models.database.gem import GemBuild
 from versions.v1.models.database.api import API
 from versions.v1.models.database.market import MarketListing
 from versions.v1.models.database.leaderboards import (
+    Leaderboard,
     LeaderboardEntry,
     LeaderboardEntryArchive,
 )
@@ -83,6 +84,7 @@ async def startup():
             ModProfile,
             SearchMod,
             MarketListing,
+            Leaderboard,
             LeaderboardEntry,
             LeaderboardEntryArchive,
             ChaosChestEntry,
@@ -116,6 +118,9 @@ async def startup():
             tasks.update_allies.start()
             tasks.twitch_streams_fetch.start()
             tasks.sse_hearbeat.start()
+            tasks.luxion.start()
+            tasks.corruxion.start()
+            tasks.fluxion.start()
     else:
         await app.redis.set("main_worker", int(datetime.now(UTC).timestamp()))
         await app.redis.delete(
@@ -134,6 +139,9 @@ async def startup():
         tasks.update_allies.start()
         tasks.twitch_streams_fetch.start()
         tasks.sse_hearbeat.start()
+        tasks.luxion.start()
+        tasks.corruxion.start()
+        tasks.fluxion.start()
     tasks.update_mods_list.start()
 
 

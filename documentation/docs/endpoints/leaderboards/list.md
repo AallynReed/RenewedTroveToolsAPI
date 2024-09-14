@@ -11,8 +11,7 @@ Used to fetch Trove's leaderboard metadata
 ## Parameters
 *♦ - required*
 
-- `category_id` > `String` - ID of the leaderboard category to filter by
-- `created_at` > `UTC Timestamp [Seconds]` - Day to extract leaderboard from. (Requires UTC or UTC+11 timestamp) which means it accepts 00:00 and 11:00 as valid entries.
+- ♦ `created_at` > `UTC Timestamp [Seconds]` - Day to extract leaderboard from. (Requires UTC or UTC+11 timestamp) which means it accepts 00:00 and 11:00 as valid entries.
 
 ## Success Response
 
@@ -25,7 +24,7 @@ Models: [`LeaderboardMetadata`](/models/leaderboards/LeaderboardMetadata)
 - **Data**:
 ```json
 [
-    <LeaderboardItem>,
+    <LeaderboardMetadata>,
     ...
 ]
 ```

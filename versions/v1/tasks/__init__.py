@@ -355,7 +355,72 @@ async def before_sse_hearbeat():
 
 
 @tasks.loop(seconds=1)
-async def luxion(): ...
+async def luxion():
+    luxion_rotations = current_app.trove_time.get_luxion_rotations()
+    next_rotation = luxion_rotations["next"]
+    now = datetime.now(UTC).replace(microsecond=0)
+    until_next = next_rotation["start"] - now
+    await asyncio.sleep(until_next.total_seconds())
+    await current_app.redis.publish_event(
+        Event(
+            id=int(datetime.now(UTC).timestamp()),
+            type=EventType.luxion,
+            data=next_rotation,
+        )
+    )
+
+
+@tasks.loop(seconds=1)
+async def corruxion():
+    corruxion_rotations = current_app.trove_time.get_corruxion_rotations()
+    next_rotation = corruxion_rotations["next"]
+    now = datetime.now(UTC).replace(microsecond=0)
+    until_next = next_rotation["start"] - now
+    await asyncio.sleep(until_next.total_seconds())
+    await current_app.redis.publish_event(
+        Event(
+            id=int(datetime.now(UTC).timestamp()),
+            type=EventType.corruxion,
+            data=next_rotation,
+        )
+    )
+
+
+@tasks.loop(seconds=5)
+async def fluxion():
+    fluxion_rotations = current_app.trove_time.get_fluxion_rotations()
+    current_rotation = fluxion_rotations["current"]
+    current_vote_phase = current_rotation["vote_phase"]
+    current_vote_phase["type"] = "vote"
+    current_buy_phase = current_rotation["buy_phase"]
+    current_buy_phase["type"] = "buy"
+    current_vote_phase["index"] = current_buy_phase["index"] = current_rotation["index"]
+    next_rotation = fluxion_rotations["next"]
+    next_vote_phase = next_rotation["vote_phase"]
+    next_vote_phase["type"] = "vote"
+    next_buy_phase = next_rotation["buy_phase"]
+    next_buy_phase["type"] = "buy"
+    next_vote_phase["index"] = next_buy_phase["index"] = next_rotation["index"]
+    phases = [
+        current_vote_phase,
+        current_buy_phase,
+        next_vote_phase,
+        next_buy_phase,
+    ]
+    now = datetime.now(UTC).replace(microsecond=0)
+    for phase in phases:
+        if phase["start"] < now:
+            continue
+        until_next = phase["start"] - now
+        await asyncio.sleep(until_next.total_seconds())
+        await current_app.redis.publish_event(
+            Event(
+                id=int(datetime.now(UTC).timestamp()),
+                type=EventType.fluxion,
+                data=next_rotation,
+            )
+        )
+        break
 
 
 # @tasks.loop(seconds=1)

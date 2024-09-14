@@ -7,3 +7,57 @@
   transform: translateY(-7px);
   box-shadow: 0px 0px 12px 0 var(--bs-primary)
 }
+
+body {
+  font-family: 'Open Sans', sans-serif;
+}
+
+.menu,
+.drop-menu {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
+
+.menu-item {
+  display: inline-block;
+  position: relative;
+}
+
+.menu-item a {
+  text-decoration: none;
+  color: #fff;
+}
+
+.drop-menu {
+  display: none;
+  position: absolute;
+  background-color: #313233;
+  min-width: 100%;
+  border-radius: 7px;
+  box-shadow: 0 2px 5px 0 rgba(0, 0, 0, .16), 0 2px 10px 0 rgba(0, 0, 0, .12);
+}
+
+.drop-menu-item {
+  width: 100%;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  padding-right: 3px;
+  padding-left: 3px;
+  border-radius: 7px;
+}
+
+.drop-menu-item:hover {
+  background-color: #515253;
+  font-weight: bolder;
+}
+
+.drop-menu-item a {
+  color: #bbb;
+  width: 100%;
+  display: block;
+}
+
+.menu-item:hover .drop-menu {
+  display: block;
+}

@@ -140,13 +140,6 @@ async def insert_missing_challenge():
             url = f"https://trovesaurus.com/challenges?token={os.getenv('TROVESAURUS_ROTATIONS_TOKEN')}&name={challenge[0]}&timestamp={time}"
             resp = await session.get(url)
             response.append(await resp.text())
-        await current_app.redis.publish_event(
-            Event(
-                id=int(time),
-                type=EventType.challenge,
-                data=challenge_entry.model_dump(exclude=["id"]),
-            )
-        )
     return "\n".join(response), 200
 
 

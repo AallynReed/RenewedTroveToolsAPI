@@ -277,7 +277,8 @@ async def get_last_hour():
                 .aggregate(get_capture_query(item, start, end))
                 .to_list()
             )
-            capture.append(captured_listings[0])
+            if captured_listings:
+                capture.append(captured_listings[0])
             current_capture += timedelta(hours=1)
         data = sorted(capture, key=lambda x: x["start"])
         await current_app.redis.set_object(meshed_search, data)

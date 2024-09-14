@@ -1,98 +1,135 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <title>Renewed Trove Tools</title>
-        <meta property="og:title" content="Renewed Trove Tools">
-        {% include 'head.html' %}
-        <link href="https://trove.aallyn.xyz/css/index.css" rel="stylesheet" />
-    </head>
-    <body class="d-flex flex-column h-100">
-        <main class="flex-shrink-0">
-            {% include 'header.html' %}
-            <header class="py-3">
-                <div class="container px-5 pb-5">
-                    <div class="row gx-5 align-items-center">
-                        <div class="col-xxl-3">
-                            <div class="d-flex justify-content-center mt-5 mt-xxl-0">
-                                <img class="profile-img" draggable="false" src="https://kiwiapi.aallyn.xyz/v1/misc/assets/favicon.png" alt="..." />
-                                <div class="dots-3">
-                                </div>
+
+<head>
+    <title>Renewed Trove Tools</title>
+    <meta property="og:title" content="Renewed Trove Tools">
+    {% include 'head.html' %}
+    <link href="https://trove.aallyn.xyz/css/index.css" rel="stylesheet" />
+
+</head>
+
+<body class="d-flex flex-column h-100">
+    <main class="flex-shrink-0">
+        {% include 'header.html' %}
+        <header class="py-3">
+            <div class="container px-5 pb-5">
+                <div class="row gx-5 align-items-center">
+                    <div class="col-xxl-3">
+                        <div class="d-flex justify-content-center mt-5 mt-xxl-0">
+                            <img class="profile-img" draggable="false"
+                                src="https://kiwiapi.aallyn.xyz/v1/misc/assets/favicon.png" alt="..." />
+                            <div class="dots-3">
                             </div>
                         </div>
-                        <div class="col-xxl-9">
-                            <div class="text-center text-xxl-start">
-                                <div class="badge bg-gradient-primary-to-secondary mb-2" style="color: #141519"><div class="text-uppercase">Python &middot; Flutter</div></div>
-                                <h1 class="display-3 fw-bolder"><span class="text-gradient d-inline">Renewed Trove Tools</span></h1>
-                                <h3 class="fw-bolder"><span class="text-gradient d-inline set-version">Version</span></h3>
-                                <p class="downloads-count text-primary">Downloads: </p>
-                                <div class="d-grid gap-3 d-sm-flex justify-content-sm-center justify-content-xxl-start mb-3">
-                                    <a class="btn btn-outline-primary btn-lg px-5 py-3 fs-6 fw-bolder set-download-release" href="https://kiwiapi.aallyn.xyz/v1/misc/latest_release/download/redirect">Windows Installer (x64)</a>
-                                    <a class="btn btn-outline-success btn-lg px-5 py-3 fs-6 fw-bolder" href="https://trovetools.aallyn.xyz/" target="_blank">Web version (Limited)</a>
-                                    <a class="btn btn-outline-danger btn-lg px-5 py-3 fs-6 fw-bolder" href="https://kiwiapi.aallyn.xyz/v1/misc/github" target="_blank">Source code</a>
-                                </div>
+                    </div>
+                    <div class="col-xxl-9">
+                        <div class="text-center text-xxl-start">
+                            <div class="badge bg-gradient-primary-to-secondary mb-2" style="color: #141519">
+                                <div class="text-uppercase">Python &middot; Flutter</div>
+                            </div>
+                            <h1 class="display-3 fw-bolder"><span class="text-gradient d-inline">Renewed Trove
+                                    Tools</span></h1>
+                            <h3 class="fw-bolder"><span class="text-gradient d-inline set-version">Version</span></h3>
+                            <p class="downloads-count text-primary">Downloads: </p>
+                            <div
+                                class="d-grid gap-3 d-sm-flex justify-content-sm-center justify-content-xxl-start mb-3">
+                                <ul class="menu">
+                                    <li class="menu-item">
+                                        <a class="btn btn-outline-primary btn-lg px-5 py-3 fs-6 fw-bolder"
+                                            style="cursor: default"
+                                            href="https://kiwiapi.aallyn.xyz/v1/misc/latest_release/download/redirect">Windows
+                                            Installer (x64)</a>
+                                        <ul class="drop-menu">
+                                            <li class="drop-menu-item">
+                                                <a
+                                                    href="https://kiwiapi.aallyn.xyz/v1/misc/latest_release/download/redirect">Release
+                                                    (Recommended)</a>
+                                            </li>
+                                            <li class="drop-menu-item">
+                                                <a
+                                                    href="https://kiwiapi.aallyn.xyz/v1/misc/latest_release/debug/redirect">Debug</a>
+                                            </li>
+                                        </ul>
+                                    </li>
+                                </ul>
+
+                                <a class="btn btn-outline-success btn-lg px-5 py-3 fs-6 fw-bolder"
+                                    href="https://trovetools.aallyn.xyz/" target="_blank">Web version (Limited)</a>
+                                <a></a>
+
+                                <a class="btn btn-outline-danger btn-lg px-5 py-3 fs-6 fw-bolder"
+                                    href="https://kiwiapi.aallyn.xyz/v1/misc/github" target="_blank">Source code</a>
+                                <a></a>
                             </div>
                         </div>
                     </div>
                 </div>
-            </header>
-            <header>
-                <div class="container px-5">
-                    <div class="row gx-5 align-items-center">
-                        <h2 class="text-gradient fw-bolder">Features</h2>
-                        {% for y in features %}
-                        <div class="d-grid gap-3 d-sm-flex justify-content-sm-center justify-content-xxl-start mb-3">
-                            {% for x in y %}
-                                <div class="col-xxl-3 card">
-                                    <div class="card-header">
-                                        <div class="d-flex">
-                                            <span class="material-icons text-primary">{{ x.icon }}</span>
-                                            <h5 class="card-title text-primary" style="margin-left: 5px">{{ x.name }}</h5>
-                                        </div>
-                                    </div>
-                                    <div class="card-footer">
-                                        <p class="text-primary">{{ x.description }}</p>
-                                    </div>
+            </div>
+        </header>
+        <header>
+            <div class="container px-5">
+                <div class="row gx-5 align-items-center">
+                    <h2 class="text-gradient fw-bolder">Features</h2>
+                    {% for y in features %}
+                    <div class="d-grid gap-3 d-sm-flex justify-content-sm-center justify-content-xxl-start mb-3">
+                        {% for x in y %}
+                        <div class="col-xxl-3 card">
+                            <div class="card-header">
+                                <div class="d-flex">
+                                    <span class="material-icons text-primary">{{ x.icon }}</span>
+                                    <h5 class="card-title text-primary" style="margin-left: 5px">{{ x.name }}</h5>
                                 </div>
-                            {% endfor %}
+                            </div>
+                            <div class="card-footer">
+                                <p class="text-primary">{{ x.description }}</p>
+                            </div>
                         </div>
                         {% endfor %}
                     </div>
+                    {% endfor %}
                 </div>
-            </header>
-            <section>
-                <div class="container px-5">
-                    <div class="row gx-5 justify-content-center">
-                        <div class="col-xxl-8">
-                            <div class="text-center my-5">
-                                <h2 class="display-5 fw-bolder"><span class="text-gradient d-inline">App Preview</span></h2>
-                                <p class="lead mb-4 text-muted">Preview this application.</p>
-                            </div>
+            </div>
+        </header>
+        <section>
+            <div class="container px-5">
+                <div class="row gx-5 justify-content-center">
+                    <div class="col-xxl-8">
+                        <div class="text-center my-5">
+                            <h2 class="display-5 fw-bolder"><span class="text-gradient d-inline">App Preview</span></h2>
+                            <p class="lead mb-4 text-muted">Preview this application.</p>
                         </div>
                     </div>
                 </div>
-                <div id="carouselIndicators" class="carousel slide container mb-5" data-bs-ride="carousel">
-                    <div class="carousel-indicators">
-                      {% for x in previews %}
-                        <button type="button" data-bs-target="#carouselIndicators" data-bs-slide-to="{{ x[0] }}" aria-label="Slide {{ x[0]+1 }}" {% if loop.first %}class="active"  aria-current="true"{% endif %}></button>
-                      {% endfor %}
-                    </div>
-                    <div class="carousel-inner">
-                        {% for x in previews %}
-                            <div class="carousel-item {% if loop.first %}active{% endif %}">
-                                <img src="{{ x[1] }}" class="d-block w-100" alt="...">
-                            </div>
-                        {% endfor %}
-                    </div>
-                    <button class="carousel-control-prev" type="button" data-bs-target="#carouselIndicators" data-bs-slide="prev">
-                      <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                      <span class="visually-hidden">Previous</span>
-                    </button>
-                    <button class="carousel-control-next" type="button" data-bs-target="#carouselIndicators" data-bs-slide="next">
-                      <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                      <span class="visually-hidden">Next</span>
-                    </button>
+            </div>
+            <div id="carouselIndicators" class="carousel slide container mb-5" data-bs-ride="carousel">
+                <div class="carousel-indicators">
+                    {% for x in previews %}
+                    <button type="button" data-bs-target="#carouselIndicators" data-bs-slide-to="{{ x[0] }}"
+                        aria-label="Slide {{ x[0]+1 }}" {% if loop.first %}class="active" aria-current="true" {% endif
+                        %}></button>
+                    {% endfor %}
                 </div>
-        </main>
-        {% include 'footer.html' %}
-    </body>
+                <div class="carousel-inner">
+                    {% for x in previews %}
+                    <div class="carousel-item {% if loop.first %}active{% endif %}">
+                        <img src="{{ x[1] }}" class="d-block w-100" alt="...">
+                    </div>
+                    {% endfor %}
+                </div>
+                <button class="carousel-control-prev" type="button" data-bs-target="#carouselIndicators"
+                    data-bs-slide="prev">
+                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Previous</span>
+                </button>
+                <button class="carousel-control-next" type="button" data-bs-target="#carouselIndicators"
+                    data-bs-slide="next">
+                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Next</span>
+                </button>
+            </div>
+    </main>
+    {% include 'footer.html' %}
+</body>
+
 </html>

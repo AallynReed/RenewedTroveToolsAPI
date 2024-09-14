@@ -1,5 +1,11 @@
 from quart import Blueprint, request, abort, current_app, Response
-from .models.database.leaderboards import LeaderboardEntry, LeaderboardEntryArchive
+from .models.database.leaderboards import (
+    Leaderboard,
+    LeaderboardEntry,
+    LeaderboardType,
+    Contest,
+    LeaderboardEntryArchive,
+)
 from utils import render_json
 import re
 import os
@@ -19,11 +25,10 @@ leaderboards = Blueprint("leaderboards", __name__, url_prefix="/leaderboards")
 @leaderboards.route("/entries", methods=["GET"])
 async def get_entries():
     params = request.args
-    query = params.get("name_id", None)
-    category = params.get("category_id", None)
+    uuid = params.get("uuid", None)
     created_at = int(params.get("created_at", 0)) or None
-    remove_fields = params.get("remove_fields", "")
-    remove_fields = remove_fields.split(",") if remove_fields else []
+    if not all([uuid, created_at]):
+        return abort(400, "Missing uuid or created_at.")
     if created_at:
         created_at_parse = datetime.fromtimestamp(created_at, UTC).replace(
             minute=0, second=0
@@ -38,24 +43,21 @@ async def get_entries():
         created_at = int(created_at_parse.timestamp())
     limit = int(params.get("limit", 0)) or None
     offset = int(params.get("offset", 0))
-    query_dump = {}
-    if query or created_at or category:
-        query_dump = {
-            "$and": [
-                *([{"name_id": query}] if query else []),
-                *([{"category_id": category}] if category else []),
-                *([{"created_at": created_at}] if created_at else []),
-            ]
-        }
     pipeline = [
-        {"$match": query_dump} if query_dump else {},
+        {
+            "$match": {
+                "$and": [
+                    {"leaderboard": int(uuid)},
+                    {"created_at": created_at},
+                ]
+            }
+        },
         {"$sort": {"rank": 1}},
         {
             "$project": {
                 "_id": 0,
-                **({"created_at": 0} if created_at else {}),
-                **({"name_id": 0} if query else {}),
-                **({"category_id": 0} if category else {}),
+                "created_at": 0,
+                "leaderboard": 0,
             }
         },
         *([{"$skip": offset}] if offset else []),
@@ -68,17 +70,11 @@ async def get_entries():
     entries = await current_app.redis.get_object(pipeline_id)
     if entries:
         print("Cache hit")
-        for entry in entries:
-            for field in remove_fields:
-                entry.pop(field, None)
         return Response(json.dumps(entries), content_type="application/json")
     final_query = LeaderboardEntry.aggregate(pipeline)
     entries = await final_query.to_list()
     await current_app.redis.set_object(pipeline_id, entries)
     await current_app.redis.expire(pipeline_id, 3600)
-    for entry in entries:
-        for field in remove_fields:
-            entry.pop(field, None)
     response = Response(json.dumps(entries), content_type="application/json")
     return response
 
@@ -87,41 +83,19 @@ async def get_entries():
 async def get_list():
     params = request.args
     created_at = int(params.get("created_at", 0)) or None
-    category = params.get("category_id", None)
-    query = {}
-    if created_at:
-        query.update({"created_at": created_at})
-    if category:
-        query.update({"category_id": category})
-    items = (
-        await LeaderboardEntry.find(query)
-        .aggregate(
-            [
-                {
-                    "$group": {
-                        "_id": {
-                            "uuid": "$uuid",
-                            "name_id": "$name_id",
-                            "category_id": "$category_id",
-                        },
-                        "count": {"$sum": 1},
-                    }
-                },
-                {
-                    "$project": {
-                        "_id": 0,
-                        "uuid": "$_id.uuid",
-                        "name_id": "$_id.name_id",
-                        "category_id": "$_id.category_id",
-                        "count": 1,
-                    }
-                },
-                {"$sort": {"uuid": 1, "name_id": 1, "category_id": 1}},
-            ]
-        )
-        .to_list()
-    )
-    return render_json(items)
+    if created_at is None:
+        return abort(400, "Missing created_at.")
+    uuids = await LeaderboardEntry.distinct("leaderboard", {"created_at": created_at})
+    items = await Leaderboard.find({"uuid": {"$in": uuids}}).to_list()
+    json_items = []
+    for item in items:
+        json_item = item.model_dump(exclude=["id"])
+        json_item["contest_type"] = None
+        for contest in item.contests:
+            if contest.time == created_at:
+                json_item["contest_type"] = contest.type.name
+        json_items.append(json_item)
+    return render_json(json_items)
 
 
 async def archive_entries(submit_time):
@@ -141,14 +115,10 @@ async def archive_entries(submit_time):
             for entry in entries:
                 await LeaderboardEntryArchive.insert_one(
                     document=LeaderboardEntryArchive(
-                        uuid=entry.uuid,
-                        name_id=entry.name_id,
-                        name=entry.name,
-                        category_id=entry.category_id,
-                        category=entry.category,
                         player_name=entry.player_name,
                         rank=entry.rank,
                         score=entry.score,
+                        leaderboard=entry.leaderboard,
                         created_at=entry.created_at,
                     ),
                     bulk_writer=bw,
@@ -159,60 +129,28 @@ async def archive_entries(submit_time):
     print("Done archiving.")
 
 
-async def precache_entries(created_at, ts_date):
+async def precache_entries(created_at, ts_date, missing=False):
     query = {"created_at": created_at}
-    items = (
-        await LeaderboardEntry.find(query)
-        .aggregate(
-            [
-                {
-                    "$group": {
-                        "_id": {
-                            "uuid": "$uuid",
-                            "name_id": "$name_id",
-                            "category_id": "$category_id",
-                        },
-                        "count": {"$sum": 1},
-                    }
-                },
-                {
-                    "$project": {
-                        "_id": 0,
-                        "uuid": "$_id.uuid",
-                        "name_id": "$_id.name_id",
-                        "category_id": "$_id.category_id",
-                        "count": 1,
-                    }
-                },
-                {"$sort": {"uuid": 1, "name_id": 1, "category_id": 1}},
-            ]
-        )
-        .to_list()
-    )
+    uuids = await LeaderboardEntry.distinct("leaderboard", query)
     offset = 0
     limit = None
-    for i, item in enumerate(items):
-        print(f"Precaching {i+1}/{len(items)}...")
-        name = item["name_id"]
-        category = item["category_id"]
-        query_dump = {}
-        if name or created_at or category:
-            query_dump = {
-                "$and": [
-                    *([{"name_id": name}] if name else []),
-                    *([{"category_id": category}] if category else []),
-                    *([{"created_at": created_at}] if created_at else []),
-                ]
-            }
+    for i, uuid in enumerate(uuids):
+        print(f"Precaching {i+1}/{len(uuids)}...")
         pipeline = [
-            {"$match": query_dump} if query_dump else {},
+            {
+                "$match": {
+                    "$and": [
+                        {"leaderboard": uuid},
+                        {"created_at": created_at},
+                    ]
+                }
+            },
             {"$sort": {"rank": 1}},
             {
                 "$project": {
                     "_id": 0,
-                    **({"created_at": 0} if created_at else {}),
-                    **({"name_id": 0} if name else {}),
-                    **({"category_id": 0} if category else {}),
+                    "created_at": 0,
+                    "leaderboard": 0,
                 }
             },
             *([{"$skip": offset}] if offset else []),
@@ -230,26 +168,15 @@ async def precache_entries(created_at, ts_date):
         await session.get(
             f"https://trovesaurus.com/leaderboards/?import&key={os.getenv('TROVESAURUS_MARKET_TOKEN')}&day={ts_date}"
         )
-    await current_app.redis.publish_event(
-        Event(
-            id=created_at, type=EventType.leaderboards, data={"imported_at": created_at}
+    if not missing:
+        await current_app.redis.publish_event(
+            Event(
+                id=created_at,
+                type=EventType.leaderboards,
+                data={"imported_at": created_at},
+            )
         )
-    )
-    print(f"Precached {len(items)} leaderboards for {ts_date}.")
-
-
-@leaderboards.route("/categories", methods=["GET"])
-async def get_categories_list():
-    params = request.args
-    created_at = int(params.get("created_at", 0)) or None
-    query = {}
-    if created_at:
-        query.update({"created_at": created_at})
-    items = await LeaderboardEntry.distinct("category_id", query)
-    response = render_json(items)
-    response.headers["count"] = len(items)
-    response.headers["total_entries"] = await LeaderboardEntry.find(query).count()
-    return response
+    print(f"Precached {len(uuids)} leaderboards for {ts_date}.")
 
 
 async def import_data():
@@ -293,7 +220,7 @@ async def get_interest_items():
     return render_json(sorted(timestamps, reverse=True))
 
 
-async def insert_leaderboard_data(raw_data):
+async def insert_leaderboard_data(raw_data, missing=False):
     data = raw_data.get("data", "")
     leaderboard_regex = re.compile(
         r"^(.+?)\$(.+?)\$(\d+?) = (.+?)\$(.+?)##(.+)$", re.MULTILINE
@@ -307,6 +234,11 @@ async def insert_leaderboard_data(raw_data):
         ).timestamp()
     )
     submit_time = raw_data.get("timestamp", submit_time)
+    leaderboard_data = leaderboard_regex.findall(data)
+    leaderboard_data.sort(
+        key=lambda x: (int(x[1].startswith("Leaderboard_Category_Contests")), int(x[2]))
+    )
+    read_leaderboards = []
     for (
         leaderboard_id,
         category_id,
@@ -314,28 +246,42 @@ async def insert_leaderboard_data(raw_data):
         name,
         category,
         raw_entries,
-    ) in leaderboard_regex.findall(data):
+    ) in leaderboard_data:
         if category.upper() == "FAVORITES":
             continue
         leaderboards_imported += 1
-        async with BulkWriter() as bw:
-            for rank, player_name, score in entry_regex.findall(
-                "\n".join(raw_entries.split("|"))
-            ):
-                await LeaderboardEntry.insert_one(
-                    document=LeaderboardEntry(
-                        uuid=int(uuid),
-                        name=name,
-                        name_id=leaderboard_id,
-                        category_id=category_id,
-                        category=category.upper() or "NULL",
-                        player_name=player_name,
-                        rank=int(rank),
-                        score=float(score),
-                        created_at=submit_time,
-                    ),
-                    bulk_writer=bw,
-                )
+        uuid = int(uuid)
+        lb = await Leaderboard.find_one({"uuid": uuid})
+        if lb is None:
+            lb = await Leaderboard(
+                uuid=uuid,
+                name_id=leaderboard_id,
+                name=name,
+                category_id=category_id,
+                category=category,
+            ).save()
+        lb_type = LeaderboardType.from_string(category_id)
+        if lb_type != LeaderboardType.DEFAULT:
+            contest = Contest(time=submit_time, type=lb_type)
+            if contest.time not in [c.time for c in lb.contests]:
+                lb.contests.append(contest)
+                await lb.save()
+        if uuid not in read_leaderboards:
+            read_leaderboards.append(uuid)
+            async with BulkWriter() as bw:
+                for rank, player_name, score in entry_regex.findall(
+                    "\n".join(raw_entries.split("|"))
+                ):
+                    await LeaderboardEntry.insert_one(
+                        document=LeaderboardEntry(
+                            player_name=player_name,
+                            rank=int(rank),
+                            score=float(score),
+                            leaderboard=lb.uuid,
+                            created_at=submit_time,
+                        ),
+                        bulk_writer=bw,
+                    )
     submit_time = datetime.fromtimestamp(submit_time, UTC)
     asyncio.create_task(archive_entries(submit_time))
     year = submit_time.year
@@ -349,7 +295,7 @@ async def insert_leaderboard_data(raw_data):
             "color": 0x00FF00,
         },
     )
-    await precache_entries(int(submit_time.timestamp()), ts_date)
+    await precache_entries(int(submit_time.timestamp()), ts_date, missing)
 
 
 @leaderboards.route("/insert", methods=["POST"])
@@ -359,6 +305,11 @@ async def insert_entries():
         return abort(401)
     asyncio.create_task(insert_leaderboard_data(raw_data))
     return "OK", 200
+
+
+async def insert_missing_data(data_blocks):
+    for data in data_blocks:
+        await insert_leaderboard_data(data, True)
 
 
 @leaderboards.route("/insert_missing", methods=["GET", "POST"])
@@ -375,6 +326,7 @@ async def insert_missing_leaderboards():
     files = await request.files
     if "files[]" not in files:
         return abort(400)
+    data_blocks = []
     for file in files.getlist("files[]"):
         timestamp = int(file.filename.split(".")[0])
         time = datetime.fromtimestamp(timestamp, UTC)
@@ -382,5 +334,6 @@ async def insert_missing_leaderboards():
             time.replace(hour=11, minute=0, second=0, microsecond=0).timestamp() - 86400
         )
         data = {"timestamp": time, "data": file.read().decode("utf-8")}
-        asyncio.create_task(insert_leaderboard_data(data))
+        data_blocks.append(data)
+    asyncio.create_task(insert_missing_data(data_blocks))
     return "OK", 200

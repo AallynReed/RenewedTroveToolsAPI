@@ -3436,12 +3436,12 @@
         "designer": "Trove Team",
         "file": "Pets",
         "filename": "collections/pet/duodrak_september2024_down",
-        "mastery": "0",
+        "mastery": "20",
         "mastery_geode": "0",
         "name": "Cross-Eyed Crawler",
-        "powerrank": "0",
+        "powerrank": "20",
         "tooltip": "",
-        "updated_at": 1723166816
+        "updated_at": 1726119474
     },
     "duodrak_twoheads_battle": {
         "blueprint": "2022/allies/duodrak_twoheads_battle/c_c_duodrak_twoheads_battle_ui",
