@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Gem System</title>
+    <link rel="stylesheet" href="/css/gems.css">
+</head>
+
+<body>
+    <div class="switch-container">
+        <span class="switch-label" id="theme-label">Light Mode</span>
+        <label class="switch">
+            <input type="checkbox" id="theme-switch">
+            <span class="slider"></span>
+        </label>
+    </div>
+    <div class="container">
+        <div class="pane left">
+            <div class="pane-label">Equipped</div>
+            <div class="slots left-slots" id="equipped"></div>
+        </div>
+        <div class="pane middle">
+            <div class="pane-label">Selected</div>
+            <form class="gem-form" id="gem-form" autocomplete="off">
+                <div class="gem-form-row">
+                    <label>
+                        Type<br>
+                        <select id="gem-type"></select>
+                    </label>
+                    <label>
+                        Tier<br>
+                        <select id="gem-tier"></select>
+                    </label>
+                </div>
+                <div class="gem-form-row">
+                    <label>
+                        Element<br>
+                        <select id="gem-element"></select>
+                    </label>
+                    <label id="gem-restriction-label">
+                        Restriction<br>
+                        <select id="gem-restriction"></select>
+                    </label>
+
+                </div>
+                <div class="gem-form-row" style="display: flex; gap: 24px; margin-bottom: 10px;">
+                    <label style="flex:1;">
+                        Level<br>
+                        <input type="range" id="gem-level-slider" min="1" max="35" value="1" style="width:100%;">
+                        <span id="gem-level-value"
+                            style="display:inline-block;width:38px;text-align:right;margin-left:8px;">1</span>
+                    </label>
+                    <div style="flex:1;">
+                        <label style="flex:1;">
+                            Augment (%)<br>
+                            <input type="range" id="gem-augment-slider" min="0" max="100" value="0" style="width:100%;">
+                            <span id="gem-augment-value"
+                                style="display:inline-block;width:38px;text-align:right;margin-left:8px;">0</span>
+                        </label>
+                        <input type="checkbox" id="gem-augment-null" checked style="vertical-align:middle;margin-right:6px;">
+                            Random augmentation
+                    </div>
+
+                </div>
+
+                <button type="submit">Generate Random Gem</button>
+            </form>
+            <div id="selected"></div>
+            <div id="trash-slot-container"></div>
+        </div>
+        <div class="pane right">
+            <div class="pane-label">Inventory</div>
+            <div class="slots right-slots" id="inventory"></div>
+        </div>
+    </div>
+    <script src="/js/gems.js"></script>
+</body>
+
+</html>

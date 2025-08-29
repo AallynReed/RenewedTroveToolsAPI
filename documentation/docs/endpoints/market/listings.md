@@ -18,8 +18,9 @@ Used to fetch Trove's market listings
 - `price_max` > `Float` - Value for maximum price filter
 - `created_after` > `UTC Timestamp [Seconds]` - When to start capturing based on creation date
 - `created_before` > `UTC Timestamp [Seconds]` - When to stop capturing based on creation date
-- `last_seen_before` > `UTC Timestamp [Seconds]` - When to start capturing based on last seen date
-- `last_seen_after` > `UTC Timestamp [Seconds]` - When to stop capturing based on last seen date
+- `last_seen_after` > `UTC Timestamp [Seconds]` - When to start capturing based on last seen date
+- `last_seen_before` > `UTC Timestamp [Seconds]` - When to stop capturing based on last seen date
+- `hide_expired` - Hide expired listings (No value parameter)
 
 ## Success Response
 

@@ -18,6 +18,8 @@ from hashlib import sha1
 import json
 from utils import Event, EventType
 
+from statistics import mean, stdev
+
 
 leaderboards = Blueprint("leaderboards", __name__, url_prefix="/leaderboards")
 
@@ -160,6 +162,9 @@ async def precache_entries(created_at, ts_date, missing=False):
             f"leaderboard_search_{created_at}"
             + sha1(json.dumps(pipeline).encode()).hexdigest()
         )
+        entries = await current_app.redis.get_object(pipeline_id)
+        if entries is not None:
+            continue
         final_query = LeaderboardEntry.aggregate(pipeline)
         entries = await final_query.to_list()
         await current_app.redis.set_object(pipeline_id, entries)
@@ -239,6 +244,8 @@ async def insert_leaderboard_data(raw_data, missing=False):
         key=lambda x: (int(x[1].startswith("Leaderboard_Category_Contests")), int(x[2]))
     )
     read_leaderboards = []
+    result = await LeaderboardEntry.find({"created_at": submit_time}).delete()
+    print(f"Deleted {result.deleted_count} documents.")
     for (
         leaderboard_id,
         category_id,
@@ -298,6 +305,20 @@ async def insert_leaderboard_data(raw_data, missing=False):
     await precache_entries(int(submit_time.timestamp()), ts_date, missing)
 
 
+@leaderboards.route("/precache")
+async def precache():
+    params = request.args
+    created_at = int(params.get("created_at", 0)) or None
+    if created_at is None:
+        return abort(400, "Missing created_at.")
+    submit_time = datetime.fromtimestamp(created_at, UTC)
+    year = submit_time.year
+    day = submit_time.timetuple().tm_yday
+    ts_date = f"{year}{day}"
+    asyncio.create_task(precache_entries(created_at, ts_date, True))
+    return "OK", 200
+
+
 @leaderboards.route("/insert", methods=["POST"])
 async def insert_entries():
     raw_data = await request.form
@@ -337,3 +358,66 @@ async def insert_missing_leaderboards():
         data_blocks.append(data)
     asyncio.create_task(insert_missing_data(data_blocks))
     return "OK", 200
+
+@leaderboards.route("/cheaters/<int:lbid>/<int:week>", methods=["GET"])
+async def get_cheaters(lbid, week):
+    
+    now = datetime.now(UTC) - timedelta(days=7*week, hours=11)
+    week_start = (now - timedelta(days=now.weekday())).replace(hour=11, minute=0, second=0, microsecond=0)
+    week_end = week_start + timedelta(days=7)
+
+    
+    entries = await LeaderboardEntry.find(
+        {
+            "leaderboard": lbid,
+            "created_at": {"$gte": week_start.timestamp(), "$lt": week_end.timestamp()}
+        }
+    ).sort("created_at").to_list()
+
+    lb = await Leaderboard.find_one({"uuid": lbid})
+
+    # Group entries by player
+    player_entries = {}
+    for entry in entries:
+        if entry.player_name not in player_entries:
+            player_entries[entry.player_name] = []
+        player_entries[entry.player_name].append(entry)
+    
+    # Calculate daily score and rank progressions
+    player_stats = {}
+    for player, entries in player_entries.items():
+        score_diffs = []
+        rank_diffs = []
+        
+        for i in range(1, len(entries)):
+            score_diff = entries[i].score - entries[i-1].score
+            rank_diff = entries[i].rank - entries[i-1].rank
+            
+            score_diffs.append(score_diff)
+            rank_diffs.append(rank_diff)
+        
+        if score_diffs:
+            avg_score_diff = mean(score_diffs)
+            avg_rank_diff = mean(rank_diffs)
+            player_stats[player] = {
+                "avg_score_diff": avg_score_diff,
+                "avg_rank_diff": avg_rank_diff,
+                "score_diffs": score_diffs,
+                "rank_diffs": rank_diffs
+            }
+    
+    # Calculate the average and standard deviation of score changes for all players
+    all_score_diffs = [stat['avg_score_diff'] for stat in player_stats.values()]
+    avg_score = mean(all_score_diffs)
+    score_std_dev = stdev(all_score_diffs)
+    
+    # Flag potential cheaters
+    potential_cheaters = []
+    threshold = 6 # Define a z-score threshold (e.g., 3 standard deviations)
+    
+    for player, stats in player_stats.items():
+        z_score = (stats['avg_score_diff'] - avg_score) / score_std_dev
+        if z_score > threshold:
+            potential_cheaters.append(player)
+    
+    return render_json({"cheaters": potential_cheaters, "leaderboard": lb.model_dump(exclude=["id"])})

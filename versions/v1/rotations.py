@@ -103,6 +103,18 @@ async def insert_challenge():
     return "OK", 200
 
 
+@rotations.route("/test/event", methods=["GET"])
+async def test_event():
+    await current_app.redis.publish_event(
+        Event(
+            id=1,
+            type=EventType.challenge,
+            data=ChallengeEntry(name="RAMPAGE ALERT!", created_at=1).model_dump(exclude=["id"]),
+        )
+    )
+    return "OK", 200
+
+
 @rotations.route("/challenge/insert_missing", methods=["GET", "POST"])
 async def insert_missing_challenge():
     if request.method == "GET":

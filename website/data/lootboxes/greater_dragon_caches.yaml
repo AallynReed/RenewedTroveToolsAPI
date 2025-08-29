@@ -1,0 +1,26 @@
+webpage: "greater_dragon_caches"
+name: "Greater Dragon Cache"
+boxes:
+  - name: "Greater Dragon Cache"
+    opened: 946
+    loot_table:
+      - name: "10 Dragon Coins"
+        quantity_min: 0
+        quantity_max: 10
+        obtained: 806
+      - name: "50 Dragon Coins"
+        quantity_min: 0
+        quantity_max: 50
+        obtained: 90
+      - name: "Burnt Draconic Essence"
+        quantity_min: 0
+        quantity_max: 3
+        obtained: 41
+      - name: "Draconic Title"
+        quantity_min: 0
+        quantity_max: 1
+        obtained: 3
+      - name: "Golden Dragon Egg/Complete Dragon"
+        quantity_min: 0
+        quantity_max: 1
+        obtained: 6

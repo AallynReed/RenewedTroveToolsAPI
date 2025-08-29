@@ -14,9 +14,7 @@ nav:
         - GET - Available Items: endpoints/market/available_items.md
         - GET - Listings: endpoints/market/listings.md
         - GET - Hourly: endpoints/market/hourly.md
-        - GET - Hourly Graph: endpoints/market/hourly_graph.md
         - GET - Daily: endpoints/market/daily.md
-        - GET - Daily Graph: endpoints/market/daily_graph.md
       - Models:
         - MarketListing: models/market/MarketListing.md
     - Leaderboards:

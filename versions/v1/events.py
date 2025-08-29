@@ -1,4 +1,4 @@
-from quart import Response, Blueprint, stream_with_context, current_app
+from quart import Response, Blueprint, stream_with_context, current_app, websocket
 import asyncio
 
 
@@ -28,3 +28,13 @@ async def events():
             yield f"data: {event.json}\n\n"
 
     return Response(feed(), content_type="text/event-stream")
+
+@api_events.websocket("/socket")
+async def socket():
+    async for event in current_app.redis.event_listen():
+        event = {
+            "id": event.id,
+            "event": event.type.name,
+            "data": event.json
+        }
+        await websocket.send(event)

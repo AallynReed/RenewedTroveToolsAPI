@@ -11,14 +11,16 @@ import traceback
 import time
 from hashlib import md5
 from ..utils.logger import l
-from datetime import datetime, UTC
+from datetime import datetime, UTC, time
 from json import loads, dumps
 from utils import Event, EventType
+from hcloud import Client
+from time import perf_counter
 
 
 @tasks.loop(seconds=5)
 async def update_mods_list():
-    start = time.time()
+    start = perf_counter()
     try:
         if not current_app.main_worker:
             mod_cache = await current_app.redis.get_object("mods_cache")
@@ -33,9 +35,10 @@ async def update_mods_list():
                 )
                 print(
                     "Mods list loaded from redis in",
-                    round(time.time() - start, 2),
+                    round(perf_counter() - start, 2),
                     "seconds",
                 )
+                await asyncio.sleep(1799)
         else:
             async with ClientSession() as session:
                 response = await session.get(
@@ -47,11 +50,14 @@ async def update_mods_list():
                     mod_id = int(mod["modid"])
                     if mod_id not in hot_data:
                         hot_data[mod_id] = 0
-                    hot_data[mod_id] += 1
+                    hot_data[mod_id] += int(mod["downloads"])
             async with ClientSession() as session:
                 async with session.get(
                     f"https://trovesaurus.com/mods/api/list?token={os.getenv('TROVESAURUS_TOKEN')}"
                 ) as response:
+                    if response.status != 200:
+                        print("Mods list grab task failed.")
+                        return
                     data = await response.json()
                     cache = ModCache()
                     mod_directory = Path("mods")
@@ -61,6 +67,8 @@ async def update_mods_list():
                     mod_searches = []
                     mod_entries = []
                     for i, mod in enumerate(data, 1):
+                        if int(mod["id"]) in [11118]:
+                            continue
                         ts_mod = TrovesaurusMod(**mod)
                         last_update = ts_mod.date
                         for d in ts_mod.files:
@@ -83,14 +91,19 @@ async def update_mods_list():
                             )
                         )
                         cache[mod["id"]] = ts_mod
-                        for file in cache[mod["id"]].files:
-                            if not file.hash:
-                                l("Mod List").error(
-                                    f"Trovesaurus file {file.id} has no hash"
-                                )
-                                continue
-                            # Crit can't fucking read
+                        for file in ts_mod.files:
                             if file.format.lower() in ["zip", "tmod"]:
+                                if file.hash not in mod_files:
+                                    l("Mod List").info(
+                                        f"Mod {file.hash} not found in mods directory"
+                                    )
+                                    async with session.get(
+                                        f"https://trovesaurus.com/client/downloadfile.php?fileid={file.id}&no_track"
+                                    ) as file_response:
+                                        data = await file_response.read()
+                                        path = Path(f"mods/{file.hash}.{file.format}")
+                                        path.write_bytes(data)
+                                        l("Mod List").info("Downloaded mod " + file.hash + " | " + str(ts_mod.id))
                                 mod_entries.append(
                                     ModEntry(
                                         hash=file.hash,
@@ -100,19 +113,45 @@ async def update_mods_list():
                                         authors=ts_mod.authors,
                                     )
                                 )
-                                path = Path(f"mods/{file.hash}.{file.format}")
-                                if file.hash not in mod_files:
-                                    req = f"https://trovesaurus.com/client/downloadfile.php?fileid={file.id}&no_track"
-                                    async with session.get(req) as file_response:
-                                        file_data = await file_response.read()
-                                        if md5(file_data).hexdigest() == file.hash:
-                                            path.write_bytes(file_data)
-                                            print("Downloaded", ts_mod.name)
-                                        else:
-                                            continue
-                                            l("Mod List").error(
-                                                f"Mod payload doesn't match hash: {file.hash}"
-                                            )
+                        # for file in cache[mod["id"]].files:
+                        #     if not file.hash:
+                        #         l("Mod List").error(
+                        #             f"Trovesaurus file {file.id} has no hash"
+                        #         )
+                        #         continue
+                        #     # Crit can't fucking read
+                        #     if file.format.lower() in ["zip", "tmod"]:
+                        #         mod_entries.append(
+                        #             ModEntry(
+                        #                 hash=file.hash,
+                        #                 name=ts_mod.name,
+                        #                 format=file.format,
+                        #                 description=ts_mod.description,
+                        #                 authors=ts_mod.authors,
+                        #             )
+                        #         )
+                        #         path = Path(f"mods/{file.hash}.{file.format}")
+                        #         if file.hash not in mod_files:
+                        #             req = f"https://trovesaurus.com/client/downloadfile.php?fileid={file.id}&no_track"
+                        #             async with session.get(req) as file_response:
+                        #                 data = await file_response.read()
+                        #                 print("Downloading", file.hash)
+                        #         else:
+                        #             path = Path(f"mods/{file.hash}.{file.format}")
+                        #             data = path.read_bytes()
+                        #         if not path.exists():
+                        #             l("Mod List").error(
+                        #                 f"Mod {file.hash} not found in mods directory"
+                        #             )
+                        #         else:
+                        #             if file.format == "zip":
+                        #                 mod_hash = md5(data).hexdigest()
+                        #             else:
+                        #                 header_size = int.from_bytes(data[:8], "little")
+                        #                 mod_hash = md5(data[:header_size]).hexdigest()
+                        #         if file.hash != mod_hash:
+                        #             async with session.get(f"https://trovesaurus.com/mods/api/setfilehash?token={os.getenv('TROVESAURUS_TOKEN')}&fileid={file.id}&hash={mod_hash}") as response:
+                        #                 print(await response.text())
                     cache.process_hashes()
                     current_app.mods_list = cache
                     await current_app.redis.set_object("mods_cache", cache)
@@ -123,7 +162,7 @@ async def update_mods_list():
                         offload_database_saves(mod_entries, mod_searches)
                     )
                     print(
-                        "Mods list updated in", round(time.time() - start, 2), "seconds"
+                        "Mods list updated in", round(perf_counter() - start, 2), "seconds"
                     )
                     await asyncio.sleep(1800)
     except Exception as e:
@@ -131,10 +170,10 @@ async def update_mods_list():
 
 
 async def offload_database_saves(mod_entries, search_mods):
-    for mod in mod_entries:
-        await ModEntry.find_one(ModEntry.hash == mod.hash).update(
-            {"$set": mod.model_dump(by_alias=True, exclude=["id"])}, upsert=True
-        )
+    # for mod in mod_entries:
+    #     await ModEntry.find_one(ModEntry.hash == mod.hash).update(
+    #         {"$set": mod.model_dump(by_alias=True, exclude=["id"])}, upsert=True
+    #     )
     for mod in search_mods:
         await SearchMod.find_one(SearchMod.id == mod.id).update(
             {"$set": mod.model_dump(by_alias=True, exclude=["id"])}, upsert=True
@@ -144,23 +183,23 @@ async def offload_database_saves(mod_entries, search_mods):
 
 @update_mods_list.before_loop
 async def before_update_mods_list():
-    l("Mod List").info("Mod list update task starting.")
     if current_app.main_worker:
-        try:
-            async for mod_entry in ModEntry.find_many({}):
-                path = Path(f"mods/{mod_entry.hash}.{mod_entry.format}")
-                if not path.exists():
-                    print(f"Mod {mod_entry.hash} not found in mods directory")
-                await mod_entry.delete()
-            print("Mod list check complete")
-        except Exception as e:
-            print(e)
+        l("Mod List").info("Mod list update task starting.")
+        # try:
+        #     async for mod_entry in ModEntry.find_many({}):
+        #         path = Path(f"mods/{mod_entry.hash}.{mod_entry.format}")
+        #         if not path.exists():
+        #             print(f"Mod {mod_entry.hash} not found in mods directory")
+        #         await mod_entry.delete()
+        #     print("Mod list check complete")
+        # except Exception as e:
+        #     print(e)
 
 
 @tasks.loop(minutes=10)
 async def update_change_log():
     versions = []
-    version_count = 10
+    version_count = 25
     async with ClientSession() as session:
         async with session.get(
             "https://api.github.com/repos/AallynReed/RenewedTroveTools/releases",
@@ -354,13 +393,15 @@ async def before_sse_hearbeat():
     print("SSE heartbeat task starting.")
 
 
-@tasks.loop(seconds=1)
+@tasks.loop(seconds=60, log_errors=True)
 async def luxion():
     luxion_rotations = current_app.trove_time.get_luxion_rotations()
     next_rotation = luxion_rotations["next"]
     now = datetime.now(UTC).replace(microsecond=0)
-    until_next = next_rotation["start"] - now
-    await asyncio.sleep(until_next.total_seconds())
+    until_next = next_rotation["start"] - int(now.timestamp())
+    if until_next < 0:
+        return
+    await asyncio.sleep(until_next)
     await current_app.redis.publish_event(
         Event(
             id=int(datetime.now(UTC).timestamp()),
@@ -370,13 +411,15 @@ async def luxion():
     )
 
 
-@tasks.loop(seconds=1)
+@tasks.loop(seconds=60)
 async def corruxion():
     corruxion_rotations = current_app.trove_time.get_corruxion_rotations()
     next_rotation = corruxion_rotations["next"]
     now = datetime.now(UTC).replace(microsecond=0)
-    until_next = next_rotation["start"] - now
-    await asyncio.sleep(until_next.total_seconds())
+    until_next = next_rotation["start"] - int(now.timestamp())
+    if until_next < 0:
+        return
+    await asyncio.sleep(until_next)
     await current_app.redis.publish_event(
         Event(
             id=int(datetime.now(UTC).timestamp()),
@@ -386,7 +429,7 @@ async def corruxion():
     )
 
 
-@tasks.loop(seconds=5)
+@tasks.loop(seconds=60)
 async def fluxion():
     fluxion_rotations = current_app.trove_time.get_fluxion_rotations()
     current_rotation = fluxion_rotations["current"]
@@ -411,8 +454,10 @@ async def fluxion():
     for phase in phases:
         if phase["start"] < now:
             continue
-        until_next = phase["start"] - now
-        await asyncio.sleep(until_next.total_seconds())
+        until_next = phase["start"] - int(now.timestamp())
+        if until_next < 0:
+            continue
+        await asyncio.sleep(until_next)
         await current_app.redis.publish_event(
             Event(
                 id=int(datetime.now(UTC).timestamp()),
@@ -422,6 +467,39 @@ async def fluxion():
         )
         break
 
+@tasks.loop(
+    time=[
+        time(hour=0, minute=35, tzinfo=UTC),
+        time(hour=2, minute=35, tzinfo=UTC),
+        time(hour=4, minute=35, tzinfo=UTC),
+        time(hour=6, minute=35, tzinfo=UTC),
+        time(hour=8, minute=35, tzinfo=UTC),
+        time(hour=10, minute=35, tzinfo=UTC),
+        time(hour=12, minute=35, tzinfo=UTC),
+        time(hour=14, minute=35, tzinfo=UTC),
+        time(hour=16, minute=35, tzinfo=UTC),
+        time(hour=18, minute=35, tzinfo=UTC),
+        time(hour=20, minute=35, tzinfo=UTC),
+        time(hour=22, minute=35, tzinfo=UTC),
+    ]
+)
+async def server_restart():
+    print("Server restart task starting.")
+    # host = '135.181.248.242'
+    # port = 28923
+    # password = '280924'
+
+    # with MCRcon(host, password, port) as mcr:
+    #     response = mcr.command('/say Restarting in 10 seconds...')
+    #     response = mcr.command('/save-all')
+    #     print(response)
+    # await asyncio.sleep(10)
+    client = Client(token=os.getenv("HETZNER_TOKEN"))
+    servers = client.servers.get_all()
+    for server in servers:
+        if server.name == "RTT":
+            server.reboot()
+            break
 
 # @tasks.loop(seconds=1)
 # async def reset_biomes():

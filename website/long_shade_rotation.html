@@ -1,142 +1,472 @@
 <html lang="en">
-    <head>
-        <title>Long Shade Rotation</title>
-        <meta property="og:title" content="Long Shade Rotation">
-        <meta http-equiv="refresh" content="120">
-        {% include 'head.html' %}
-        <style>
-            td, th {
-                color: #bbb;
-                border: 1px solid gray;
-                padding-left: 5px;
-                background: transparent;
-            }
-            th {
-                height: 50px;
-                text-align: center;
-                font-size: 24px;
-            }
-            tr.current {
-                height: 35px;
-                font-weight: bolder;
-                background-color: rgba(5, 94, 5, 0.479);
-            }
-            pill {
-                background: transparent;
-                color: #bbb;
-                border: 1px solid #bbb;
-                margin-left: 3px;
-                margin-right: 3px;
-                padding: 3px 3px 3px 3px;
-                border-radius: 7px;
-                margin-bottom: 4px;
-            }
-            .star {
-                vertical-align: middle;
-                margin-right: 10px;
-            }
-            .star-middle {
-                vertical-align: middle;
-            }
-            .star-gold {
-                color: gold;
-            }
-            .star-silver {
-                color: silver;
-            }
-            
-            .star-bronze {
-                color: #b08d57;
-            }
-            .star-red {
-                color: transparent;
-            }
-            .star-blank {
-                color: #0cc;
-            }
-        </style>
-    </head>
 
-    <body>
-        <main>
-            {% include 'header.html' %}
-            <div class="container px-5 my-2">
-                <div class="row gx-5 justify-content-center">
-                    <h1 class="my-2 text-center text-primary">Long Shade Rotation</h1>
-                    <!-- <span style="color: #999;text-align: center;">You can put your mouse over or click the names to highlight biomes in the table</span>
+<head>
+    <title data-i18n="Long Shade Rotation">Long Shade Rotation</title>
+    <meta property="og:title" content="Long Shade Rotation">
+    <meta http-equiv="refresh" content="120">
+    {% include 'head.html' %}
+    <style>
+        td,
+        th {
+            color: #bbb;
+            border: 1px solid gray;
+            padding-left: 5px;
+            background: transparent;
+        }
+
+        th {
+            height: 50px;
+            text-align: center;
+            font-size: 24px;
+        }
+
+        tr.current {
+            height: 35px;
+            font-weight: bolder;
+            background-color: rgba(5, 94, 5, 0.479);
+        }
+
+        pill {
+            background: transparent;
+            color: #bbb;
+            border: 1px solid #bbb;
+            margin-left: 3px;
+            margin-right: 3px;
+            padding: 3px 3px 3px 3px;
+            border-radius: 7px;
+            margin-bottom: 4px;
+        }
+
+        .star {
+            vertical-align: middle;
+            margin-right: 10px;
+        }
+
+        .star-middle {
+            vertical-align: middle;
+        }
+
+        .star-gold {
+            color: gold;
+        }
+
+        .star-silver {
+            color: silver;
+        }
+
+        .star-bronze {
+            color: #b08d57;
+        }
+
+        .star-red {
+            color: transparent;
+        }
+
+        .star-blank {
+            color: #0cc;
+        }
+
+        
+        .long-shade-container {
+            position: relative;
+            width: 150px;
+            height: 150px;
+            background-image: url('https://trovesaurus.com/images/biomes/long_shade.png');
+            background-size: cover;
+            overflow: hidden;
+        }
+
+        .rotating-image {
+            position: absolute;
+            top: 45%;
+            left: 45%;
+            width: 30px;
+            height: 30px;
+            transform-origin: 30px 0;
+        }
+
+        #biome_image1 {
+            transform: rotate(0deg) translateX(-40px) rotate(0deg);
+            animation: rotate-around1 15s linear infinite;
+        }
+
+        #biome_image2 {
+            transform: rotate(120deg) translateX(-40px) rotate(-120deg);
+            animation: rotate-around2 15s linear infinite;
+        }
+
+        #biome_image3 {
+            transform: rotate(240deg) translateX(-40px) rotate(-240deg);
+            animation: rotate-around3 15s linear infinite;
+        }
+
+        @keyframes rotate-around1 {
+            from {
+                transform: rotate(0deg) translateX(-40px) rotate(0deg);
+            }
+            to {
+                transform: rotate(360deg) translateX(-40px) rotate(-360deg);
+            }
+        }
+        @keyframes rotate-around2 {
+            from {
+                transform: rotate(120deg) translateX(-40px) rotate(-120deg);
+            }
+            to {
+                transform: rotate(480deg) translateX(-40px) rotate(-480deg);
+            }
+        }
+        @keyframes rotate-around3 {
+            from {
+                transform: rotate(240deg) translateX(-40px) rotate(-240deg);
+            }
+            to {
+                transform: rotate(600deg) translateX(-40px) rotate(-600deg);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <main>
+        {% include 'header.html' %}
+        <div id="language-selector" style="position:fixed;top:10px;right:10px;z-index:1000;">
+            <form id="langForm" action="#" method="get" style="display:inline;">
+                <select id="langDropdown" name="lang">
+                    {% for code, name in langs.items() %}
+                    <option value="{{ code }}">{{ name }}</option>
+                    {% endfor %}
+                </select>
+            </form>
+        </div>
+        <div class="container px-5 my-2">
+            <div class="row justify-content-center">
+                <h1 class="my-2 text-center text-primary" data-i18n="Long Shade Rotation">Long Shade Rotation</h1>
+                <!-- <span style="color: #999;text-align: center;">You can put your mouse over or click the names to highlight biomes in the table</span>
                     <span style="color: #999;text-align: center;">You can see subbiome names if put your mouse over a biome in the table</span> -->
-                    <div class="row justify-content-md-center my-2">
-                        {% for biome in biomes %}
-                            <pill class="col-md-auto" style="font-size: 15px" biome="{{ biome[0] }}" onclick="clickBiomeName(this);" onmouseenter="hoverBiomeNames(this);" onmouseleave="unHoverBiomeNames(this);" >
-                                <img src="https://kiwiapi.aallyn.xyz/v1/misc/assets/images/biomes/{{ biome[1] }}.png" width="15"> {{ biome[0] }}
-                            </pill>
-                        {% endfor %}
-                    </div>
-                    <div class="row justify-content-md-center my-2">
-                        {% for icon in biome_icons %}
-                            <pill class="col-md-auto" onclick="clickBiomeIcon(this);" onmouseenter="hoverBiomeIcons(this);" onmouseleave="unHoverBiomeIcons(this);" biome_icon="{{ icon }}">
-                                <img src="https://kiwiapi.aallyn.xyz/v1/misc/assets/images/biomes/{{ icon }}.png" width="24">
-                            </pill>
-                        {% endfor %}
-                    </div>
-                    <div style="display:flex;justify-content: center;color: transparent">
-                        <span style="color: #999;text-align: center;margin-right:40px;"><span class="material-icons star-middle star-blank">landscape</span> - Size/Existence of caves</span>
-                        <span style="color: #999;text-align: center;"><span class="material-icons star-middle star-blank">diamond</span> - Rating of farmability of ores</span>
-                    </div>
-                    <table class="my-2">
-                        {% for x in history %}
-                            <tr {% if x[5] %}class="current"{% endif %}>
-                                <td class="time" timestamp="{{ x[0][1] }}">{{ x[0][0] }}</td>
-                                {% for y in x[2:5] %}
-                                    {% if advanced %}
-                                        <td id="biome" onmouseenter="hoverBiomeNames(this);" onmouseleave="unHoverBiomeNames(this);" biome="{{ y.name }}" biome_icon="{{ y.icon }}">
-                                            <div style="display: flex;justify-content: space-between;">
-                                                <div data-toggle="tooltip" title="{{ y.final_name }}">
-                                                    <img src="https://kiwiapi.aallyn.xyz/v1/misc/assets/images/biomes/{{ y.icon }}.png" width="24">
-                                                    <span>{{ y.name }}</span>
-                                                </div>
-                                                <div style="width: fit-content">
-                                                    <span data-toggle="tooltip" title="Caves" class="material-icons star-middle {% if y.caves == 1 %}star-bronze{% elif y.caves == 2 %}star-silver{% elif y.caves == 3 %}star-gold{% else %}star-red{% endif %}">
-                                                        landscape
-                                                    </span>
-                                                    <span data-toggle="tooltip" title="Ores" class="material-icons star {% if y.farm == 1 %}star-bronze{% elif y.farm == 2 %}star-silver{% elif y.farm == 3 %}star-gold{% else %}star-red{% endif %}">
-                                                        diamond
-                                                    </span>
-                                                </div>
-                                            </div>
-                                        </td>
-                                    {% else %}
-                                        <td id="biome" onmouseenter="hoverBiomeNames(this);" onmouseleave="unHoverBiomeNames(this);" biome="{{ y.final_name }}" biome_icon="{{ y.icon }}">
-                                            <div style="display: flex;justify-content: space-between;">
-                                                <div data-toggle="tooltip" title="{{ y.name }}">
-                                                    <img src="https://kiwiapi.aallyn.xyz/v1/misc/assets/images/biomes/{{ y.icon }}.png" width="24">
-                                                    <span>{{ y.final_name }}</span>
-                                                </div>
-                                                <div style="width: fit-content">
-                                                    <span data-toggle="tooltip" title="Caves" class="material-icons star-middle {% if y.caves == 1 %}star-bronze{% elif y.caves == 2 %}star-silver{% elif y.caves == 3 %}star-gold{% else %}star-red{% endif %}">
-                                                        landscape
-                                                    </span>
-                                                    <span data-toggle="tooltip" title="Ores" class="material-icons star {% if y.farm == 1 %}star-bronze{% elif y.farm == 2 %}star-silver{% elif y.farm == 3 %}star-gold{% else %}star-red{% endif %}">
-                                                        diamond
-                                                    </span>
-                                                </div>
-                                            </div>
-                                        </td>
-                                    {% endif %}
-                                {% endfor %}
-                            </tr>
-                        {% endfor %}
-                    </table>
-                    <span class="my-1" style="color: #999;text-align: center;">Special thanks for helping gathering information on the biomes:</span>
-                    <span class="my-1" style="color: #999;text-align: center;">
-                        <span class="badge" style="font-size: 18px">Nikstar</span>
-                        <span class="badge" style="font-size: 18px">Hackerdu77</span>
-                        <span class="badge" style="font-size: 18px">Nina</span>
-                        <span class="badge" style="font-size: 18px">Criteox</span>
-                    </span>
+                <div class="row justify-content-md-center my-2">
+                    {% for biome in biomes %}
+                    <pill class="col-md-auto" style="font-size: 15px" biome="{{ biome[0] }}"
+                        onclick="clickBiomeName(this);" onmouseenter="hoverBiomeNames(this);"
+                        onmouseleave="unHoverBiomeNames(this);">
+                        <img src="https://kiwiapi.aallyn.xyz/v1/misc/assets/images/biomes/{{ biome[1] }}.png"
+                            width="15">
+                        <span data-i18n="{{ biome[0] }}">{{ biome[0] }}</span>
+                    </pill>
+                    {% endfor %}
                 </div>
+                <div class="row justify-content-md-center my-2">
+                    {% for icon in biome_icons %}
+                    <pill class="col-md-auto" onclick="clickBiomeIcon(this);" onmouseenter="hoverBiomeIcons(this);"
+                        onmouseleave="unHoverBiomeIcons(this);" biome_icon="{{ icon }}">
+                        <img src="https://kiwiapi.aallyn.xyz/v1/misc/assets/images/biomes/{{ icon }}.png" width="24">
+                    </pill>
+                    {% endfor %}
+                </div>
+                <div style="display:flex;justify-content: center;color: transparent">
+                    <span style="color: #999;text-align: center;margin-right:40px;"><span
+                            class="material-icons star-middle star-blank">landscape</span> - <span
+                            data-i18n="Size/Existence of caves">Size/Existence of
+                            caves</span></span>
+                    <span style="color: #999;text-align: center;"><span
+                            class="material-icons star-middle star-blank">diamond</span> - <span data-i18n="Rating of farmability of ores">
+                                Rating of farmability of ores</span></span>
+                </div>
+                {% for x in history %}
+                {% if x[5] %}
+                <div class="long-shade-container">
+                    {% for y in x[2:5] %}
+                    <img class="rotating-image" src="https://kiwiapi.aallyn.xyz/v1/misc/assets/images/biomes/{{ y.icon }}.png" alt="{{ y.name }}" width="16" height="16" id="biome_image{{ loop.index }}">
+                    {% endfor %}
+                </div>
+                {% endif %}
+                {% endfor %}
+                <table class="my-2">
+                    {% for x in history %}
+                    <tr {% if x[5] %}class="current"{% endif %}>
+                        <td class="time" timestamp="{{ x[0][1] }}">{{ x[0][0] }}</td>
+                        {% for y in x[2:5] %}
+                        {% if advanced %}
+                        <td id="biome" onmouseenter="hoverBiomeNames(this);" onmouseleave="unHoverBiomeNames(this);"
+                            biome="{{ y.name }}" biome_icon="{{ y.icon }}">
+                            <div style="display: flex;justify-content: space-between;">
+                                <div data-toggle="tooltip" title="{{ y.final_name }}">
+                                    <img src="https://kiwiapi.aallyn.xyz/v1/misc/assets/images/biomes/{{ y.icon }}.png"
+                                        width="24">
+                                    <span data-i18n="{{ y.name }}">{{ y.name }}</span>
+                                </div>
+                                <div style="width: fit-content">
+                                    <span data-toggle="tooltip" title="Caves"
+                                        class="material-icons star-middle {% if y.caves == 1 %}star-bronze{% elif y.caves == 2 %}star-silver{% elif y.caves == 3 %}star-gold{% else %}star-red{% endif %}">
+                                        landscape
+                                    </span>
+                                    <span data-toggle="tooltip" title="Ores"
+                                        class="material-icons star {% if y.farm == 1 %}star-bronze{% elif y.farm == 2 %}star-silver{% elif y.farm == 3 %}star-gold{% else %}star-red{% endif %}">
+                                        diamond
+                                    </span>
+                                </div>
+                            </div>
+                        </td>
+                        {% else %}
+                        <td id="biome" onmouseenter="hoverBiomeNames(this);" onmouseleave="unHoverBiomeNames(this);"
+                            biome="{{ y.final_name }}" biome_icon="{{ y.icon }}">
+                            <div style="display: flex;justify-content: space-between;">
+                                <div data-toggle="tooltip" title="{{ y.name }}">
+                                    <img src="https://kiwiapi.aallyn.xyz/v1/misc/assets/images/biomes/{{ y.icon }}.png"
+                                        width="24">
+                                    <span data-i18n="{{ y.final_name }}">{{ y.final_name }}</span>
+                                </div>
+                                <div style="width: fit-content">
+                                    <span data-toggle="tooltip" title="Caves"
+                                        class="material-icons star-middle {% if y.caves == 1 %}star-bronze{% elif y.caves == 2 %}star-silver{% elif y.caves == 3 %}star-gold{% else %}star-red{% endif %}">
+                                        landscape
+                                    </span>
+                                    <span data-toggle="tooltip" title="Ores"
+                                        class="material-icons star {% if y.farm == 1 %}star-bronze{% elif y.farm == 2 %}star-silver{% elif y.farm == 3 %}star-gold{% else %}star-red{% endif %}">
+                                        diamond
+                                    </span>
+                                </div>
+                            </div>
+                        </td>
+                        {% endif %}
+                        {% endfor %}
+                    </tr>
+                    {% endfor %}
+                </table>
+                <span class="my-1" style="color: #999;text-align: center;" data-i18n="Special thanks for helping gathering information on the biomes">Special thanks for helping gathering
+                    information on the biomes<span>:</span></span>
+                <span class="my-1" style="color: #999;text-align: center;">
+                    <span class="badge" style="font-size: 18px">Nikstar</span>
+                    <span class="badge" style="font-size: 18px">Hackerdu77</span>
+                    <span class="badge" style="font-size: 18px">Nina</span>
+                    <span class="badge" style="font-size: 18px">Criteox</span>
+                </span>
             </div>
-        </main>
-        {% include 'footer.html' %}
-    </body>
+        </div>
+    </main>
+    {% include 'footer.html' %}
+</body>
+<footer>
+    <script>
+        const translations = {{ translations| tojson }};
+
+        function setCookie(name, value, days) {
+            let expires = "";
+            if (days) {
+                let date = new Date();
+                date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+                expires = "; expires=" + date.toUTCString();
+            }
+            document.cookie = name + "=" + (value || "") + expires + "; path=/";
+        }
+
+        function getCookie(name) {
+            let nameEQ = name + "=";
+            let ca = document.cookie.split(';');
+            for (let i = 0; i < ca.length; i++) {
+                let c = ca[i];
+                while (c.charAt(0) == ' ') c = c.substring(1, c.length);
+                if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length, c.length);
+            }
+            return null;
+        }
+
+        function updateLanguage(lang) {
+            if (lang === "en-US") {
+                document.querySelectorAll('[data-i18n]').forEach(el => {
+                    const key = el.getAttribute('data-i18n');
+                    el.textContent = key;
+                })
+            } else {
+                document.querySelectorAll('[data-i18n]').forEach(el => {
+                    const key = el.getAttribute('data-i18n');
+                    if (translations[lang] && translations[lang][key]) {
+                        el.textContent = translations[lang][key];
+                    }
+                })
+            }
+        }
+
+        function updateString(lang, key) {
+            if (lang === "en-US") return key;
+            return translations[lang][key];
+        }
+
+        function hoverBiomeNames(biome) {
+            var biome_name = biome.getAttribute("biome");
+            var elements = document.querySelectorAll(`[biome="${biome_name}"]`);
+            for (index = 0; index < elements.length; index++) {
+                var element = elements[index];
+                var computedStyle = window.getComputedStyle(element);
+                var backgroundColor = computedStyle.backgroundColor;
+                if (backgroundColor == "rgba(0, 0, 0, 0)") {
+                    element.style.background = "rgba(94, 5, 94, 0.48)";
+                }
+            }
+        }
+
+        function unHoverBiomeNames(biome) {
+            var biome_name = biome.getAttribute("biome");
+            var elements = document.querySelectorAll(`[biome="${biome_name}"]`);
+            for (var index = 0; index < elements.length; index++) {
+                var element = elements[index];
+                var computedStyle = window.getComputedStyle(element);
+                var backgroundColor = computedStyle.backgroundColor;
+                if (backgroundColor == "rgba(94, 5, 94, 0.48)") {
+                    element.style.background = "transparent";
+                }
+            }
+        }
+
+        function clickBiomeName(biome) {
+            var computedStyle = window.getComputedStyle(biome);
+            var backgroundColor = computedStyle.backgroundColor;
+            if (backgroundColor == "rgba(5, 94, 94, 0.48)") {
+                var elements = document.querySelectorAll(`pill`);
+                for (index = 0; index < elements.length; index++) {
+                    elements[index].style.background = "";
+                }
+                var elements = document.querySelectorAll(`td`);
+                for (index = 0; index < elements.length; index++) {
+                    elements[index].style.background = "";
+                }
+                return;
+            }
+            var biome_name = biome.getAttribute("biome");
+            var elements = document.querySelectorAll(`pill`);
+            for (index = 0; index < elements.length; index++) {
+                if (elements[index].getAttribute("biome") != biome_name) {
+                    elements[index].style.background = "";
+                } else {
+                    elements[index].style.background = "rgba(5, 94, 94, 0.48)";
+                }
+            }
+            var elements = document.querySelectorAll(`td`);
+            for (index = 0; index < elements.length; index++) {
+                if (elements[index].getAttribute("biome") != biome_name) {
+                    elements[index].style.background = "";
+                } else {
+                    elements[index].style.background = "rgba(5, 94, 94, 0.48)";
+                }
+            }
+        }
+
+        function hoverBiomeIcons(biome) {
+            var biome_name = biome.getAttribute("biome_icon");
+            var elements = document.querySelectorAll(`[biome_icon="${biome_name}"]`);
+            for (index = 0; index < elements.length; index++) {
+                var element = elements[index];
+                var computedStyle = window.getComputedStyle(element);
+                var backgroundColor = computedStyle.backgroundColor;
+                if (backgroundColor == "rgba(0, 0, 0, 0)") {
+                    element.style.background = "rgba(94, 5, 94, 0.48)";
+                }
+            }
+        }
+
+        function unHoverBiomeIcons(biome) {
+            var biome_name = biome.getAttribute("biome_icon");
+            var elements = document.querySelectorAll(`[biome_icon="${biome_name}"]`);
+            for (var index = 0; index < elements.length; index++) {
+                var element = elements[index];
+                var computedStyle = window.getComputedStyle(element);
+                var backgroundColor = computedStyle.backgroundColor;
+                if (backgroundColor == "rgba(94, 5, 94, 0.48)") {
+                    element.style.background = "transparent";
+                }
+            }
+        }
+
+        function clickBiomeIcon(biome) {
+            var computedStyle = window.getComputedStyle(biome);
+            var backgroundColor = computedStyle.backgroundColor;
+            if (backgroundColor == "rgba(5, 94, 94, 0.48)") {
+                var elements = document.querySelectorAll(`pill`);
+                for (index = 0; index < elements.length; index++) {
+                    elements[index].style.background = "";
+                }
+                var elements = document.querySelectorAll(`td`);
+                for (index = 0; index < elements.length; index++) {
+                    elements[index].style.background = "";
+                }
+                return;
+            }
+            var biome_name = biome.getAttribute("biome_icon");
+            var elements = document.querySelectorAll(`pill`);
+            for (index = 0; index < elements.length; index++) {
+                if (elements[index].getAttribute("biome_icon") != biome_name) {
+                    elements[index].style.background = "";
+                } else {
+                    elements[index].style.background = "rgba(5, 94, 94, 0.48)";
+                }
+            }
+            var elements = document.querySelectorAll(`td`);
+            for (index = 0; index < elements.length; index++) {
+                if (elements[index].getAttribute("biome_icon") != biome_name) {
+                    elements[index].style.background = "";
+                } else {
+                    elements[index].style.background = "rgba(5, 94, 94, 0.48)";
+                }
+            }
+        }
+
+        function setDateText(element, lang) {
+            console.log(element.getAttribute("timestamp"));
+            const now = Date.now();
+            const date = new Date(parseInt(element.getAttribute("timestamp")));
+            // check if now and date are within 10 seconds
+            if (Math.abs(now - date) < 10000) {
+                // Get translation
+                element.innerHTML = updateString(lang, "Happening now");
+                return;
+            }
+            const months = [
+                "January", "February", "March", "April", "May", "June",
+                "July", "August", "September", "October", "November", "December"
+            ];
+
+            
+
+            const getOrdinalSuffix = (day) => {
+                if (day > 3 && day < 21) return updateString(lang, "th"); // Handles 11th, 12th, 13th
+                switch (day % 10) {
+                    case 1: return updateString(lang, "st");
+                    case 2: return updateString(lang, "nd");
+                    case 3: return updateString(lang, "rd");
+                    default: return updateString(lang, "th");
+                }
+            };
+
+            const day = date.getDate();
+            const month = updateString(lang, months[date.getMonth()]);
+            const hour = String(date.getHours()).padStart(2, '0');
+            const minute = String(date.getMinutes()).padStart(2, '0');
+
+            const ordinalSuffix = getOrdinalSuffix(day);
+            element.innerHTML = `${month}, ${day}${ordinalSuffix} ${updateString(lang, "at")} ${hour}:${minute}`;
+        }
+
+        function setAllDates() {
+            let lang = getCookie('lang') || 'en-US';
+            var elements = document.querySelectorAll(`td[class="time"]`);
+            for (index = 0; index < elements.length; index++) {
+                setDateText(elements[index], lang);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            console.log("Setting up language and dates");
+            let lang = getCookie('lang') || 'en-US';
+            document.getElementById('langDropdown').value = lang;
+            document.getElementById('langDropdown').addEventListener('change', function () {
+                setCookie('lang', this.value, 365);
+                setAllDates()
+                updateLanguage(this.value);
+            });
+            setAllDates();
+            updateLanguage(lang);
+        });
+    </script>
+</footer>
+
 </html>

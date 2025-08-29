@@ -1,5 +1,5 @@
-from quart import Blueprint, request, abort, send_file, current_app
-from .models.database.market import MarketListing, MarketCapture, get_capture_query
+from quart import Blueprint, request, abort, current_app
+from .models.database.market import MarketListing, get_capture_query
 from pathlib import Path
 from utils import render_json
 from uuid import UUID
@@ -11,11 +11,6 @@ import asyncio
 from .utils.discord import send_embed
 from datetime import datetime, timedelta, UTC
 from beanie import BulkWriter
-import matplotlib.pyplot as plt
-import matplotlib.dates as mdates
-from matplotlib.ticker import FuncFormatter
-from io import BytesIO
-from .utils.functions import intword
 from utils import Event, EventType
 from hashlib import sha1
 
@@ -35,6 +30,7 @@ async def get_listings():
     created_after = int(params.get("created_after", 0)) or None
     last_seen_before = int(params.get("last_seen_before", 0)) or None
     last_seen_after = int(params.get("last_seen_after", 0)) or None
+    hide_expired = "hide_expired" in params
     if price_min and price_max and price_min > price_max:
         return abort(400, '"price_min" can\'t be greater than "price_max"')
     if created_before and created_after and created_before < created_after:
@@ -43,6 +39,7 @@ async def get_listings():
         return abort(400, '"last_seen_before" can\'t be less than "last_seen_after"')
     limit = int(params.get("limit", 0)) or None
     offset = int(params.get("offset", 0))
+    time_now = int(datetime.now(UTC).timestamp())
     query_dump = {}
     if (
         query
@@ -52,6 +49,7 @@ async def get_listings():
         or created_after
         or last_seen_before
         or last_seen_after
+        or hide_expired
     ):
         query_dump = {
             "$and": [
@@ -70,12 +68,18 @@ async def get_listings():
                     if last_seen_after
                     else []
                 ),
+                *(
+                    [{"last_seen": {"$gte": time_now - 3600 * 3}}]
+                    if hide_expired
+                    else []
+                ),
             ]
         }
     final_query = MarketListing.find(query_dump)
     listings = await final_query.skip(offset).limit(limit).to_list()
     listings_count = await final_query.count()
-    response = render_json([i.model_dump() for i in listings])
+    final_listings = [i.model_dump() for i in listings]
+    response = render_json(final_listings)
     response.headers["count"] = listings_count
     return response
 
@@ -285,174 +289,6 @@ async def get_last_hour():
     return render_json(data)
 
 
-@market.route("/hourly_graph", methods=["GET"])
-async def get_last_hour_graph():
-    name = request.args.get("item")
-    if not name:
-        return abort(400, "Missing Item")
-    hours = int(request.args.get("hours", 1))
-    days = int(request.args.get("days", 0))
-    last_listing = await MarketListing.find_one({}, sort=[("last_seen", -1)])
-    meshed_search = (
-        f"market_search_graph_{last_listing.last_seen}_"
-        + sha1(f"{name}{days}{hours}".encode()).hexdigest()
-    )
-    await clear_old_market_searches()
-    data = await current_app.redis.get(meshed_search)
-    if data is not None:
-        return await send_file(BytesIO(data), mimetype="image/png")
-    try:
-        async with ClientSession() as session:
-            async with session.get(
-                f"https://kiwiapi.aallyn.xyz/v1/market/hourly?item={name}&hours={hours}&days={days}&no_listings"
-            ) as response:
-                if response.status == 200:
-                    data = await response.json()
-                    times = [
-                        datetime.fromtimestamp(item["start"], UTC) for item in data
-                    ]
-                    iqr_avg = [item["iqr_avg"] for item in data]
-                    iqr_max = [item["iqr_max"] for item in data]
-                    iqr_min = [item["iqr_min"] for item in data]
-                    plt.style.use("dark_background")
-                    fig, ax = plt.subplots(figsize=(12, 6))
-                    ax.plot(
-                        times,
-                        iqr_max,
-                        label="IQR Max",
-                        marker="o",
-                        markeredgecolor="#555555",
-                        color="#d62728",
-                    )
-                    ax.plot(
-                        times,
-                        iqr_avg,
-                        label="IQR Average",
-                        marker="o",
-                        markeredgecolor="#555555",
-                        color="#1f77b4",
-                    )
-                    ax.plot(
-                        times,
-                        iqr_min,
-                        label="IQR Min",
-                        marker="o",
-                        markeredgecolor="#555555",
-                        color="#2ca02c",
-                    )
-                    ax.set_ylim(ymin=0)
-                    ax.set_ylabel("Flux EA")
-                    ax.set_title(name)
-                    ax.legend()
-                    ax.grid(True, color="#555555")
-                    ax.ticklabel_format(style="plain", axis="y")
-                    ax.xaxis.set_major_formatter(mdates.DateFormatter("%b-%d %H:%M"))
-                    ax.xaxis.set_major_locator(mdates.HourLocator(interval=1))
-                    plt.setp(
-                        ax.xaxis.get_majorticklabels(), rotation=45, color="#555555"
-                    )
-                    plt.setp(ax.yaxis.get_majorticklabels(), color="#555555")
-                    for spine in ax.spines.values():
-                        spine.set_edgecolor("#555555")
-                    plt.tight_layout()
-                    buf = BytesIO()
-                    plt.savefig(buf, format="png")
-                    buf.seek(0)
-                    await current_app.redis.set(meshed_search, buf.getvalue())
-                    return await send_file(buf, mimetype="image/png")
-    except:
-        ...
-    return abort(500, "Failed to fetch data")
-
-
-@market.route("/hourly_market_flux", methods=["GET"])
-async def get_last_hour_market_flux():
-    raw_data = request.args
-    days = int(raw_data.get("days", 0))
-    hours = int(raw_data.get("hours", 1))
-    last_listing = await MarketListing.find_one({}, sort=[("last_seen", -1)])
-    now = datetime.fromtimestamp(last_listing.last_seen, UTC)
-    current_capture = now - timedelta(days=days, hours=hours, minutes=-2)
-    capture = []
-    while current_capture < now:
-        start = int(current_capture.timestamp())
-        end = int((current_capture + timedelta(seconds=3599)).timestamp())
-        captured_listings = (
-            await MarketListing.find()
-            .aggregate(
-                [
-                    {
-                        "$match": {
-                            "last_seen": {"$gt": start},
-                            "created_at": {"$lt": end},
-                        }
-                    },
-                    {"$group": {"_id": None, "total_flux": {"$sum": "$price"}}},
-                ],
-                projection_model=MarketCapture,
-            )
-            .to_list()
-        )
-        candidate = {
-            "start": start,
-            "end": end,
-            "total_flux": captured_listings[0].total_flux,
-        }
-        capture.append(candidate)
-        current_capture += timedelta(hours=1)
-    return render_json(sorted(capture, key=lambda x: x["start"]))
-
-
-@market.route("/hourly_market_flux_graph", methods=["GET"])
-async def get_last_hour_market_flux_graph():
-    hours = int(request.args.get("hours", 1))
-    days = int(request.args.get("days", 0))
-    try:
-        async with ClientSession() as session:
-            async with session.get(
-                f"https://kiwiapi.aallyn.xyz/v1/market/hourly_market_flux?hours={hours}&days={days}"
-            ) as response:
-                if response.status == 200:
-                    data = await response.json()
-                    times = [
-                        datetime.fromtimestamp(item["start"], UTC) for item in data
-                    ]
-                    total_flux = [item["total_flux"] for item in data]
-                    plt.style.use("dark_background")
-                    fig, ax = plt.subplots(figsize=(12, 6))
-                    ax.plot(
-                        times,
-                        total_flux,
-                        label="Total Flux",
-                        marker="o",
-                        markeredgecolor="#555555",
-                        color="#d62728",
-                    )
-                    ax.set_ylim(ymin=0)
-                    ax.set_ylabel("Total Flux")
-                    ax.set_title("Total Market Flux")
-                    ax.legend()
-                    ax.grid(True, color="#555555")
-                    ax.ticklabel_format(style="plain", axis="y")
-                    ax.xaxis.set_major_formatter(mdates.DateFormatter("%b-%d %H:%M"))
-                    ax.xaxis.set_major_locator(mdates.HourLocator(interval=1))
-                    ax.yaxis.set_major_formatter(FuncFormatter(lambda x, _: intword(x)))
-                    plt.setp(
-                        ax.xaxis.get_majorticklabels(), rotation=45, color="#555555"
-                    )
-                    plt.setp(ax.yaxis.get_majorticklabels(), color="#555555")
-                    for spine in ax.spines.values():
-                        spine.set_edgecolor("#555555")
-                    plt.tight_layout()
-                    buf = BytesIO()
-                    plt.savefig(buf, format="png")
-                    buf.seek(0)
-                    return await send_file(buf, mimetype="image/png")
-    except:
-        ...
-    return abort(500, "Failed to fetch data")
-
-
 @market.route("/daily", methods=["GET"])
 async def get_last_day():
     raw_data = request.args
@@ -486,166 +322,3 @@ async def get_last_day():
         data = sorted(capture, key=lambda x: x["start"])
         await current_app.redis.set_object(meshed_search, data)
     return render_json(data)
-
-
-@market.route("/daily_graph", methods=["GET"])
-async def get_last_daily_graph():
-    name = request.args.get("item")
-    if not name:
-        return abort(400, "Missing Item")
-    last_listing = await MarketListing.find_one({}, sort=[("last_seen", -1)])
-    days = int(request.args.get("days", 1))
-    meshed_search = (
-        f"market_search_graph_{last_listing.last_seen}_"
-        + sha1(f"{name}{days}".encode()).hexdigest()
-    )
-    await clear_old_market_searches()
-    data = await current_app.redis.get(meshed_search)
-    if data is not None:
-        return await send_file(BytesIO(data), mimetype="image/png")
-    try:
-        async with ClientSession() as session:
-            async with session.get(
-                f"https://kiwiapi.aallyn.xyz/v1/market/daily?item={name}&days={days}&no_listings"
-            ) as response:
-                if response.status == 200:
-                    data = await response.json()
-                    times = [
-                        datetime.fromtimestamp(item["start"], UTC) for item in data
-                    ]
-                    iqr_avg = [item["iqr_avg"] for item in data]
-                    iqr_max = [item["iqr_max"] for item in data]
-                    iqr_min = [item["iqr_min"] for item in data]
-                    plt.style.use("dark_background")
-                    fig, ax = plt.subplots(figsize=(12, 6))
-                    ax.plot(
-                        times,
-                        iqr_max,
-                        label="IQR Max",
-                        marker="o",
-                        markeredgecolor="#555555",
-                        color="#d62728",
-                    )
-                    ax.plot(
-                        times,
-                        iqr_avg,
-                        label="IQR Average",
-                        marker="o",
-                        markeredgecolor="#555555",
-                        color="#1f77b4",
-                    )
-                    ax.plot(
-                        times,
-                        iqr_min,
-                        label="IQR Min",
-                        marker="o",
-                        markeredgecolor="#555555",
-                        color="#2ca02c",
-                    )
-                    ax.set_ylim(ymin=0)
-                    ax.set_ylabel("Flux EA")
-                    ax.set_title(name)
-                    ax.legend()
-                    ax.grid(True, color="#555555")
-                    ax.ticklabel_format(style="plain", axis="y")
-                    ax.xaxis.set_major_formatter(mdates.DateFormatter("%b-%d"))
-                    ax.xaxis.set_major_locator(mdates.DayLocator(interval=1))
-                    plt.setp(
-                        ax.xaxis.get_majorticklabels(), rotation=45, color="#555555"
-                    )
-                    plt.setp(ax.yaxis.get_majorticklabels(), color="#555555")
-                    for spine in ax.spines.values():
-                        spine.set_edgecolor("#555555")
-                    plt.tight_layout()
-                    buf = BytesIO()
-                    plt.savefig(buf, format="png")
-                    buf.seek(0)
-                    await current_app.redis.set(meshed_search, buf.getvalue())
-                    return await send_file(buf, mimetype="image/png")
-    except:
-        ...
-    return abort(500, "Failed to fetch data")
-
-
-@market.route("/daily_market_flux", methods=["GET"])
-async def get_last_day_market_flux():
-    raw_data = request.args
-    days = int(raw_data.get("days", 1))
-    last_listing = await MarketListing.find_one({}, sort=[("last_seen", -1)])
-    now = datetime.fromtimestamp(last_listing.last_seen, UTC)
-    current_capture = now - timedelta(days=days, minutes=-2)
-    capture = []
-    while current_capture < now:
-        captured_listings = (
-            await MarketListing.find()
-            .aggregate(
-                [
-                    {
-                        "$match": {
-                            "last_seen": {"$gt": int(current_capture.timestamp())},
-                            "created_at": {"$lt": int(current_capture.timestamp())},
-                        }
-                    },
-                    {"$group": {"_id": None, "total_flux": {"$sum": "$price"}}},
-                ],
-                projection_model=MarketCapture,
-            )
-            .to_list()
-        )
-        candidate = {
-            "start": int(current_capture.timestamp()),
-            "end": int((current_capture + timedelta(seconds=86399)).timestamp()),
-            "total_flux": captured_listings[0].total_flux,
-        }
-        capture.append(candidate)
-        current_capture += timedelta(days=1)
-    return render_json(sorted(capture, key=lambda x: x["start"]))
-
-
-@market.route("/daily_market_flux_graph", methods=["GET"])
-async def get_last_day_market_flux_graph():
-    days = int(request.args.get("days", 0))
-    try:
-        async with ClientSession() as session:
-            async with session.get(
-                f"https://kiwiapi.aallyn.xyz/v1/market/daily_market_flux?days={days}"
-            ) as response:
-                if response.status == 200:
-                    data = await response.json()
-                    times = [
-                        datetime.fromtimestamp(item["start"], UTC) for item in data
-                    ]
-                    total_flux = [item["total_flux"] for item in data]
-                    plt.style.use("dark_background")
-                    fig, ax = plt.subplots(figsize=(12, 6))
-                    ax.plot(
-                        times,
-                        total_flux,
-                        label="Total Flux",
-                        marker="o",
-                        markeredgecolor="#555555",
-                        color="#d62728",
-                    )
-                    ax.set_ylim(ymin=0)
-                    ax.set_ylabel("Total Flux")
-                    ax.set_title("Total Market Flux")
-                    ax.legend()
-                    ax.grid(True, color="#555555")
-                    ax.ticklabel_format(style="plain", axis="y")
-                    ax.xaxis.set_major_formatter(mdates.DateFormatter("%b-%d"))
-                    ax.xaxis.set_major_locator(mdates.DayLocator(interval=1))
-                    ax.yaxis.set_major_formatter(FuncFormatter(lambda x, _: intword(x)))
-                    plt.setp(
-                        ax.xaxis.get_majorticklabels(), rotation=45, color="#555555"
-                    )
-                    plt.setp(ax.yaxis.get_majorticklabels(), color="#555555")
-                    for spine in ax.spines.values():
-                        spine.set_edgecolor("#555555")
-                    plt.tight_layout()
-                    buf = BytesIO()
-                    plt.savefig(buf, format="png")
-                    buf.seek(0)
-                    return await send_file(buf, mimetype="image/png")
-    except:
-        ...
-    return abort(500, "Failed to fetch data")

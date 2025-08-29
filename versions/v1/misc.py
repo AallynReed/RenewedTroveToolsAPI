@@ -333,10 +333,27 @@ async def latest_release_debug_redirect():
     app_versions = await current_app.redis.get_value("app_versions")
     if app_versions is None:
         return abort(503, "Latest release is not available.")
+    headers = request.headers
+    country = headers.get("Cf-Ipcountry", None)
+    if country:
+        country = pycountry.countries.get(alpha_2=country)
+        country = country.name
+    else:
+        country = "Unknown"
     for version in app_versions:
         for asset in version.get("assets"):
             asset_name = asset.get("name")
             if "debug" in asset_name and asset_name.endswith(".msi"):
+                await send_embed(
+                    os.getenv("APP_WEBHOOK"),
+                    {
+                        "title": "APP Downloaded (Debug)",
+                        "color": 0xBBBB00,
+                        "fields": [
+                            {"name": "Geolocation", "value": country},
+                        ],
+                    },
+                )
                 return Response(
                     status=302, headers={"Location": asset.get("browser_download_url")}
                 )
@@ -375,7 +392,7 @@ async def get_locales():
                     for k, v in sorted(list(set(fix_file)), key=lambda x: x[0])
                 ]
             )
-            x.write_text(fix_file)
+            x.write_bytes(fix_file.encode("utf-8"))
             file_name = str(x.relative_to(locales_folder).as_posix())
             files[file_name] = b64encode(x.read_bytes()).decode("utf-8")
     return render_json(files)
