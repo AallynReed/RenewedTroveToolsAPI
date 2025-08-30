@@ -48,7 +48,7 @@ def get_increment_power_rank_lesser(gem_tier, level):
         case GemTier.CRYSTAL:
             return get_level_pr_increment(level, 7)
         case GemTier.MYSTIC:
-            return get_level_pr_increment(level, 8)
+            return get_level_pr_increment(level, 9)
     return None
 
 
@@ -101,7 +101,7 @@ def get_stat_base_lesser(
             return 5 / 7
         ### Mystic
         case GemTier.MYSTIC, _, GemStatType.PHYSICAL_DAMAGE | GemStatType.MAGIC_DAMAGE:
-            return 19
+            return 168 / 9
         case GemTier.MYSTIC, _, GemStatType.CRITICAL_DAMAGE:
             return 2.5 / 9
         case GemTier.MYSTIC, _, GemStatType.CRITICAL_HIT:

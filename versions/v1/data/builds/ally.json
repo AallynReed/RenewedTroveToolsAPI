@@ -1,6 +1,106 @@
 {
+    "spidermonkey_heckbug": {
+        "qualified_name": "[CD|LT] Bulbous Heckmantis",
+        "stats": [
+            {
+                "name": "Light",
+                "value": 150.0,
+                "percentage": false
+            },
+            {
+                "name": "Critical Damage",
+                "value": 30.0,
+                "percentage": true
+            }
+        ],
+        "abilities": [
+        ]
+    },
+    "trex_manabeast_fire": {
+        "qualified_name": "[PD|CD|LT] Mini Fire Manabeast",
+        "stats": [
+            {
+                "name": "Light",
+                "value": 200.0,
+                "percentage": false
+            },
+            {
+                "name": "Physical Damage",
+                "value": 25.0,
+                "percentage": true
+            },
+            {
+                "name": "Critical Damage",
+                "value": 15.0,
+                "percentage": true
+            }
+        ],
+        "abilities": [
+        ]
+    },
+    "trex_manabeast_water": {
+        "qualified_name": "[MD|CD|LT] Mini Water Manabeast",
+        "stats": [
+            {
+                "name": "Light",
+                "value": 200.0,
+                "percentage": false
+            },
+            {
+                "name": "Magic Damage",
+                "value": 25.0,
+                "percentage": true
+            },
+            {
+                "name": "Critical Damage",
+                "value": 15.0,
+                "percentage": true
+            }
+        ],
+        "abilities": [
+        ]
+    },
+    "venturous_vivian": {
+        "qualified_name": "[MD|PD|LT] Venturous Vivian",
+        "stats": [
+            {
+                "name": "Light",
+                "value": 450.0,
+                "percentage": false
+            },
+            {
+                "name": "Physical Damage",
+                "value": 10.0,
+                "percentage": true
+            },
+            {
+                "name": "Magic Damage",
+                "value": 10.0,
+                "percentage": true
+            }
+        ],
+        "abilities": [
+        ]
+    },
+    "goat_pinata_moontouched": {
+        "qualified_name": "[PD|LT] The Moontouched of All Time",
+        "stats": [
+            {
+                "name": "Light",
+                "value": 450.0,
+                "percentage": false
+            },
+            {
+                "name": "Physical Damage",
+                "value": 10.0,
+                "percentage": true
+            }
+        ],
+        "abilities": [
+        ]
+    },
     "phoenix_stars": {
-        "qualified_name": "[MD|LT] Starry Skyfire | Orchian",
+        "qualified_name": "[MD|LT] Starry Skyfire",
         "stats": [
             {
                 "name": "Light",
@@ -18,7 +118,7 @@
         ]
     },
     "spidermonkey_stars": {
-        "qualified_name": "[PD|LT] Scorpius | Earnie",
+        "qualified_name": "[PD|LT] Scorpius",
         "stats": [
             {
                 "name": "Light",

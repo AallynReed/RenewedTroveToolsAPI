@@ -8,32 +8,37 @@ gems = Blueprint("gems", __name__, url_prefix="/gems")
 @gems.route("/types", methods=["GET"])
 async def get_gem_types():
     types = sorted(list(GemType), key=lambda x: x.value)
-    return jsonify({gem_type.name: gem_type.value for gem_type in types})
+    return jsonify({gem_type.display_name: gem_type.value for gem_type in types})
 
 @gems.route("/elements", methods=["GET"])
 async def get_gem_elements():
     elements = sorted(list(GemElement), key=lambda x: x.value)
-    return jsonify({element.name: element.value for element in elements})
+    return jsonify({element.display_name: element.value for element in elements})
 
 @gems.route("/tiers", methods=["GET"])
 async def get_gem_tiers():
     tiers = sorted(list(GemTier), key=lambda x: x.value)
-    return jsonify({gem_tier.name: gem_tier.value for gem_tier in tiers})
+    return jsonify({gem_tier.display_name: gem_tier.value for gem_tier in tiers})
 
 @gems.route("/restrictions", methods=["GET"])
 async def get_gem_restrictions():
     restrictions = sorted(list(GemRestriction), key=lambda x: x.value)
-    return jsonify({gem_restriction.name: gem_restriction.value for gem_restriction in restrictions})
+    return jsonify({gem_restriction.display_name: gem_restriction.value for gem_restriction in restrictions})
 
 @gems.route("/stat_types", methods=["GET"])
 async def get_gem_stat_types():
     stat_types = sorted(list(GemStatType), key=lambda x: x.value)
-    return jsonify({gem_stat_type.name: gem_stat_type.value for gem_stat_type in stat_types})
+    return jsonify({gem_stat_type.display_name: gem_stat_type.value for gem_stat_type in stat_types})
 
 @gems.route("/augment_types", methods=["GET"])
 async def get_gem_augment_types():
     augment_types = sorted(list(AugmentType), key=lambda x: x.value)
-    return jsonify({gem_augment_type.name: gem_augment_type.value for gem_augment_type in augment_types})
+    return jsonify({gem_augment_type.display_name: gem_augment_type.value for gem_augment_type in augment_types})
+
+@gems.route("/gem_abilities", methods=["GET"])
+async def get_gem_abilities():
+    abilities = sorted(list(GemAbility), key=lambda x: x.value)
+    return jsonify({gem_ability.display_name: gem_ability.value for gem_ability in abilities})
 
 @gems.route("/create", methods=["GET", "POST"])
 async def create_gem():
