@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <title>Gem System</title>
     <link rel="stylesheet" href="/css/gems.css">
+    <link rel="stylesheet" href="/css/star_chart.css">
 </head>
 
 <body>
@@ -17,11 +18,12 @@
     </div>
     <div class="container">
         <div class="pane left">
-            <div class="pane-label">Equipped</div>
+            <!-- <div class="pane-label">Equipped</div> -->
             <div class="slots left-slots" id="equipped"></div>
+            <!-- <button id="open-star-chart-btn" class="star-chart-btn">Star Chart</button> -->
         </div>
         <div class="pane middle">
-            <div class="pane-label">Selected</div>
+            <!-- <div class="pane-label">Selected</div> -->
             <form class="gem-form" id="gem-form" autocomplete="off">
                 <div class="gem-form-row">
                     <label>
@@ -58,8 +60,9 @@
                             <span id="gem-augment-value"
                                 style="display:inline-block;width:38px;text-align:right;margin-left:8px;">0</span>
                         </label>
-                        <input type="checkbox" id="gem-augment-null" checked style="vertical-align:middle;margin-right:6px;">
-                            Random augmentation
+                        <input type="checkbox" id="gem-augment-null" checked
+                            style="vertical-align:middle;margin-right:6px;">
+                        Random augmentation
                     </div>
 
                 </div>
@@ -70,11 +73,29 @@
             <div id="trash-slot-container"></div>
         </div>
         <div class="pane right">
-            <div class="pane-label">Inventory</div>
+            <!-- <div class="pane-label">Inventory</div> -->
             <div class="slots right-slots" id="inventory"></div>
         </div>
     </div>
-    <script src="/js/gems.js"></script>
+    <div id="star-chart-overlay" style="display:none;">
+        <div id="star-chart-backdrop"
+            style="position:fixed;top:0;left:0;width:100vw;height:100vh;background:#000a;z-index:1000;"></div>
+        <div id="star-chart-modal"
+            style="position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:#23273a;border-radius:16px;box-shadow:0 4px 32px #0008;z-index:1001;padding:32px 24px;max-width:900px;max-height:85vh;overflow:auto;">
+            <button id="close-star-chart-btn"
+                style="position:absolute;top:16px;right:20px;font-size:1.3em;background:none;border:none;color:#fff;cursor:pointer;">✕</button>
+            <h2 style="margin-top:0;text-align:center;color:#34d058;">Star Chart</h2>
+            <canvas id="star-chart-canvas" width="860" height="740"
+                style="background:#222;border-radius:12px;display:block;margin:0 auto;"></canvas>
+        </div>
+    </div>
 </body>
+<footer>
+    <script>
+        const star_chart_data = {{ star_chart_data| tojson }};
+    </script>
+    <script src="/js/gems.js"></script>
+    <script src="/js/star_chart.js"></script>
+</footer>
 
 </html>

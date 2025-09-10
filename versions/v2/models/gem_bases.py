@@ -5,11 +5,14 @@ from .gem_constants import (
     GemStatType,
     GemRestriction,
     GemAbility,
+    GenerationType,
     GEM_STAT_RESTRICTIONS,
     GEM_TYPE_RESTRICTIONS,
     PHYSICAL_GEM_STAT_POOL,
     MAGIC_GEM_STAT_POOL,
     GEM_ABILITIES,
+    LESSER_GENERATION_MODE,
+    EMPOWERED_GENERATION_MODE,
     AugmentType,
 )
 

@@ -1,5 +1,6 @@
 from quart import Blueprint, request, abort, current_app, Response, jsonify, render_template, redirect, url_for
 from .models.gems import *
+from .models.builds import GemBuild
 # import ordered dict
 from collections import OrderedDict
 
@@ -48,6 +49,31 @@ async def create_gem():
     else:
         gem = Gem.create()
     return jsonify(gem.model_dump())
+
+@gems.route("/update", methods=["GET", "POST"])
+async def update_gem():
+    data = await request.get_json()
+    gem_data = data.get("gem")
+    if not gem_data:
+        return abort(400, description="Missing required fields")
+    gem = Gem(**gem_data)
+    return jsonify(gem.model_dump())
+
+@gems.route("/mass_update", methods=["GET", "POST"])
+async def mass_update_gems():
+    data = await request.get_json()
+    gem_data = data.get("gems")
+    if not gem_data:
+        return abort(400, description="Missing required fields")
+    print(gem_data)
+    gems = []
+    for gem in gem_data:
+        if gem is None:
+            gems.append(None)
+        else:
+            gems.append(Gem(**gem).model_dump())
+    print(gems)
+    return jsonify({"gems": gems})
 
 @gems.route("/level_up", methods=["POST"])
 async def level_up_gem():
@@ -102,6 +128,10 @@ async def flare_gem_stat():
         return abort(400, description="Stat type not found in gem")
     gem.move_proc(GemStatType(stat_data))
     return jsonify(gem.model_dump())
+
+###
+
+
 
 ###
 

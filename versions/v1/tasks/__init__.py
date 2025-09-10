@@ -44,6 +44,9 @@ async def update_mods_list():
                 response = await session.get(
                     f"https://trovesaurus.com/mods/api/hot?token={os.getenv('TROVESAURUS_TOKEN')}"
                 )
+                if response.status != 200:
+                    print("Hot mods grab task failed.")
+                    return
                 hot_raw_data = await response.json()
                 hot_data = {}
                 for mod in hot_raw_data:

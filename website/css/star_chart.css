@@ -1,0 +1,167 @@
+/* ========== Star Chart Reset Styles ========== */
+
+/* Overlay container (assumes HTML already provides #star-chart-overlay) */
+#star-chart-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.82);
+  display: none; /* shown via JS */
+  justify-content: center;
+  align-items: center;
+  z-index: 10000;
+  font-family: system-ui, sans-serif;
+}
+
+#star-chart-modal {
+  position: relative;
+  background: #1b2029;
+  border: 1px solid #2b3241;
+  border-radius: 20px;
+  box-shadow: 0 10px 40px -8px #000a;
+  width: 90vw;
+  height: 88vh;
+  min-width: 900px;
+  min-height: 600px;
+  display: flex;
+  flex-direction: row;
+  gap: 0;
+  overflow: hidden;
+  color: #e5e9f0;
+}
+
+/* Side panels (auto-created if missing) */
+.star-chart-panel {
+  width: 240px;
+  background: #232a36;
+  padding: 16px 18px 22px 18px;
+  overflow-y: auto;
+  font-size: 0.92rem;
+  line-height: 1.3;
+}
+
+.star-chart-panel h3 {
+  margin: 0 0 12px;
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: .5px;
+  color: #5ec6ff;
+}
+
+.star-chart-panel::-webkit-scrollbar {
+  width: 10px;
+}
+.star-chart-panel::-webkit-scrollbar-track {
+  background: #1e242d;
+  border-radius: 6px;
+}
+.star-chart-panel::-webkit-scrollbar-thumb {
+  background: #334253;
+  border-radius: 6px;
+}
+.star-chart-panel::-webkit-scrollbar-thumb:hover {
+  background: #3f5367;
+}
+
+/* Canvas region */
+#star-chart-canvas {
+  flex: 1 1 auto;
+  display: block;
+  background: #181d23;
+  margin: 0;
+  cursor: grab;
+  outline: none;
+}
+
+#star-chart-canvas.grabbing {
+  cursor: grabbing;
+}
+
+#close-star-chart-btn {
+  position: absolute;
+  top: 14px;
+  right: 18px;
+  background: none;
+  border: none;
+  color: #9aa7bb;
+  font-size: 1.6rem;
+  cursor: pointer;
+  line-height: 1;
+  padding: 4px;
+  transition: color .18s;
+  z-index: 20;
+}
+#close-star-chart-btn:hover {
+  color: #ffd166;
+}
+
+/* Basic infobox / tooltip (hidden by default) */
+#star-chart-tooltip {
+  position: fixed;
+  pointer-events: none;
+  background: #10151b;
+  border: 1px solid #2b3949;
+  color: #f2f6fa;
+  font-size: 12px;
+  padding: 6px 8px;
+  border-radius: 6px;
+  box-shadow: 0 4px 18px -4px #000c;
+  z-index: 20000;
+  max-width: 260px;
+  line-height: 1.25;
+  display: none;
+}
+
+#star-chart-tooltip .tt-name {
+  font-weight: 600;
+  color: #5ec6ff;
+  margin-bottom: 4px;
+  font-size: 13px;
+}
+#star-chart-tooltip .tt-desc {
+  opacity: .82;
+  margin-bottom: 4px;
+}
+#star-chart-tooltip ul {
+  margin: 4px 0 0;
+  padding-left: 16px;
+}
+
+/* Utility classes */
+.muted {
+  opacity: .55;
+  font-size: .85em;
+}
+
+.empty-note {
+  opacity: .4;
+  font-style: italic;
+}
+
+.activation-count {
+  font-size: .78rem;
+  opacity: .75;
+  margin-top: -6px;
+  margin-bottom: 12px;
+  letter-spacing: .5px;
+  text-transform: uppercase;
+}
+
+/* Responsive */
+@media (max-width: 1300px) {
+  .star-chart-panel {
+    width: 200px;
+  }
+}
+
+@media (max-width: 1100px) {
+  #star-chart-modal {
+    flex-direction: column;
+  }
+  .star-chart-panel {
+    width: 100%;
+    max-height: 28%;
+  }
+  #star-chart-canvas {
+    height: 100%;
+  }
+}

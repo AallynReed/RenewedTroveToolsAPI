@@ -62,6 +62,8 @@ GEM_STAT_TYPE_NAMES = {
     5: "Max Health",
     6: "Max Health %",
     7: "Light",
+    8: "Movement Speed",
+    9: "Jump"
 }
 
 
@@ -73,6 +75,8 @@ class GemStatType(IntEnum):
     MAX_HEALTH = 5
     MAX_HEALTH_BONUS = 6
     LIGHT = 7
+    MOVEMENT_SPEED = 8
+    JUMP = 9
 
     @property
     def display_name(self) -> str:
@@ -311,4 +315,140 @@ class AugmentType(IntEnum):
     def display_name(self) -> str:
         return AUGMENT_TYPE_NAMES[self.value]
 
+class GenerationType(IntEnum):
+    DAMAGE = 1
 
+
+LESSER_GENERATION_MODE = {
+    GemElement.WATER: {
+        GemRestriction.ARCANE: {
+            GenerationType.DAMAGE: [
+                GemStatType.MAGIC_DAMAGE,
+                GemStatType.CRITICAL_DAMAGE,
+                GemStatType.CRITICAL_HIT,
+            ]
+        },
+        GemRestriction.FIERCE: {
+            GenerationType.DAMAGE: [
+                GemStatType.PHYSICAL_DAMAGE,
+                GemStatType.CRITICAL_DAMAGE,
+                GemStatType.CRITICAL_HIT,
+            ]
+        }
+    },
+    GemElement.AIR: {
+        GemRestriction.ARCANE: {
+            GenerationType.DAMAGE: [
+                GemStatType.MAGIC_DAMAGE,
+                GemStatType.CRITICAL_DAMAGE,
+                GemStatType.CRITICAL_HIT,
+            ]
+        },
+        GemRestriction.FIERCE: {
+            GenerationType.DAMAGE: [
+                GemStatType.PHYSICAL_DAMAGE,
+                GemStatType.CRITICAL_DAMAGE,
+                GemStatType.CRITICAL_HIT,
+            ]
+        }
+    },
+    GemElement.FIRE: {
+        GemRestriction.ARCANE: {
+            GenerationType.DAMAGE: [
+                GemStatType.MAGIC_DAMAGE,
+                GemStatType.CRITICAL_DAMAGE,
+                GemStatType.CRITICAL_HIT,
+            ]
+        },
+        GemRestriction.FIERCE: {
+            GenerationType.DAMAGE: [
+                GemStatType.PHYSICAL_DAMAGE,
+                GemStatType.CRITICAL_DAMAGE,
+                GemStatType.CRITICAL_HIT,
+            ]
+        }
+    },
+    GemElement.COSMIC: {
+        GemRestriction.ARCANE: {
+            GenerationType.DAMAGE: [
+                GemStatType.MAGIC_DAMAGE,
+                GemStatType.CRITICAL_DAMAGE,
+                GemStatType.LIGHT,
+            ]
+        },
+        GemRestriction.FIERCE: {
+            GenerationType.DAMAGE: [
+                GemStatType.PHYSICAL_DAMAGE,
+                GemStatType.CRITICAL_DAMAGE,
+                GemStatType.LIGHT,
+            ]
+        }
+    }
+}
+
+EMPOWERED_GENERATION_MODE = {
+    GemElement.WATER: {
+        GemRestriction.ARCANE: {
+            GenerationType.DAMAGE: [
+                GemStatType.MAGIC_DAMAGE,
+                GemStatType.CRITICAL_DAMAGE,
+                GemStatType.CRITICAL_HIT,
+            ]
+        },
+        GemRestriction.FIERCE: {
+            GenerationType.DAMAGE: [
+                GemStatType.PHYSICAL_DAMAGE,
+                GemStatType.CRITICAL_DAMAGE,
+                GemStatType.CRITICAL_HIT,
+            ]
+        }
+    },
+    GemElement.AIR: {
+        GemRestriction.ARCANE: {
+            GenerationType.DAMAGE: [
+                GemStatType.MAGIC_DAMAGE,
+                GemStatType.CRITICAL_DAMAGE,
+                GemStatType.CRITICAL_HIT,
+            ]
+        },
+        GemRestriction.FIERCE: {
+            GenerationType.DAMAGE: [
+                GemStatType.PHYSICAL_DAMAGE,
+                GemStatType.CRITICAL_DAMAGE,
+                GemStatType.CRITICAL_HIT,
+            ]
+        }
+    },
+    GemElement.FIRE: {
+        GemRestriction.ARCANE: {
+            GenerationType.DAMAGE: [
+                GemStatType.MAGIC_DAMAGE,
+                GemStatType.CRITICAL_DAMAGE,
+                GemStatType.CRITICAL_HIT,
+            ]
+        },
+        GemRestriction.FIERCE: {
+            GenerationType.DAMAGE: [
+                GemStatType.PHYSICAL_DAMAGE,
+                GemStatType.CRITICAL_DAMAGE,
+                GemStatType.CRITICAL_HIT,
+            ]
+        }
+    },
+    GemElement.COSMIC: {
+        GemRestriction.ARCANE: {
+            GenerationType.DAMAGE: [
+                GemStatType.MAGIC_DAMAGE,
+                GemStatType.CRITICAL_DAMAGE,
+                GemStatType.LIGHT,
+            ]
+        },
+        GemRestriction.FIERCE: {
+            GenerationType.DAMAGE: [
+                GemStatType.PHYSICAL_DAMAGE,
+                GemStatType.CRITICAL_DAMAGE,
+                GemStatType.LIGHT,
+            ]
+        }
+    }
+}

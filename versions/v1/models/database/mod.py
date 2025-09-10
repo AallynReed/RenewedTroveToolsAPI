@@ -10,19 +10,14 @@ from pathlib import Path
 from typing import Optional
 
 from aiohttp import ClientSession
+from beanie import Document, Indexed
 from binary_reader import BinaryReader
 from pydantic import BaseModel
 from toml import dumps
 
-from ...utils.functions import (
-    ReadLeb128,
-    WriteLeb128,
-    calculate_hash,
-    chunks,
-    get_attr,
-)
+from ...utils.functions import (ReadLeb128, WriteLeb128, calculate_hash,
+                                chunks, get_attr)
 from ...utils.trovesaurus import Mod, ModAuthor
-from beanie import Document, Indexed
 
 
 class NoFilesError(Exception): ...

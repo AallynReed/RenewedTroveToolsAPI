@@ -1,13 +1,17 @@
-from quart import Blueprint, request, abort, current_app, send_file
-from .models.database.mod import ModEntry, ZMod, TMod, SearchMod
-from .utils.cache import SortOrder
-from pathlib import Path
-from io import BytesIO
 import base64
-import traceback
 import re
-from utils import render_json
+import traceback
+from hashlib import md5
+from io import BytesIO
+from pathlib import Path
+
+from aiohttp import ClientSession
 from fuzzy_search import FuzzyPhraseSearcher
+from quart import Blueprint, abort, current_app, request, send_file
+from utils import render_json
+
+from .models.database.mod import ModEntry, SearchMod, TMod, ZMod
+from .utils.cache import SortOrder
 
 mods_path = Path("mods")
 mods_path.mkdir(parents=True, exist_ok=True)
@@ -192,3 +196,33 @@ async def get_preview_image(hash):
         attachment_filename="no_preview.png",
         as_attachment=True,
     )
+
+@mods.route("/downloadfile.php", methods=["GET"])
+async def download_mod():
+    params = request.args
+    fileid = params.get("fileid", None)
+    if fileid is None:
+        return "No fileid provided", 400
+    async with ClientSession() as session:
+        async with session.get(f"https://trovesaurus.com/client/downloadfile.php?fileid={fileid}") as resp:
+            if resp.status != 200:
+                return f"Failed to download mod: {resp.status}", resp.status
+            data = await resp.read()
+            # Get file name from content-disposition header
+            content_disposition = resp.headers.get("Content-Disposition", "")
+            match = re.search(r'filename="(.+)"?', content_disposition)
+            io = BytesIO(data)
+            io.seek(0)
+            try:
+                mod = TMod.read_bytes(Path("temp.tmod"), data)
+            except:
+                try:
+                    mod = ZMod.read_bytes(Path("temp.zmod"), data)
+                except:
+                    return "Failed to parse mod file", 500
+            return await send_file(
+                io,
+                attachment_filename=f"{match.groups(1)[0]}",
+                as_attachment=True,
+                mimetype="application/octet-stream",
+            )

@@ -1,42 +1,42 @@
-from dotenv import load_dotenv
-from quart import Quart, request, abort, redirect, send_file, render_template, url_for
+import asyncio
 import os
-from motor.motor_asyncio import AsyncIOMotorClient
+import re
+from datetime import UTC, datetime, timedelta
+from io import BytesIO
+from pathlib import Path
+from typing import List
+from urllib.parse import quote
+
+import qrcode
 import versions
-from beanie import init_beanie, Document
-from versions.v1.models.database.star import StarBuild
-from versions.v1.models.database.user import User
+import versions.v1.tasks as tasks
+from aiohttp import ClientSession
+from beanie import Document, init_beanie
+from dotenv import load_dotenv
+from humanize import precisedelta
+from motor.motor_asyncio import AsyncIOMotorClient
+from pydantic import BaseModel, Field
+from quart import (Quart, abort, redirect, render_template, request, send_file,
+                   url_for)
+from quart_cors import cors
+from trove import TroveTime
+from utils import Redis, render, render_json
+from versions.v1.models.database.api import API
+from versions.v1.models.database.gem import GemBuild
+from versions.v1.models.database.leaderboards import (Leaderboard,
+                                                      LeaderboardEntry,
+                                                      LeaderboardEntryArchive)
+from versions.v1.models.database.market import MarketListing
 from versions.v1.models.database.mod import ModEntry, SearchMod
 from versions.v1.models.database.profile import ModProfile
-from versions.v1.models.database.gem import GemBuild
-from versions.v1.models.database.api import API
-from versions.v1.models.database.market import MarketListing
-from versions.v1.models.database.leaderboards import (
-    Leaderboard,
-    LeaderboardEntry,
-    LeaderboardEntryArchive,
-)
-from versions.v1.models.database.scraping import ChaosChestEntry, ChallengeEntry
-import versions.v1.tasks as tasks
+from versions.v1.models.database.scraping import (ChallengeEntry,
+                                                  ChaosChestEntry)
+from versions.v1.models.database.star import StarBuild
+from versions.v1.models.database.user import User
 from versions.v1.utils.logger import Logger
-from pathlib import Path
-from datetime import datetime, UTC, timedelta
-from aiohttp import ClientSession
-from utils import render_json, render
-from quart_cors import cors
-import re
-from humanize import precisedelta
+from website.internals.app import kiwiapp
 from website.internals.models import data
 from yaml import safe_load
-from website.internals.app import kiwiapp
-from utils import Redis
-from trove import TroveTime
-import asyncio
-from pydantic import BaseModel, Field
-from typing import List
-import qrcode
-from io import BytesIO
-from urllib.parse import quote
 
 config = {
     "DEBUG": True,
@@ -264,7 +264,7 @@ async def ovg():
 
 @app.before_request
 async def before_request():
-    if request.headers["Cf-Connecting-Ip"] == os.getenv("TROVESAURUS_IP"):
+    if request.remote_addr == os.getenv("TROVESAURUS_IP"):
         print(f"Request from Trovesaurus: {request.path}")
 
 @app.route("/favicon.ico")
@@ -416,9 +416,14 @@ async def home():
 @app.route("/gems", subdomain="app")
 @app.route("/gems", subdomain="trove")
 async def gem_page():
-    return await render_template(
-        "gems.html"
-    )
+    async with ClientSession() as session:
+        async with session.get("https://kiwiapi.aallyn.xyz/v1/stats/file/star_chart.json") as response:
+            star_chart_data = await response.json()
+            return await render_template(
+                "gems.html",
+                star_chart_data=star_chart_data
+            )
+    return abort(503, "Service is unavailable.")
 
 @app.route("/long_shade_rotation")
 @app.route("/long_shade_rotation", subdomain="trove")

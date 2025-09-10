@@ -174,16 +174,18 @@ function loadInventory() {
     let inventory_data = localStorage.getItem('inventory');
     if (inventory_data) {
         inventory = JSON.parse(inventory_data);
-    };
+    }
     let equipped_data = localStorage.getItem('equipped');
     if (equipped_data) {
         equipped = JSON.parse(equipped_data);
-    };
+    }
+    render();
 }
 function saveInventory() {
     localStorage.setItem('inventory', JSON.stringify(inventory));
     localStorage.setItem('equipped', JSON.stringify(equipped));
 }
+
 loadInventory();
 
 function gemTierBgUrl(item) {
@@ -217,6 +219,15 @@ function render() {
     saveInventory();
 }
 
+// Element color mapping and default
+const ELEMENT_COLORS = {
+    Fire:   '#a96b64',  // Muted brick red
+    Water:  '#628bad',  // Muted slate blue
+    Air:    '#a8a77b',  // Muted olive gold
+    Cosmic: '#4e7d6c',  // Muted teal green
+};
+const ELEMENT_DEFAULT_COLOR = '#888888';
+
 function renderEquipped() {
     // --- Primordial Dragon Toggles: keep state across renders ---
     if (!window.primordialDragonToggles) window.primordialDragonToggles = {};
@@ -232,15 +243,26 @@ function renderEquipped() {
 
     const equippedRows = getEquippedRows();
     equippedRows.forEach((row, rowIdx) => {
-        // Row label
+        // Row label with element color
+        const elementName = getElementNameById(row.elementId);
+        const color = ELEMENT_COLORS[formatGemName(elementName)] || ELEMENT_DEFAULT_COLOR;
         const rowLabel = document.createElement('div');
         rowLabel.className = 'equipped-row-label';
-        rowLabel.textContent = getElementNameById(row.elementId);
+        rowLabel.textContent = elementName;
+        rowLabel.style.color = color;
         equippedEl.appendChild(rowLabel);
 
         // Row slots
         const rowDiv = document.createElement('div');
         rowDiv.className = 'equipped-row';
+        rowDiv.className = 'equipped-row';
+        rowDiv.style.border = `2px dashed ${color}`;
+        rowDiv.style.borderRadius = '10px';
+        rowDiv.style.marginBottom = '16px';
+        rowDiv.style.padding = '5px 10px';
+        rowDiv.style.width = "fit-content"
+        rowDiv.style.marginLeft = 'auto';
+        rowDiv.style.marginRight = 'auto';
         row.slots.forEach((slot, slotIdx) => {
             const idx = slot.slotIdx;
             if (!equipped[idx]) equipped[idx] = null;
@@ -258,7 +280,16 @@ function renderEquipped() {
                 const itemEl = createItem(item, 'equipped', idx);
                 slotDiv.appendChild(itemEl);
             }
-            rowDiv.appendChild(slotDiv);
+
+            if (slotIdx === 1) {
+                const separator = document.createElement('div');
+                separator.className = 'slot-vertical-separator';
+                separator.style.borderColor = color;
+                rowDiv.appendChild(slotDiv);
+                rowDiv.appendChild(separator);
+            } else {
+                rowDiv.appendChild(slotDiv);
+            }
         });
         equippedEl.appendChild(rowDiv);
     });
@@ -275,6 +306,8 @@ function renderEquipped() {
     const togglesRow = document.createElement('div');
     togglesRow.className = 'primordial-toggles-row';
     Object.entries(GEM_LOOKUPS.elements || {}).sort((a, b) => a[1] - b[1]).forEach(([elementName, elementId]) => {
+        const color = ELEMENT_COLORS[formatGemName(elementName)] || ELEMENT_DEFAULT_COLOR;
+
         const toggleDiv = document.createElement('label');
         toggleDiv.className = 'primordial-toggle-label';
 
@@ -289,10 +322,14 @@ function renderEquipped() {
 
         const customSlider = document.createElement('span');
         customSlider.className = 'primordial-toggle-slider';
+        customSlider.style.background = toggleInput.checked
+        ? `${color}`
+        : '#ccc';
 
         const labelText = document.createElement('span');
         labelText.className = 'primordial-toggle-text';
         labelText.textContent = `${formatGemName(elementName)} Primordial Dragon`;
+        labelText.style.color = color;
 
         toggleDiv.appendChild(toggleInput);
         toggleDiv.appendChild(customSlider);
@@ -396,6 +433,7 @@ function renderEquipped() {
     Object.entries(GEM_LOOKUPS.elements || {}).sort((a, b) => a[1] - b[1]).forEach(([elementName, elementId]) => {
         const stats = perElementBuffed[elementId] || {};
         const nonzeroStats = Object.entries(stats).filter(([key, val]) => key !== '_buffed' && val > 0);
+        const color = ELEMENT_COLORS[formatGemName(elementName)] || ELEMENT_DEFAULT_COLOR;
 
         const card = document.createElement('div');
         card.className = 'selected-stats-square';
@@ -403,6 +441,7 @@ function renderEquipped() {
         card.style.maxWidth = '270px';
         card.style.flex = '1 1 220px';
         card.style.margin = '0';
+        card.style.border = `2px solid ${color}`;
 
         // Name row with badge if buff enabled
         const nameRow = document.createElement('div');
@@ -416,8 +455,7 @@ function renderEquipped() {
         nameDiv.textContent = formatGemName(elementName);
         nameDiv.style.fontWeight = 'bold';
         nameDiv.style.fontSize = '1.08em';
-        nameDiv.style.color = '#0097a7';
-
+        nameDiv.style.color = color;
         nameRow.appendChild(nameDiv);
 
         // Buff badge
@@ -440,7 +478,7 @@ function renderEquipped() {
         const prDiv = document.createElement('div');
         prDiv.style.textAlign = 'center';
         prDiv.style.fontWeight = 'bold';
-        prDiv.style.color = '#34d058';
+        // prDiv.style.color = '#34d058';
         prDiv.style.marginBottom = '5px';
         prDiv.textContent = `Power Rank: ${Math.round((perElementBuffedPR[elementId] || 0) * 100) / 100}`;
         card.appendChild(prDiv);
@@ -451,6 +489,7 @@ function renderEquipped() {
         hr.style.border = '0';
         hr.style.borderTop = '1.5px solid #3b4252';
         hr.style.margin = '8px auto 8px auto';
+        hr.style.borderColor = `${color}`;
         card.appendChild(hr);
 
         // If no gems OR no nonzero stats for this element
@@ -568,6 +607,26 @@ function handleEquippedDrop(e, elementId, typeRestriction, equippedIdx) {
     }
 }
 
+async function massUpdateGemsRemote(gemArray) {
+    try {
+        const resp = await fetch('https://kiwiapi.aallyn.xyz/v2/gems/mass_update', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ gems: gemArray })
+        });
+        if (!resp.ok) throw new Error('Failed to update gems');
+        const data = await resp.json();
+        // Only trust a response if it's a non-empty array matching your input length
+        if (Array.isArray(data.gems) && data.gems.length === gemArray.length) {
+            return data.gems;
+        }
+        return gemArray;
+    } catch (e) {
+        return gemArray;
+    }
+}
+
+
 function renderInventory() {
     const inventoryEl = document.getElementById('inventory');
     inventoryEl.innerHTML = '';
@@ -587,6 +646,94 @@ function renderInventory() {
         }
         inventoryEl.appendChild(slot);
     }
+
+    // Remove existing update button to prevent duplicates
+    let updateBtn = document.getElementById('update-gems-btn');
+    if (updateBtn) updateBtn.remove();
+
+    // Add "Update Gems" button below inventory
+    updateBtn = document.createElement('button');
+    updateBtn.id = 'update-gems-btn';
+    updateBtn.innerText = 'Sync Gem Bases';
+
+    // Styles
+    updateBtn.style.display = 'block';
+    updateBtn.style.margin = '24px auto 0 auto';
+    updateBtn.style.padding = '12px 32px';
+    updateBtn.style.fontSize = '1.2rem';
+    updateBtn.style.background = 'linear-gradient(90deg, #6bffcb 0%, #3698f3 100%)';
+    updateBtn.style.color = '#222';
+    updateBtn.style.border = 'none';
+    updateBtn.style.borderRadius = '8px';
+    updateBtn.style.boxShadow = '0 2px 8px rgba(54,152,243,0.2)';
+    updateBtn.style.cursor = 'pointer';
+    updateBtn.style.fontWeight = 'bold';
+    updateBtn.style.transition = 'background 0.3s, box-shadow 0.3s';
+    updateBtn.onmouseover = function() {
+        updateBtn.style.background = 'linear-gradient(90deg, #3698f3 0%, #6bffcb 100%)';
+        updateBtn.style.boxShadow = '0 4px 16px rgba(54,152,243,0.3)';
+    };
+    updateBtn.onmouseout = function() {
+        updateBtn.style.background = 'linear-gradient(90deg, #6bffcb 0%, #3698f3 100%)';
+        updateBtn.style.boxShadow = '0 2px 8px rgba(54,152,243,0.2)';
+    };
+
+    updateBtn.onclick = async function() {
+        // Store selection info
+        let prevSelection = null;
+        if (
+            selected &&
+            typeof selectedSource === "object" &&
+            selectedSource !== null &&
+            (
+                (selectedSource.pane === "inventory" && typeof selectedSource.idx === "number" && inventory[selectedSource.idx] && inventory[selectedSource.idx].id === selected.id) ||
+                (selectedSource.pane === "equipped" && typeof selectedSource.idx === "number" && equipped[selectedSource.idx] && equipped[selectedSource.idx].id === selected.id)
+            )
+        ) {
+            prevSelection = { pane: selectedSource.pane, idx: selectedSource.idx, id: selected.id };
+        }
+
+        // Mass update inventory
+        if (Array.isArray(inventory) && inventory.length > 0) {
+            const updatedInventory = await massUpdateGemsRemote(inventory);
+            inventory = updatedInventory;
+            localStorage.setItem('inventory', JSON.stringify(inventory));
+        }
+        // Mass update equipped
+        if (Array.isArray(equipped) && equipped.length > 0) {
+            const updatedEquipped = await massUpdateGemsRemote(equipped);
+            equipped = updatedEquipped;
+            localStorage.setItem('equipped', JSON.stringify(equipped));
+        }
+
+        // Reselect gem if it is from inventory or equipped, otherwise clear selection
+        if (prevSelection) {
+            if (
+                prevSelection.pane === "inventory" &&
+                inventory[prevSelection.idx] &&
+                inventory[prevSelection.idx].id === prevSelection.id
+            ) {
+                selected = inventory[prevSelection.idx];
+                selectedSource = { pane: "inventory", idx: prevSelection.idx };
+            } else if (
+                prevSelection.pane === "equipped" &&
+                equipped[prevSelection.idx] &&
+                equipped[prevSelection.idx].id === prevSelection.id
+            ) {
+                selected = equipped[prevSelection.idx];
+                selectedSource = { pane: "equipped", idx: prevSelection.idx };
+            } else {
+                selected = null;
+                selectedSource = null;
+            }
+        } else {
+            selected = null;
+            selectedSource = null;
+        }
+
+        render();
+    };
+    inventoryEl.parentNode.insertBefore(updateBtn, inventoryEl.nextSibling);
 }
 
 // At top level, preserve selectedActionKey for the same gem

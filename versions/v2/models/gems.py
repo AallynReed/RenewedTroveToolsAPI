@@ -11,12 +11,15 @@ from .gem_bases import (
     AugmentType,
     GemRestriction,
     GemAbility,
+    GenerationType,
     ####
     GEM_STAT_RESTRICTIONS,
     GEM_TYPE_RESTRICTIONS,
     PHYSICAL_GEM_STAT_POOL,
     MAGIC_GEM_STAT_POOL,
     GEM_ABILITIES,
+    LESSER_GENERATION_MODE,
+    EMPOWERED_GENERATION_MODE,
     ####
     get_gem_max_level,
     get_increment_power_rank_lesser,
@@ -29,6 +32,7 @@ from .gem_bases import (
     get_empowered_gem_pr_threshold,
     get_augment_base
 )
+
 
 
 class Augment(BaseModel):
@@ -123,6 +127,67 @@ class Gem(BaseModel):
     stats: List[Stat]
     augmentation: Optional[float] = None
 
+    def __str__(self):
+        return f"Gem(id={self.id}, name={self.gem_name})"
+    
+    def __repr__(self):
+        return self.__str__()
+
+    @classmethod
+    def create(cls, tier=None, type=None, element=None, restriction=None, augmentation=None, level=1, procs=None, generation=None):
+        if not tier:
+            tier = choice(list(GemTier))
+        if not type:
+            type = choice(list(GemType))
+        if not element:
+            element = choice(list(GemElement))
+        else:
+            element = GemElement(element)
+        if augmentation is not None:
+            aug = {"base": augmentation}
+        else:
+            aug = {}
+        if type == GemType.LESSER:
+            if restriction is None:
+                restriction = choice(list(GemRestriction))
+            else:
+                restriction = GemRestriction(restriction)
+        else:
+            restriction = None
+        extra_containers = min(level, 15) // 5
+        if not generation:
+            if restriction is None:
+                gem_stat_pool = choice([PHYSICAL_GEM_STAT_POOL, MAGIC_GEM_STAT_POOL])
+            else:
+                gem_stat_pool = PHYSICAL_GEM_STAT_POOL if restriction == GemRestriction.FIERCE else MAGIC_GEM_STAT_POOL
+            stat_types = sample(gem_stat_pool[element], 3)
+            stats = [Stat(type=t) for t in stat_types]
+            if element == GemElement.COSMIC:
+                index = randint(0, 2)
+                stats[index].type = GemStatType.LIGHT
+                stats[index].locked = True
+        else:
+            stats = [Stat(type=t) for t in generation]
+            for stat in stats:
+                if stat.type == GemStatType.LIGHT:
+                    stat.locked = True
+        # Each stat has a base container
+        for stat in stats:
+            stat.containers.append(StatContainer(**aug))
+        if procs is None:
+            for _ in range(extra_containers):
+                index = randint(0, 2)
+                stats[index].containers.append(StatContainer(**aug))
+        else:
+            print(procs)
+            for i, proc in enumerate(procs):
+                for _ in range(proc):
+                    stats[i].containers.append(StatContainer(**aug))
+        max_level = get_gem_max_level(tier, type)
+        level = min(level, max_level)
+        ability = choice(list(GEM_ABILITIES[element])) if type == GemType.EMPOWERED else None
+        return cls(tier=tier, type=type, element=element, restriction=restriction, level=level, stats=stats, augmentation=augmentation, ability=ability)
+
     @property
     def augment_level(self):
         if self.augmentation is not None:
@@ -154,7 +219,6 @@ class Gem(BaseModel):
                 stat.type = choice(unused)
                 return True
         return False
-
 
     def move_proc(self, stat_type):
         if not self.has_stat(stat_type):
@@ -244,48 +308,6 @@ class Gem(BaseModel):
         for stat in self.stats:
             value += stat.augmentation_progress
         return value / len(self.stats)
-
-    @classmethod
-    def create(cls, tier=None, type=None, element=None, restriction=None, augmentation=None, level=1):
-        if not tier:
-            tier = choice(list(GemTier))
-        if not type:
-            type = choice(list(GemType))
-        if not element:
-            element = choice(list(GemElement))
-        else:
-            element = GemElement(element)
-        if augmentation is not None:
-            aug = {"base": augmentation}
-        else:
-            aug = {}
-        if type == GemType.LESSER:
-            if restriction is None:
-                restriction = choice(list(GemRestriction))
-            else:
-                restriction = GemRestriction(restriction)
-        else:
-            restriction = None
-        extra_containers = min(level, 15) // 5
-        if restriction is None:
-            gem_stat_pool = choice([PHYSICAL_GEM_STAT_POOL, MAGIC_GEM_STAT_POOL])
-        else:
-            gem_stat_pool = PHYSICAL_GEM_STAT_POOL if restriction == GemRestriction.FIERCE else MAGIC_GEM_STAT_POOL
-        stat_types = sample(gem_stat_pool[element], 3)
-        stats = [Stat(type=t) for t in stat_types]
-        if element == GemElement.COSMIC:
-            index = randint(0, 2)
-            stats[index].type = GemStatType.LIGHT
-            stats[index].locked = True
-        for stat in stats:
-            stat.containers.append(StatContainer(**aug))
-        for _ in range(extra_containers):
-            index = randint(0, 2)
-            stats[index].containers.append(StatContainer(**aug))
-        max_level = get_gem_max_level(tier, type)
-        level = min(level, max_level)
-        ability = choice(list(GEM_ABILITIES[element])) if type == GemType.EMPOWERED else None
-        return cls(tier=tier, type=type, element=element, restriction=restriction, level=level, stats=stats, augmentation=augmentation, ability=ability)
 
     def get_lesser_power_rank_increment(self):
         return get_increment_power_rank_lesser(self.tier, self.level)
