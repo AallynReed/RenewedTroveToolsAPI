@@ -1,0 +1,106 @@
+{
+    "Neon City": {
+        "name": "Neon City",
+        "final_name": "Neon City",
+        "caves": 0,
+        "farm": 2,
+        "icon": "neon",
+        "biome": "Neon City"
+    },
+    "The Lost Isles": {
+        "name": "The Lost Isles",
+        "final_name": "The Lost Isles",
+        "caves": 0,
+        "farm": 0,
+        "icon": "pirate",
+        "biome": "Treasure Isles"
+    },
+    "Sundered Uplands": {
+        "name": "Sundered Uplands",
+        "final_name": "Sundered Uplands",
+        "caves": 0,
+        "farm": 3,
+        "icon": "giantland",
+        "biome": "Sundered Uplands"
+    },
+    "Dragonfire Peaks": {
+        "name": "Dragonfire Peaks",
+        "final_name": "Dragonfire Peaks",
+        "caves": 0,
+        "farm": 0,
+        "icon": "dragon",
+        "biome": "Dragonfire Peaks"
+    },
+    "Candoria": {
+        "name": "Candoria",
+        "final_name": "Candoria",
+        "caves": 1,
+        "farm": 0,
+        "icon": "candy",
+        "biome": "Candoria"
+    },
+    "Medieval Highlands": {
+        "name": "Medieval Highlands",
+        "final_name": "Medieval Highlands",
+        "caves": 1,
+        "farm": 0,
+        "icon": "forest",
+        "biome": "Medieval Highlands"
+    },
+    "Cursed Vale": {
+        "name": "Cursed Vale",
+        "final_name": "Cursed Vale",
+        "caves": 0,
+        "farm": 0,
+        "icon": "undead",
+        "biome": "Cursed Vale"
+    },
+    "Fae Forest": {
+        "name": "Fae Forest",
+        "final_name": "Fae Forest",
+        "caves": 1,
+        "farm": 0,
+        "icon": "fae",
+        "biome": "Fae Forest"
+    },
+    "Desert Frontier": {
+        "name": "Desert Frontier",
+        "final_name": "Desert Frontier",
+        "caves": 1,
+        "farm": 0,
+        "icon": "frontier",
+        "biome": "Desert Frontier"
+    },
+    "Permafrost": {  
+        "name": "Permafrost",
+        "final_name": "Permafrost",
+        "caves": 1,
+        "farm": 0,
+        "icon": "tundra",
+        "biome": "Permafrost"
+    },
+    "Jurassic Jungle": {
+        "name": "Jurassic Jungle",
+        "final_name": "Jurassic Jungle",
+        "caves": 0,
+        "farm": 1,
+        "icon": "dinosaur",
+        "biome": "Jurassic Jungle"
+    },
+    "Forbidden Spires": {
+        "name": "Forbidden Spires",
+        "final_name": "Forbidden Spires",
+        "caves": 0,
+        "farm": 0,
+        "icon": "spires",
+        "biome": "Forbidden Spires"
+    },
+    "Geode Topside": {
+        "name": "Geode Topside",
+        "final_name": "Geode Topside",
+        "caves": 1,
+        "farm": 1,
+        "icon": "sandsea",
+        "biome": "Geode Topside"
+    }
+}

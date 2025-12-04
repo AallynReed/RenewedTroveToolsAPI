@@ -1,4 +1,4 @@
-from quart import Blueprint, request, abort, current_app, Response, send_file, redirect
+from quart import Blueprint, request, abort, current_app, Response, send_file, redirect, render_template
 from aiohttp import ClientSession
 from os import getenv
 import matplotlib.pyplot as plt
@@ -12,6 +12,7 @@ from pathlib import Path
 from base64 import b64encode
 from utils import render_json
 from .utils.biome_rotation import get_rotation, system_epoch, system_interval
+from .utils.stampy_rotation import get_stampy_rotation, STAMPY_MONDAY_EPOCH, STAMPY_SATURDAY_EPOCH, STAMPY_SUNDAY_EPOCH, STAMPY_MONDAY_INTERVAL, STAMPY_SATURDAY_INTERVAL, STAMPY_SUNDAY_INTERVAL
 
 
 misc = Blueprint("misc", __name__, url_prefix="/misc")
@@ -374,25 +375,25 @@ async def get_locales():
     files = {}
     for x in locales_folder.rglob("*.loc"):
         if x.is_file():
-            fix_file = []
-            with open(x) as f:
-                data = f.read()
-                for l in data.splitlines():
-                    if not l:
-                        continue
-                    split = l.split("»»", 1)
-                    if len(split) != 2:
-                        continue
-                    k, v = split
-                    if k and v:
-                        fix_file.append((k, v))
-            fix_file = "\n".join(
-                [
-                    f"{k}»»{v}"
-                    for k, v in sorted(list(set(fix_file)), key=lambda x: x[0])
-                ]
-            )
-            x.write_bytes(fix_file.encode("utf-8"))
+            # fix_file = []
+            #with open(x) as f:
+            #    data = f.read()
+            #    for l in data.splitlines():
+            #        if not l:
+            #            continue
+            #        split = l.split("»»", 1)
+            #        if len(split) != 2:
+            #            continue
+            #        k, v = split
+            #        if k and v:
+            #            fix_file.append((k, v))
+            #fix_file = "\n".join(
+            #    [
+            #        f"{k}»»{v}"
+            #        for k, v in sorted(list(set(fix_file)), key=lambda x: x[0])
+            #    ]
+            #)
+            #x.write_bytes(fix_file.encode("utf-8"))
             file_name = str(x.relative_to(locales_folder).as_posix())
             files[file_name] = b64encode(x.read_bytes()).decode("utf-8")
     return render_json(files)
@@ -435,6 +436,49 @@ async def d15_biomes_get():
         }
     )
 
+@misc.route("/stampy_biomes", methods=["GET"])
+async def stampy_biomes_get():
+    now = datetime.now(UTC)
+    monday_current = int((now - STAMPY_MONDAY_EPOCH).total_seconds())
+    saturday_current = int((now - STAMPY_SATURDAY_EPOCH).total_seconds())
+    sunday_current = int((now - STAMPY_SUNDAY_EPOCH).total_seconds())
+    monday_consumed, monday_elapsed = divmod(monday_current, STAMPY_MONDAY_INTERVAL)
+    saturday_consumed, saturday_elapsed = divmod(saturday_current, STAMPY_SATURDAY_INTERVAL)
+    sunday_consumed, sunday_elapsed = divmod(sunday_current, STAMPY_SUNDAY_INTERVAL)
+    history = [get_stampy_rotation(now, monday_consumed, monday_elapsed, saturday_consumed, saturday_elapsed, sunday_consumed, sunday_elapsed, x) for x in range(-5, 15)]
+    return render_json(
+        {
+            "current": get_stampy_rotation(now, monday_consumed, monday_elapsed, saturday_consumed, saturday_elapsed, sunday_consumed, sunday_elapsed, 0),
+            "next": get_stampy_rotation(now, monday_consumed, monday_elapsed, saturday_consumed, saturday_elapsed, sunday_consumed, sunday_elapsed, 1),
+            "history": history,
+        }
+    )
+
+@misc.route("/unlock_debug", methods=["GET", "POST"])
+async def unlock_debug():
+    if request.method == "GET":
+        return await render_template("unlock_debug.html")
+    # Get submitted file and replace byte sequence
+    files = await request.files
+    print(files)
+    trove_exe = files.get("trove_exe")
+    if not trove_exe:
+        return abort(400, "No file uploaded.")
+    data = trove_exe.read()
+
+    original = bytes.fromhex('7C 39 68 E0 02 00 00')
+    patched  = bytes.fromhex('90 90 68 E0 02 00 00')
+
+    # Replace all occurrences of the original sequence
+    data = data.replace(original, patched)
+    return await send_file(
+        BytesIO(data),
+        mimetype="application/octet-stream",
+        attachment_filename="Trove.exe",
+        as_attachment=True,
+    )
+
+    
 
 # @misc.route("/d15_biomes", methods=["POST"])
 # async def d15_biomes_post():

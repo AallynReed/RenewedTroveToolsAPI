@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Gem Evaluator</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        :root {
+            --main-bg: #10151a;
+            --pane-bg: #1d232b;
+            --slot-bg: #232b34;
+            --slot-bg-active: #3b4252;
+            --slot-border: #444c5e;
+            --slot-border-active: #88c0d0;
+            --text-main: #e5e9f0;
+            --text-muted: #a3adc2;
+            --accent: #0097a7;
+            --danger: #d32f2f;
+            --inventory-highlight: #232b34;
+        }
+        body[data-theme="light"] {
+            --main-bg: #f6f7fb;
+            --pane-bg: #fff;
+            --slot-bg: #eee;
+            --slot-bg-active: #ffe082;
+            --slot-border: #ccc;
+            --slot-border-active: #ffb300;
+            --text-main: #232323;
+            --text-muted: #6a6a6a;
+            --accent: #0097a7;
+            --danger: #d32f2f;
+            --inventory-highlight: #ffe082;
+        }
+        html, body {
+            background: var(--main-bg);
+            color: var(--text-main);
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            height: 100vh;
+            width: 100vw;
+            font-family: sans-serif;
+        }
+        .center-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+        }
+        .pane {
+            background: var(--pane-bg);
+            border-radius: 12px;
+            box-shadow: 0 4px 24px rgba(0,0,0,0.13);
+            padding: 2.5rem 2rem 2rem 2rem;
+            min-width: 320px;
+            max-width: 95vw;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        h1 {
+            margin-top: 0;
+            font-size: 2rem;
+            color: var(--accent);
+        }
+        .switch-container {
+            display: flex;
+            align-items: center;
+            margin-bottom: 2rem;
+            gap: 0.8rem;
+        }
+        .switch-label {
+            color: var(--text-muted);
+            font-size: 1rem;
+            user-select: none;
+        }
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 46px;
+            height: 24px;
+        }
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: var(--slot-bg);
+            border: 1.5px solid var(--slot-border);
+            transition: .3s;
+            border-radius: 24px;
+        }
+        .switch input:checked + .slider {
+            background-color: var(--slot-bg-active);
+            border-color: var(--slot-border-active);
+        }
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 20px;
+            width: 20px;
+            left: 2px;
+            bottom: 2px;
+            background-color: var(--accent);
+            transition: .3s;
+            border-radius: 50%;
+        }
+        .switch input:checked + .slider:before {
+            transform: translateX(22px);
+            background-color: var(--slot-border-active);
+        }
+        .file-upload {
+            background: var(--slot-bg);
+            border: 2px solid var(--slot-border);
+            border-radius: 7px;
+            color: var(--text-main);
+            padding: 1.2rem;
+            width: 100%;
+            max-width: 350px;
+            text-align: center;
+            cursor: pointer;
+            margin-bottom: 1.2rem;
+            transition: border-color .3s, background .3s;
+        }
+        .file-upload.active {
+            background: var(--slot-bg-active);
+            border-color: var(--slot-border-active);
+        }
+        input[type="file"] {
+            display: none;
+        }
+        .status-message {
+            color: var(--accent);
+            margin-top: 1rem;
+            font-size: 1.1rem;
+        }
+        @media (max-width: 600px) {
+            .pane {
+                padding: 1.5rem 0.6rem;
+                min-width: unset;
+            }
+            .file-upload {
+                max-width: 95vw;
+                font-size: 1rem;
+            }
+        }
+    </style>
+</head>
+<body data-theme="dark">
+    <div class="center-container">
+        <div class="pane">
+            <div class="switch-container">
+                <span class="switch-label" id="theme-label">Light Mode</span>
+                <label class="switch">
+                    <input type="checkbox" id="theme-switch">
+                    <span class="slider"></span>
+                </label>
+            </div>
+            <h1>Evaluate Your Gem</h1>
+            <label class="file-upload" id="file-label">
+                <span id="file-label-text">Select a gem file to evaluate</span>
+                <input type="file" id="file-input" accept=".png, .jpeg, .jpg">
+            </label>
+            <div class="status-message" id="status-message"></div>
+        </div>
+    </div>
+    <script>
+        // Theme Switch
+        const themeSwitch = document.getElementById('theme-switch');
+        const themeLabel = document.getElementById('theme-label');
+        const body = document.body;
+        themeSwitch.addEventListener('change', function() {
+            if (this.checked) {
+                body.setAttribute('data-theme', 'light');
+                themeLabel.textContent = 'Dark Mode';
+            } else {
+                body.setAttribute('data-theme', 'dark');
+                themeLabel.textContent = 'Light Mode';
+            }
+        });
+
+        // File Upload Handling
+        const fileInput = document.getElementById('file-input');
+        const fileLabel = document.getElementById('file-label');
+        const fileLabelText = document.getElementById('file-label-text');
+        const statusMessage = document.getElementById('status-message');
+
+        fileInput.addEventListener('change', async function() {
+            if (fileInput.files.length > 0) {
+                fileLabel.classList.add('active');
+                fileLabelText.textContent = `Selected: ${fileInput.files[0].name}`;
+
+                // Create FormData and POST file
+                const formData = new FormData();
+                formData.append('gem', fileInput.files[0]);
+
+                statusMessage.textContent = 'Evaluating gem...';
+
+                try {
+                    const response = await fetch('https://kiwiapi.aallyn.xyz/v2/gems/evaluate', {
+                        method: 'POST',
+                        body: formData
+                    });
+
+                    if (!response.ok) {
+                        throw new Error('Failed to evaluate gem');
+                    }
+                    const result = await response.json();
+                    // Handle response, show result
+                    statusMessage.textContent = result.message || 'Gem evaluated.';
+                } catch (error) {
+                    statusMessage.textContent = 'Error evaluating gem.';
+                }
+            } else {
+                fileLabel.classList.remove('active');
+                fileLabelText.textContent = 'Select a gem file to evaluate';
+                statusMessage.textContent = '';
+            }
+        });
+
+        // Clicking label opens file dialog
+        fileLabel.addEventListener('click', () => {
+            fileInput.click();
+        });
+    </script>
+</body>
+</html>

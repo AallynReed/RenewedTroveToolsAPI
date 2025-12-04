@@ -1,38 +1,22 @@
-from pydantic import BaseModel, Field, computed_field, ConfigDict
-from random import sample, random, randint, choice
-from datetime import datetime, UTC
+from datetime import UTC, datetime
 from enum import IntEnum
+from random import choice, randint, random, sample
 from typing import List, Optional
-from .gem_bases import (
-    GemTier,
-    GemType,
-    GemElement,
-    GemStatType,
-    AugmentType,
-    GemRestriction,
-    GemAbility,
-    GenerationType,
-    ####
-    GEM_STAT_RESTRICTIONS,
-    GEM_TYPE_RESTRICTIONS,
-    PHYSICAL_GEM_STAT_POOL,
-    MAGIC_GEM_STAT_POOL,
-    GEM_ABILITIES,
-    LESSER_GENERATION_MODE,
-    EMPOWERED_GENERATION_MODE,
-    ####
-    get_gem_max_level,
-    get_increment_power_rank_lesser,
-    get_increment_power_rank_empowered,
-    get_stat_base_lesser,
-    get_stat_base_empowered,
-    get_stat_threshold_lesser,
-    get_stat_threshold_empowered,
-    get_lesser_gem_pr_threshold,
-    get_empowered_gem_pr_threshold,
-    get_augment_base
-)
 
+from pydantic import BaseModel, ConfigDict, Field, computed_field
+
+from .gem_bases import (EMPOWERED_GENERATION_MODE, GEM_ABILITIES,  # ###
+                        GEM_STAT_RESTRICTIONS, GEM_TYPE_RESTRICTIONS,
+                        LESSER_GENERATION_MODE, MAGIC_GEM_STAT_POOL,
+                        PHYSICAL_GEM_STAT_POOL, AugmentType, GemAbility,
+                        GemElement, GemRestriction, GemStatType, GemTier,
+                        GemType, GenerationType, get_augment_base,
+                        get_empowered_gem_pr_threshold, get_gem_max_level,
+                        get_increment_power_rank_empowered,
+                        get_increment_power_rank_lesser,
+                        get_lesser_gem_pr_threshold, get_stat_base_empowered,
+                        get_stat_base_lesser, get_stat_threshold_empowered,
+                        get_stat_threshold_lesser)
 
 
 class Augment(BaseModel):
@@ -368,3 +352,62 @@ class Gem(BaseModel):
             stat_value += stat_base * pr_increments
             calculated.append({stat.type.display_name: stat_value})
         return calculated
+
+
+class PartialGem(BaseModel):
+    tier: GemTier
+    type: GemType
+    level: int
+    power_rank: int
+
+    @computed_field
+    @property
+    def power_rank_thresholds(self) -> tuple:
+        if self.type == GemType.LESSER:
+            return get_lesser_gem_pr_threshold(self.tier, GemElement.WATER)
+        else:
+            return get_empowered_gem_pr_threshold(self.tier, GemElement.WATER)
+        
+    def get_increment_power_rank(self, level):
+        if self.type == GemType.LESSER:
+            return get_increment_power_rank_lesser(self.tier, level)
+        else:
+            return get_increment_power_rank_empowered(self.tier, level)
+
+    @computed_field
+    @property
+    def expected_power_rank_range(self) -> tuple:
+        container_count = min(self.level, 15) // 5 + 3
+        thresholds = self.power_rank_thresholds
+        min_pr = thresholds[0] * container_count
+        max_pr = thresholds[1] * container_count
+        if self.type == GemType.EMPOWERED:
+            min_pr += 100
+            max_pr += 100
+        for level in range(1, self.level + 1):
+            pr_increment = self.get_increment_power_rank(level)
+            min_pr += pr_increment * 3
+            max_pr += pr_increment * 3
+        return (round(min_pr), round(max_pr))
+
+    @computed_field
+    @property
+    def is_within_expected_range(self) -> bool:
+        min_pr, max_pr = self.expected_power_rank_range
+        return min_pr <= self.power_rank <= max_pr
+    
+    @computed_field
+    @property
+    def progress(self) -> float:
+        min_pr, max_pr = self.expected_power_rank_range
+        if self.power_rank < min_pr:
+            return -1.0
+        elif self.power_rank > max_pr:
+            return 1.0
+        else:
+            return (self.power_rank - min_pr) / (max_pr - min_pr)
+
+gem = PartialGem(tier=GemTier.STELLAR, type=GemType.EMPOWERED, level=24, power_rank=1694)
+print(gem.expected_power_rank_range)
+
+print(gem.progress)

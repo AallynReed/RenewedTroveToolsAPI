@@ -334,3 +334,13 @@ def get_augment_base(augment: AugmentType):
         case AugmentType.SUPERIOR:
             return 12.5
     return None
+
+def get_augment_power(augment: AugmentType, container_count: int):
+    match augment:
+        case AugmentType.ROUGH:
+            return 2.5 / container_count
+        case AugmentType.PRECISE:
+            return 5 / container_count
+        case AugmentType.SUPERIOR:
+            return 12.5 / container_count
+    return None

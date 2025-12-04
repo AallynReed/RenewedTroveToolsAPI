@@ -7,6 +7,7 @@ from pathlib import Path
 from typing import List
 from urllib.parse import quote
 
+#import easyocr
 import qrcode
 import versions
 import versions.v1.tasks as tasks
@@ -16,27 +17,37 @@ from dotenv import load_dotenv
 from humanize import precisedelta
 from motor.motor_asyncio import AsyncIOMotorClient
 from pydantic import BaseModel, Field
-from quart import (Quart, abort, redirect, render_template, request, send_file,
-                   url_for)
+from quart import Quart, abort, redirect, render_template, request, send_file, url_for
 from quart_cors import cors
 from trove import TroveTime
 from utils import Redis, render, render_json
 from versions.v1.models.database.api import API
 from versions.v1.models.database.gem import GemBuild
-from versions.v1.models.database.leaderboards import (Leaderboard,
-                                                      LeaderboardEntry,
-                                                      LeaderboardEntryArchive)
+from versions.v1.models.database.leaderboards import (
+    Leaderboard,
+    LeaderboardEntry,
+    LeaderboardEntryArchive,
+)
 from versions.v1.models.database.market import MarketListing
 from versions.v1.models.database.mod import ModEntry, SearchMod
 from versions.v1.models.database.profile import ModProfile
-from versions.v1.models.database.scraping import (ChallengeEntry,
-                                                  ChaosChestEntry)
+from versions.v1.models.database.scraping import ChallengeEntry, ChaosChestEntry
 from versions.v1.models.database.star import StarBuild
 from versions.v1.models.database.user import User
 from versions.v1.utils.logger import Logger
 from website.internals.app import kiwiapp
 from website.internals.models import data
 from yaml import safe_load
+
+# reader = easyocr.Reader(
+#     [
+#         "en",
+#         "de",
+#         "fr",
+#         "pt",
+#     ],
+#     gpu=False,
+# )
 
 config = {
     "DEBUG": True,
@@ -54,12 +65,10 @@ app.register_blueprint(kiwiapp)
 langs = {
     "en-US": "American English",
     "zh-CN": "简体中文",
-    "pt-PT": "Português (Incompleto)"
+    "pt-PT": "Português (Incompleto)",
 }
-lang_strings ={
-    k: {}
-    for k in langs.keys()
-}
+lang_strings = {k: {} for k in langs.keys()}
+
 
 def load_language_strings():
     for lang in lang_strings.keys():
@@ -73,6 +82,7 @@ def load_language_strings():
                         key, value = line.split("»»", 1)
                         lang_strings[lang][key.strip()] = value.strip()
     return lang_strings
+
 
 try:
     from personal import personal_bp
@@ -95,13 +105,16 @@ app.config["DISCORD_BOT_TOKEN"] = os.getenv("DISCORD_BOT_TOKEN")
 def setup_loggers():
     Logger("Mod List")
 
+
 class QR_Code_Counter(BaseModel):
     url: str
     counts: int = 0
     unique_counts: int = 0
 
+
 class Leonor(Document):
     qr_code_scan_counters: List[QR_Code_Counter] = Field(default_factory=list)
+
 
 @app.before_serving
 async def startup():
@@ -125,7 +138,7 @@ async def startup():
             LeaderboardEntryArchive,
             ChaosChestEntry,
             ChallengeEntry,
-            Leonor
+            Leonor,
         ],
     )
     if not list(await Leonor.find({}).to_list()):
@@ -187,26 +200,22 @@ async def startup():
     if app.main_worker:
         print("Main worker started.")
 
+
 @app.route("/pdf/<file>", subdomain="leonor")
 async def leonor_pdf(file):
     file_path = Path().joinpath("leonor", "pdfs", file)
     if not file_path.exists():
         return abort(404, "Not Found")
     response = await send_file(file_path, mimetype="application/pdf")
-    requested = request.cookies.get(f'requested_{file}')
+    requested = request.cookies.get(f"requested_{file}")
     if not requested:
         count = True
-        response.set_cookie(f'requested_{file}', "true")
+        response.set_cookie(f"requested_{file}", "true")
     else:
         count = False
     leonor_database = await Leonor.find_one({})
     matched_counter = next(
-        (
-            c
-            for c in leonor_database.qr_code_scan_counters
-            if c.url == file
-            ),
-        None
+        (c for c in leonor_database.qr_code_scan_counters if c.url == file), None
     )
     if not matched_counter:
         matched_counter = QR_Code_Counter(url=file)
@@ -232,40 +241,47 @@ async def leonor_qr(file):
     )
     qr.add_data(data)
     qr.make(fit=True)
-    img = qr.make_image(fill='black', back_color='transparent')
+    img = qr.make_image(fill="black", back_color="transparent")
     img_io = BytesIO()
-    img.save(img_io, 'PNG')
+    img.save(img_io, "PNG")
     img_io.seek(0)
-    return await send_file(img_io, mimetype='image/png')
+    return await send_file(img_io, mimetype="image/png")
 
 
-@app.route("/pdf/upload", subdomain="leonor", methods=['GET','POST'])
+@app.route("/pdf/upload", subdomain="leonor", methods=["GET", "POST"])
 async def leonor_upload():
     if request.method == "GET":
-        return await render_template('leonor/upload.html')
+        return await render_template("leonor/upload.html")
     files = await request.files
-    if 'file' not in files:
+    if "file" not in files:
         return abort(400, "Sem ficheiro")
-    file = files['file']
-    if file.filename == '':
+    file = files["file"]
+    if file.filename == "":
         return abort(400, "Sem ficheiro")
     file_path = Path("leonor/pdfs") / file.filename
     await file.save(file_path)
-    return redirect(url_for('leonor_upload_success', filename=file.filename, _external=True))
+    return redirect(
+        url_for("leonor_upload_success", filename=file.filename, _external=True)
+    )
 
 
 @app.route("/pdf/success/<filename>", subdomain="leonor")
 async def leonor_upload_success(filename):
-    return await render_template('leonor/success.html', filename=filename)
+    return await render_template("leonor/success.html", filename=filename)
+
 
 @app.route("/ovg")
 async def ovg():
-    return redirect("https://www.dropbox.com/scl/fi/55au6wy37sf8x456s0y8g/OnVirtualGYM_NewBeFit-release-1.apk?rlkey=eym72imiluc7reqnf1u00mxzh&dl=1")
+    return redirect(
+        "https://www.dropbox.com/scl/fi/55au6wy37sf8x456s0y8g/OnVirtualGYM_NewBeFit-release-1.apk?rlkey=eym72imiluc7reqnf1u00mxzh&dl=1"
+    )
+
 
 @app.before_request
 async def before_request():
     if request.remote_addr == os.getenv("TROVESAURUS_IP"):
         print(f"Request from Trovesaurus: {request.path}")
+
 
 @app.route("/favicon.ico")
 @app.route("/favicon.ico", subdomain="trove")
@@ -417,13 +433,19 @@ async def home():
 @app.route("/gems", subdomain="trove")
 async def gem_page():
     async with ClientSession() as session:
-        async with session.get("https://kiwiapi.aallyn.xyz/v1/stats/file/star_chart.json") as response:
+        async with session.get(
+            "https://kiwiapi.aallyn.xyz/v1/stats/file/star_chart.json"
+        ) as response:
             star_chart_data = await response.json()
-            return await render_template(
-                "gems.html",
-                star_chart_data=star_chart_data
-            )
+            return await render_template("gems.html", star_chart_data=star_chart_data)
     return abort(503, "Service is unavailable.")
+
+
+@app.route("/gem_evaluator", subdomain="app")
+@app.route("/gem_evaluator", subdomain="trove")
+async def gem_eval_page():
+    return await render_template("gem_eval.html")
+
 
 @app.route("/long_shade_rotation")
 @app.route("/long_shade_rotation", subdomain="trove")
@@ -492,7 +514,7 @@ async def long_shade_rotation():
                 advanced=advanced,
                 lang=lang,
                 langs=langs,
-                translations=lang_strings
+                translations=lang_strings,
             )
     return abort(503, "Service is unavailable.")
 

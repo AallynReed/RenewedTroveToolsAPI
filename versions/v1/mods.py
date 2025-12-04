@@ -197,6 +197,7 @@ async def get_preview_image(hash):
         as_attachment=True,
     )
 
+
 @mods.route("/downloadfile.php", methods=["GET"])
 async def download_mod():
     params = request.args
@@ -204,7 +205,9 @@ async def download_mod():
     if fileid is None:
         return "No fileid provided", 400
     async with ClientSession() as session:
-        async with session.get(f"https://trovesaurus.com/client/downloadfile.php?fileid={fileid}") as resp:
+        async with session.get(
+            f"https://trovesaurus.com/client/downloadfile.php?fileid={fileid}"
+        ) as resp:
             if resp.status != 200:
                 return f"Failed to download mod: {resp.status}", resp.status
             data = await resp.read()
@@ -213,13 +216,13 @@ async def download_mod():
             match = re.search(r'filename="(.+)"?', content_disposition)
             io = BytesIO(data)
             io.seek(0)
-            try:
-                mod = TMod.read_bytes(Path("temp.tmod"), data)
-            except:
-                try:
-                    mod = ZMod.read_bytes(Path("temp.zmod"), data)
-                except:
-                    return "Failed to parse mod file", 500
+            # try:
+            #     mod = TMod.read_bytes(Path("temp.tmod"), data)
+            # except:
+            #     try:
+            #         mod = ZMod.read_bytes(Path("temp.zmod"), data)
+            #     except:
+            #         return "Failed to parse mod file", 500
             return await send_file(
                 io,
                 attachment_filename=f"{match.groups(1)[0]}",

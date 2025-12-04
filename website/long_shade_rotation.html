@@ -66,12 +66,12 @@
             color: #0cc;
         }
 
-        
+
         .long-shade-container {
             position: relative;
             width: 150px;
             height: 150px;
-            background-image: url('https://trovesaurus.com/images/biomes/long_shade.png');
+            background-image: url('https://kiwiapi.aallyn.xyz/v1/misc/assets/images/biomes/long_shade.png');
             background-size: cover;
             overflow: hidden;
         }
@@ -104,22 +104,27 @@
             from {
                 transform: rotate(0deg) translateX(-40px) rotate(0deg);
             }
+
             to {
                 transform: rotate(360deg) translateX(-40px) rotate(-360deg);
             }
         }
+
         @keyframes rotate-around2 {
             from {
                 transform: rotate(120deg) translateX(-40px) rotate(-120deg);
             }
+
             to {
                 transform: rotate(480deg) translateX(-40px) rotate(-480deg);
             }
         }
+
         @keyframes rotate-around3 {
             from {
                 transform: rotate(240deg) translateX(-40px) rotate(-240deg);
             }
+
             to {
                 transform: rotate(600deg) translateX(-40px) rotate(-600deg);
             }
@@ -169,21 +174,24 @@
                             data-i18n="Size/Existence of caves">Size/Existence of
                             caves</span></span>
                     <span style="color: #999;text-align: center;"><span
-                            class="material-icons star-middle star-blank">diamond</span> - <span data-i18n="Rating of farmability of ores">
-                                Rating of farmability of ores</span></span>
+                            class="material-icons star-middle star-blank">diamond</span> - <span
+                            data-i18n="Rating of farmability of ores">
+                            Rating of farmability of ores</span></span>
                 </div>
                 {% for x in history %}
                 {% if x[5] %}
                 <div class="long-shade-container">
                     {% for y in x[2:5] %}
-                    <img class="rotating-image" src="https://kiwiapi.aallyn.xyz/v1/misc/assets/images/biomes/{{ y.icon }}.png" alt="{{ y.name }}" width="16" height="16" id="biome_image{{ loop.index }}">
+                    <img class="rotating-image"
+                        src="https://kiwiapi.aallyn.xyz/v1/misc/assets/images/biomes/{{ y.icon }}.png"
+                        alt="{{ y.name }}" width="16" height="16" id="biome_image{{ loop.index }}">
                     {% endfor %}
                 </div>
                 {% endif %}
                 {% endfor %}
                 <table class="my-2">
                     {% for x in history %}
-                    <tr {% if x[5] %}class="current"{% endif %}>
+                    <tr {% if x[5] %}class="current" {% endif %}>
                         <td class="time" timestamp="{{ x[0][1] }}">{{ x[0][0] }}</td>
                         {% for y in x[2:5] %}
                         {% if advanced %}
@@ -233,7 +241,9 @@
                     </tr>
                     {% endfor %}
                 </table>
-                <span class="my-1" style="color: #999;text-align: center;" data-i18n="Special thanks for helping gathering information on the biomes">Special thanks for helping gathering
+                <span class="my-1" style="color: #999;text-align: center;"
+                    data-i18n="Special thanks for helping gathering information on the biomes">Special thanks for
+                    helping gathering
                     information on the biomes<span>:</span></span>
                 <span class="my-1" style="color: #999;text-align: center;">
                     <span class="badge" style="font-size: 18px">Nikstar</span>
@@ -425,7 +435,7 @@
                 "July", "August", "September", "October", "November", "December"
             ];
 
-            
+
 
             const getOrdinalSuffix = (day) => {
                 if (day > 3 && day < 21) return updateString(lang, "th"); // Handles 11th, 12th, 13th

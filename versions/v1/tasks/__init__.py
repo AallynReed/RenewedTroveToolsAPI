@@ -1,21 +1,23 @@
-from quart import current_app
-from ..utils import tasks
-from aiohttp import ClientSession
-from ..utils.trovesaurus import TrovesaurusMod
-from ..models.database.mod import ModEntry, SearchMod
-from ..utils.cache import ModCache
-from pathlib import Path
-import os
 import asyncio
-import traceback
+import os
 import time
+import traceback
+from datetime import UTC, datetime, time
 from hashlib import md5
-from ..utils.logger import l
-from datetime import datetime, UTC, time
-from json import loads, dumps
-from utils import Event, EventType
-from hcloud import Client
+from json import dumps, loads
+from pathlib import Path
 from time import perf_counter
+
+from aiohttp import ClientSession
+from hcloud import Client
+from quart import current_app
+from utils import Event, EventType
+
+from ..models.database.mod import ModEntry, SearchMod
+from ..utils import tasks
+from ..utils.cache import ModCache
+from ..utils.logger import l
+from ..utils.trovesaurus import TrovesaurusMod
 
 
 @tasks.loop(seconds=5)
